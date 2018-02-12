@@ -539,7 +539,7 @@ def ExecuteExperiment(i):
     print(total_time)
 
 start_time = datetime.datetime.now().time().strftime('%H:%M:%S')
-for nameFile in glob.glob(os.getcwd() + "\\"+"..\data\\RedAdyCom2014.txt"): 
+for nameFile in glob.glob(os.getcwd() + "\\"+"..\data\\RedAdyCom200?.txt"): 
 #for nameFile in glob.glob(os.getcwd() + "\\"+"..\data\\kaka1.txt"):
     print("nameFile")
     print(nameFile) 

@@ -192,7 +192,7 @@ if (languageEl == "EN"){
   xscale = "escala degree"
 }
 
-red <- "RedAdyCom2014"
+red <- "RedAdyCom2000"
 #red <- "kaka1"
 
 #series = "Both"
