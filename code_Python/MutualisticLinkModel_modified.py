@@ -498,8 +498,8 @@ def save_to_file(filename,*text):
    
 def save_df(filename,matriz):
     gg = pd.DataFrame(matriz)
-    pieces_path = filename.split("\\")
-    directory = "\\".join(pieces_path[0:-1])
+    pieces_path = filename.split("/")
+    directory = "/".join(pieces_path[0:-1])
     if not os.path.exists(directory):
         os.makedirs(directory)
     gg.to_csv(filename,sep = '\t',header= False, index=False)
@@ -514,7 +514,6 @@ def ExecuteExperiment(i):
     print("Path:"+nameFile)
     R = ReadWeb(nameFile)
     numexper = 100
-    #W = SimNet2(Nl, w,Na,Np,fl)
     (Na,Np) = shape(R)
     
     print("Na")
@@ -522,29 +521,26 @@ def ExecuteExperiment(i):
     print("Np")
     print(Np)
     
-    
     emptyW = np.zeros((Na,Np),dtype=float)
     CompareDistributions(nameFile,numexper,i*0)
-    
     end_time = datetime.datetime.now().time().strftime('%H:%M:%S')
     total_time=(datetime.datetime.strptime(end_time,'%H:%M:%S') - datetime.datetime.strptime(start_time,'%H:%M:%S'))
     print("CompareDistributions ")
     print(total_time)
-
-    CompareMatrix(nameFile,i*0)
-    
+    CompareMatrix(nameFile,i*0)    
     end_time = datetime.datetime.now().time().strftime('%H:%M:%S')
     total_time=(datetime.datetime.strptime(end_time,'%H:%M:%S') - datetime.datetime.strptime(start_time,'%H:%M:%S'))
     print("CompareMatrix ")
     print(total_time)
 
 start_time = datetime.datetime.now().time().strftime('%H:%M:%S')
-for nameFile in glob.glob(os.getcwd() + "\\"+"..\data\\RedAdyCom200?.txt"): 
+#for nameFile in glob.glob(os.getcwd() + "\\"+"..\data\\RedAdyCom????.txt"): 
+for nameFile in glob.glob(os.getcwd() + "/"+"../data/RedAdyCom????.txt"): 
 #for nameFile in glob.glob(os.getcwd() + "\\"+"..\data\\kaka1.txt"):
     print("nameFile")
     print(nameFile) 
     [ExecuteExperiment(k) for k in range(1, 2)]
 end_time = datetime.datetime.now().time().strftime('%H:%M:%S')
 total_time=(datetime.datetime.strptime(end_time,'%H:%M:%S') - datetime.datetime.strptime(start_time,'%H:%M:%S'))
-print("FINAAAAAAALLLLLLLLLLLLL ")
+print("*** END ***")
 print(total_time)
