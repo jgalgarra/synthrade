@@ -19,8 +19,9 @@ MPack <- function(matrix,normalize = TRUE)
 
 
 NREPS <- 1000
-orig_file <- "RedAdyCom2014"
+orig_file <- "RedAdyCom2010"
 file_name <- paste0(orig_file,"_ff_1")
+
 #file_name <- "kaka1"
 experiment_files <- Sys.glob(paste0("../results/",file_name,"_W_*.txt"))
 

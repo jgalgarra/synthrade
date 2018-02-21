@@ -28,7 +28,8 @@ if (filter_factor != 0){
   }
 }
 
-files = c("RedAdyCom2000","RedAdyCom1984","RedAdyCom1970")
+#files = c("RedAdyCom2000","RedAdyCom1984","RedAdyCom1970")
+files = paste0("RedAdyCom",seq(1962,2014))
 for (nf in files){
   nivel_filtrado = 1
   print("Sin filtro")

@@ -513,7 +513,7 @@ def ExecuteExperiment(i):
     global emptyW
     print("Path:"+nameFile)
     R = ReadWeb(nameFile)
-    numexper = 3
+    numexper = 1
     (Na,Np) = shape(R)
     
     print("Na")
@@ -534,7 +534,7 @@ def ExecuteExperiment(i):
     print(total_time)
 
 start_time = datetime.datetime.now().time().strftime('%H:%M:%S')
-for nameFile in glob.glob(os.getcwd() + "\\"+"..\data\\RedAdyCom1970_ff_1.txt"): 
+for nameFile in glob.glob(os.getcwd() + "\\"+"..\data\\RedAdyCom2010_ff_1.txt"): 
     print("nameFile")
     print(nameFile) 
     [ExecuteExperiment(k) for k in range(1, 2)]
