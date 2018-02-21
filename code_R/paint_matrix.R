@@ -2,7 +2,7 @@ library(grid)
 library(gridExtra)
 library(ggplot2)
 
-file_name <- "RedAdyCom2014"
+file_name <- "RedAdyCom2014_ff_1"
 experiment_files <- Sys.glob(paste0("../results/",file_name,"_W_*.txt"))
 
 zero_matrix <- read.table(experiment_files[1],sep="\t")
@@ -49,10 +49,12 @@ for (i in 1:ncol(emp_matrix))
   sum_col[i] <- sum(emp_matrix[,i])
 emp_matrix <- emp_matrix[sum_row>0,sum_col>0]
 
-MPack <- function(matrix)
+MPack <- function(matrix,normalize = TRUE)
 {
   sum_row <- rep(0,nrow(matrix))
   sum_col <- rep(0,ncol(matrix))
+  if (normalize)
+    matrix = matrix/max(matrix)
   for (i in 1:nrow(matrix))
     sum_row[i] <- sum(matrix[i,])
   for (i in 1:ncol(matrix))
@@ -72,7 +74,7 @@ paint_int_matrix <- function(mq,titulo="",maximo=100)
   zp1 <- ggplot(mq,
                 aes(x = X, y = rev(Y)))
   b <- c(0,1,maximo/2)
-  zp1 <- zp1 + geom_tile(aes(fill=cuenta+0.00001)) + scale_fill_gradientn(colours=c("grey95",
+  zp1 <- zp1 + geom_tile(aes(fill=cuenta+0.00000001)) + scale_fill_gradientn(colours=c("grey95",
                                                                                     "blue","red"),
                                                    trans = "log",  
                                                    breaks =b, 

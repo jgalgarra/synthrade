@@ -3,10 +3,12 @@ library(gridExtra)
 library(ggplot2)
 library(kcorebip)
 
-MPack <- function(matrix)
+MPack <- function(matrix,normalize = TRUE)
 {
   sum_row <- rep(0,nrow(matrix))
   sum_col <- rep(0,ncol(matrix))
+  if (normalize)
+    matrix = matrix/max(matrix)
   for (i in 1:nrow(matrix))
     sum_row[i] <- sum(matrix[i,])
   for (i in 1:ncol(matrix))
@@ -15,21 +17,34 @@ MPack <- function(matrix)
   return(t(ord_matrix))       # Transpose because of order of python-written matrix
 }
 
-file_name <- "RedAdyCom2001"
+
+NREPS <- 1000
+orig_file <- "RedAdyCom2014"
+file_name <- paste0(orig_file,"_ff_1")
 #file_name <- "kaka1"
 experiment_files <- Sys.glob(paste0("../results/",file_name,"_W_*.txt"))
 
-zero_matrix <- read.table(experiment_files[1],sep="\t")
-for (l in 1:nrow(zero_matrix))
-  for(m in 1:ncol(zero_matrix))
-    zero_matrix[l,m]<-0
+# zero_matrix <- read.table(experiment_files[1],sep="\t")
+# for (l in 1:nrow(zero_matrix))
+#   for(m in 1:ncol(zero_matrix))
+#     zero_matrix[l,m]<-0
 
 numexper <- length(experiment_files)
 
-NREPS <- 10000
+
+or_matrix <- read.table(paste0("../data/",orig_file,".txt"),sep="\t")
+sum_row <- rep(0,nrow(or_matrix))
+sum_col <- rep(0,ncol(or_matrix))
+ind_matrix_p <- MPack(or_matrix)
+# Remove all zeroes columns and rows
+dfint <- as.data.frame(ind_matrix_p)
+w <- wine(dfint,nreps=NREPS)
+obswine <- w$wine
+print(paste0(orig_file," wine ",obswine))
 
 emp_matrix <- read.table(paste0("../data/",file_name,".txt"),sep="\t")
-#dfanid <- data.frame("NDOF"=c(),"WNODF"=c(),"wine"=c(),"exper"=c())
+sum_row <- rep(0,nrow(emp_matrix))
+sum_col <- rep(0,ncol(emp_matrix))
 dfanid <- data.frame("wine"=c(),"exper"=c())
 ind_matrix_p <- MPack(emp_matrix)
 # Remove all zeroes columns and rows

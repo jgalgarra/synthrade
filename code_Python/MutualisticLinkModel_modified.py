@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 Mutualistic Link Model for weighted mutualistic networks
 
@@ -63,7 +63,7 @@ global listW
 
 #_____________________________________________________________________________
 # INPUT DATA 
-def ReadWeb(web_file):
+def ReadWeb(web_file,filter_factor=0):
     '''
     Reads interaction matrix of an empirical network from 'web_file' file. 
     It must be a .txt archive. The format must be plain text, with columns
@@ -82,7 +82,6 @@ def ReadWeb(web_file):
 
     
     R = array(ListInt)
-    
     
     R=R[~np.all(R==0,axis=1),:] # deletes columns of zeros
     R=R[:,~np.all(R==0,axis=0)] # deletes rows of zeros
@@ -115,7 +114,7 @@ def UpdatableLinks(matrixprob):
         listaedges.append([positions[0][i], positions[1][i]])
     return listaedges
 
-def SimNet2(R,Nl,pw,Na,Np,fl):
+def SimNet2(R,Nl,pw,Na,Np,fl,filter_factor=0):
     
     '''
     Simulates a mutualistic network with Nl links, w total weight, Na importers, 
@@ -498,8 +497,9 @@ def save_to_file(filename,*text):
    
 def save_df(filename,matriz):
     gg = pd.DataFrame(matriz)
-    pieces_path = filename.split("/")
+    pieces_path = filename.split("\\")
     directory = "/".join(pieces_path[0:-1])
+    print("save_df",filename,directory)
     if not os.path.exists(directory):
         os.makedirs(directory)
     gg.to_csv(filename,sep = '\t',header= False, index=False)
@@ -513,7 +513,7 @@ def ExecuteExperiment(i):
     global emptyW
     print("Path:"+nameFile)
     R = ReadWeb(nameFile)
-    numexper = 100
+    numexper = 3
     (Na,Np) = shape(R)
     
     print("Na")
@@ -534,9 +534,7 @@ def ExecuteExperiment(i):
     print(total_time)
 
 start_time = datetime.datetime.now().time().strftime('%H:%M:%S')
-#for nameFile in glob.glob(os.getcwd() + "\\"+"..\data\\RedAdyCom????.txt"): 
-for nameFile in glob.glob(os.getcwd() + "/"+"../data/RedAdyCom????.txt"): 
-#for nameFile in glob.glob(os.getcwd() + "\\"+"..\data\\kaka1.txt"):
+for nameFile in glob.glob(os.getcwd() + "\\"+"..\data\\RedAdyCom1970_ff_1.txt"): 
     print("nameFile")
     print(nameFile) 
     [ExecuteExperiment(k) for k in range(1, 2)]
