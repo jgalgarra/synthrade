@@ -19,7 +19,7 @@ MPack <- function(matrix,normalize = TRUE)
 
 
 NREPS <- 1000
-orig_file <- "RedAdyCom2010"
+orig_file <- "RedAdyCom1962"
 file_name <- paste0(orig_file,"_ff_1")
 
 #file_name <- "kaka1"
@@ -41,19 +41,21 @@ ind_matrix_p <- MPack(or_matrix)
 dfint <- as.data.frame(ind_matrix_p)
 w <- wine(dfint,nreps=NREPS)
 obswine <- w$wine
-print(paste0(orig_file," wine ",obswine))
+print(paste0("Original file ",orig_file," wine ",obswine))
+print(sprintf("Volume %020.0f",sum(or_matrix)))
 
 emp_matrix <- read.table(paste0("../data/",file_name,".txt"),sep="\t")
 sum_row <- rep(0,nrow(emp_matrix))
 sum_col <- rep(0,ncol(emp_matrix))
-dfanid <- data.frame("wine"=c(),"exper"=c())
+dfanid <- data.frame("wine"=c(),"volume"=c(),"max"=c(),"exper"=c())
 ind_matrix_p <- MPack(emp_matrix)
 # Remove all zeroes columns and rows
 dfint <- as.data.frame(ind_matrix_p)
 w <- wine(dfint,nreps=NREPS)
 obswine <- w$wine
-print(paste0(file_name," wine ",obswine))
-dfanid <- rbind(dfanid,data.frame("wine"=obswine,"exper"=0))
+print(paste0("Filtered file ",file_name," wine ",obswine))
+print(sprintf("Volume %020.0f",sum(emp_matrix)))
+dfanid <- rbind(dfanid,data.frame("wine"=obswine,"volume"=sum(emp_matrix),"max"=max(emp_matrix),"exper"=0))
 
 
 for (i in 1:numexper){
@@ -63,7 +65,8 @@ for (i in 1:numexper){
   w <- wine(dfint,nreps=NREPS)
   obswine <- w$wine
   print(paste0(experiment_files[i]," wine ",obswine))
-  dfanid <- rbind(dfanid,data.frame("wine"=obswine,"exper"=i))
+  print(sprintf("Volume %020.0f",sum(ind_matrix)))
+  dfanid <- rbind(dfanid,data.frame("wine"=obswine,"volume"=sum(ind_matrix),"max"=max(ind_matrix),"exper"=i))
 }
 
 write.table(dfanid,paste0("../nestedness/",file_name,"_nestvalues.csv"),row.names = FALSE,

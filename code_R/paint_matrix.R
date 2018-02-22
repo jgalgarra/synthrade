@@ -2,7 +2,7 @@ library(grid)
 library(gridExtra)
 library(ggplot2)
 
-file_name <- "RedAdyCom2014_ff_1"
+file_name <- "RedAdyCom1962_ff_1"
 experiment_files <- Sys.glob(paste0("../results/",file_name,"_W_*.txt"))
 
 zero_matrix <- read.table(experiment_files[1],sep="\t")
@@ -92,8 +92,8 @@ paint_int_matrix <- function(mq,titulo="",maximo=100)
   return(zp1)
 }
 
-hist(log10(hm_emp$cuenta),breaks=30)
-hist(log10(hm_mean$cuenta),breaks=30)
+hist(log10(hm_emp$cuenta),breaks=10)
+hist(log10(hm_mean$cuenta),breaks=10)
 
 m_emp <- paint_int_matrix(hm_emp,titulo=paste(file_name,"Empirical Matrix"))
 m_mean <- paint_int_matrix(hm_mean,titulo=paste0("Simulated Matrix. #Experiments: ",numexper ))
