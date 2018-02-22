@@ -438,13 +438,12 @@ def save_df(filename,matriz):
         
 #_____________________________________________________________________________    
 
-def ExecuteExperiment():
+def ExecuteExperiment(numexper=1):
 
     global nameFile
     global emptyW
     start_time = datetime.datetime.now().time().strftime('%H:%M:%S')
     R = ReadWeb(nameFile)
-    numexper = 1
     (Na,Np) = shape(R)
     print("Importers: ",Na)
     print("Exporters: ",Np)
@@ -453,11 +452,23 @@ def ExecuteExperiment():
     CompareMatrix(nameFile)    
 
 # MAIN PROGRAM 
-print(sys.argv)
+# Call example: python MutualisticModel.py nexper datafile
+print('Number of arguments:', len(sys.argv), 'arguments.')
+print('Argument List:', str(sys.argv))
+relpath = os.getcwd() + "/"+"../data/"
+nargs = len(sys.argv)
 start_time = datetime.datetime.now().time().strftime('%H:%M:%S')
-print("*** BEGIN *** File: ",nameFile)
-for nameFile in glob.glob(os.getcwd() + "\\"+"..\data\\RedAdyCom1962_ff_1.txt"):  
-    ExecuteExperiment()
+
+if (nargs == 3):
+    nexper = int(sys.argv[1])
+    nameFile = relpath+sys.argv[2]
+    print("*** BEGIN *** File: ",nameFile)
+    ExecuteExperiment(nexper)
+else:
+    print("Usage: python MutualisticModel.py numberofexperiments file")
 end_time = datetime.datetime.now().time().strftime('%H:%M:%S')
 total_time=(datetime.datetime.strptime(end_time,'%H:%M:%S') - datetime.datetime.strptime(start_time,'%H:%M:%S'))
 print("*** END *** Elapsed time: ",total_time)
+
+#for nameFile in glob.glob(os.getcwd() + "\\"+"..\data\\RedAdyCom1962_ff_1.txt"):  
+
