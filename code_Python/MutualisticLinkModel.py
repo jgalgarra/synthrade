@@ -40,14 +40,11 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 from pylab import *
 import glob
-
-
 import random
 from matplotlib.colors import LogNorm
 from matplotlib.pyplot import imshow
 from scipy import stats
 import pandas as pd
-
 
 #mlml 04/10/2017
 
@@ -71,18 +68,11 @@ def ReadWeb(web_file,filter_factor=0):
     Returns interaction matrix R as an array.
     '''
     archive = open(str(web_file),'r')
-    List = archive.read()
-    
-    List = List.split('\n')
-    
+    List = archive.read()  
+    List = List.split('\n')  
     List = [line.split('\t') for line in List]   # change '\t' for ' ' or ',' 
-    #print(List)
-    
-    ListInt= [[float(y) for y in x ] for x in List if len(x)!=1]
-
-    
-    R = array(ListInt)
-    
+    ListInt= [[float(y) for y in x ] for x in List if len(x)!=1]   
+    R = array(ListInt)  
     R=R[~np.all(R==0,axis=1),:] # deletes columns of zeros
     R=R[:,~np.all(R==0,axis=0)] # deletes rows of zeros
     return R
@@ -114,50 +104,31 @@ def UpdatableLinks(matrixprob):
         listaedges.append([positions[0][i], positions[1][i]])
     return listaedges
 
-def SimNet2(R,Nl,pw,Na,Np,fl,filter_factor=0):
-    
+def SynthNetwork(R,Nl,pw,Na,Np,filter_factor=0):
     '''
     Simulates a mutualistic network with Nl links, w total weight, Na importers, 
-    Np exporters and fl percentage of forbidden links
+    Np exporters
     Returns the weighted interaction matrix
     '''
-#    edge_list=[(0,0),(0,1),(1,0)]
-#    edge_list_weight= [(0,0,0.01),(0,1,0.01),(1,0,0.01)]
-#    Amax = 4
-#    Pmax = 4
-    
     edge_list=[(0,1),(1,0)]
     edge_list_weight= [(0,1,1),(1,0,1)]
     Amax = 2
     Pmax = 2
-
     W = np.zeros((Na,Np),dtype=float)
     W[0,1] = W [0,2] = W [1,0] = W[1,2] = W[2,0] = W[2,1] = 1
     Pr_A = np.sum(W, axis=1)/sum(W)
     Pr_P = np.sum(W, axis=0)/sum(W)
-
-    # generate random forbidden links matrix a priori
-    FL = np.zeros((Na,Np),dtype=bool) 
-    dividendo = float(Na*Np)
-    while sum(FL)/dividendo < fl:      
-        a = random.choice(range(Na))     
-        p = random.choice(range(Np))      
-        if (a,p) not in edge_list and not FL[a,p]:
-            FL[a,p] = 1
-          
     cuentalinks = sum(W)
     minval = np.min(R[R>0])
     ciclos = np.max(R)/minval
     ciclos = Nl
-
     lambdaA = (Na**2-Na)/(2.*ciclos)
     lambdaP = (Np**2-Np)/(2.*ciclos)
     # Just to explore the effect of a change of speed in the birth of nodes
 #    lambdaA = lambdaA/4
 #    lambdaP = lambdaP/4
     
-    print("lambdaA ",lambdaA,"  lambdaP ",lambdaP)
-    #while ((sum(elem[2] for elem in edge_list_weight) < w) or (cuentalinks<Nl)):
+#    print("lambdaA ",lambdaA,"  lambdaP ",lambdaP)
     morenewnodes = True
     newA = Amax
     newP = Pmax
@@ -166,14 +137,13 @@ def SimNet2(R,Nl,pw,Na,Np,fl,filter_factor=0):
         # Updating link probabilities
         if (cuenta_antciclo != cuentalinks):
             cuenta_antciclo = cuentalinks
-            if not(cuentalinks % 100):
-                print("Amax", Amax, "Pmax", Pmax,"  ",cuentalinks, " links out of ",Nl)
+#            if not(cuentalinks % 1000):
+#                print("Amax", Amax, "Pmax", Pmax,"  ",cuentalinks, " links out of ",Nl)
             prob_new_links = np.zeros((Amax,Pmax),dtype=float)
             for i in range (Amax):
                 for j in range(Pmax):
-                    prob_new_links[i,j] = Pr_A[i]*Pr_P[j]#*exp(-W[i,j]/sum(W))
+                    prob_new_links[i,j] = Pr_A[i]*Pr_P[j]
         # Na and Np linked by preferential attachment
-                
         if (Amax < Na-1):
             if np.random.binomial(1,min(1,lambdaA/Amax))>0:
                 newA = Amax + 1
@@ -228,8 +198,8 @@ def SumAP(W,s):
     else:
         A = W>0
     (N,M) = shape(A)
-    SA = [sum(A[i,:]) for i in range(N)]    #for i in range(N):    
-    SP = [sum(A[:,i]) for i in range(M)]    #    SA[i]=sum(A[i,:])
+    SA = [sum(A[i,:]) for i in range(N)]    
+    SP = [sum(A[:,i]) for i in range(M)]
     return SA, SP 
 
 def Pack(W):
@@ -311,7 +281,7 @@ def AverageDistribution(X,Y,n):
 #_____________________________________________________________________________    
 # SIMULATION FUNCTIONS      
 
-def NsimDist(Nl, w,Na,Np,fl,num_trials,s):
+def NsimDist(Nl, w,Na,Np,num_trials,s):
     '''
     Generates num_trials interaction matrices with parameters w, Na, Np and fl
     Returns average strength/degree distributions with standard errors and 
@@ -337,22 +307,18 @@ def NsimDist(Nl, w,Na,Np,fl,num_trials,s):
     # average and acumulate distributions and statistical errors for both classes
     meanXA, meanYA, eYA = AverageDistribution(XA,YA,num_trials)
     meanYA = [sum(meanYA[:i+1]) for i in range(len(meanYA))]    
-    eYA = [sqrt(sum(eYA[:i+1]**2)) for i in range(len(meanYA))]
-    
+    eYA = [sqrt(sum(eYA[:i+1]**2)) for i in range(len(meanYA))] 
     meanXP, meanYP, eYP = AverageDistribution(XP,YP,num_trials)
     meanYP = [sum(meanYP[:i+1]) for i in range(len(meanYP))]
-    eYP = [sqrt(sum(eYP[:i+1]**2)) for i in range(len(meanYP))]
-    
-    meanE = meanE/(1.*num_trials)
-    
-    
+    eYP = [sqrt(sum(eYP[:i+1]**2)) for i in range(len(meanYP))]   
+    meanE = meanE/(1.*num_trials)    
     return array(meanXA[::-1]), array(meanYA[::-1]), array(eYA[::-1]), \
            array(meanXP[::-1]), array(meanYP[::-1]), array(eYP[::-1]),  meanE
 
 #_____________________________________________________________________________    
 # OUTPUT FUNCTIONS
 
-def CompareMatrix(web_name,fl):
+def CompareMatrix(web_name):
     
     global W
     
@@ -365,19 +331,10 @@ def CompareMatrix(web_name,fl):
     (Na,Np) = shape(R)
     w = sum(R)
     Nl=np.count_nonzero(R) 
-    print("Enlaces R")
-    print(Nl)
-    #W = SimNet2(Nl, w,Na,Np,fl)
-    print("Enlaces W")
-    print(np.count_nonzero(W))
     fileFig = web_name.replace("data","results")
     fileFig = fileFig.replace(".txt","_W.txt")
-    #save_to_file(fileFig,W)
     R = array(Pack(R))
     W = array(Pack(W))
-   
-    
-    
     fig, ax = subplots(1,2,sharex=False,sharey=False)
     m1=ax[0].imshow(R,interpolation='none',vmin=1,vmax=max(R.max(),W.max()),norm=LogNorm(),cmap='jet')
     m2=ax[1].imshow(W,interpolation='none',vmin=1,vmax=max(R.max(),W.max()),norm=LogNorm(),cmap='jet')
@@ -393,35 +350,24 @@ def CompareMatrix(web_name,fl):
     m2.axes.set_ylabel('I-importer')
     m2.axes.set_xlabel('E-exporter')
     m2.axes.set_title('Simulated int. matrix')
-    
-
-    fileFig = web_name.replace(".txt","_"+str(fl)+"FigCMm1.png")
+    fileFig = web_name.replace(".txt","_FigCMm1.png")
     fileFig = fileFig.replace("data","plots")
     myFig = m1.get_figure()  
     pathFile = fileFig         # Get the figure
-    myFig.savefig(pathFile)  # Save to file
-    
-#    fileFig = web_name.replace(".txt","_"+str(fl)+"FigCMm2.png")
-#    myFig = m2.get_figure()  
-#    pathFile = fileFig         # Get the figure
-#    myFig.savefig(pathFile)  # Save to file
-    
+    myFig.savefig(pathFile)  # Save to file   
     return R, W
 
-def CompareDistributions(web_name,num_trials,fl):
-    
-    global W
-    global listW
-
-    
+def CompareDistributions(web_name,num_trials):
     '''
     Loads an empirical network from file 'web_name.txt' and performs num_trials
     simulations of the model with same w, Na, Np as the empirical network and
     fl percentage of forbidden links. Represents the empirical and the average 
     simulated strength and degree distributions and number of links.
-    '''
+    ''' 
+    global W
+    global listW
+
     R = ReadWeb(web_name)   
-    
     (Na,Np) = shape(R)
     w = sum(R)
     Nl=np.count_nonzero(R) 
@@ -430,27 +376,18 @@ def CompareDistributions(web_name,num_trials,fl):
     fileFig = web_name.replace("data","results")
     fileFig = fileFig.replace(".txt","_W_.txt")
     for i in range(num_trials):
-        print(web_name," Experiment ",i+1," of ",num_trials)
-        W = SimNet2(R,Nl, w,Na,Np,fl)
+        print("Experiment ",i+1," of ",num_trials)
+        W = SynthNetwork(R,Nl,w,Na,Np)
         W = W*(np.sum(R)/np.sum(W))
         fileFigInd = fileFig.replace(".txt",str(i+1)+".txt")
         save_df(fileFigInd,W)
         listW.append(W)
-#    R = array(Pack(R)), 
-#    W = array(Pack(listW[0]))
     W = listW[0]
-
-#    fileFig = web_name.replace("data","results")
-#    fileFig = fileFig.replace(".txt","_W_.txt")
-#    for k in range(num_trials):
-#        fileFigInd = fileFig.replace(".txt",str(k+1)+".txt")
-#        save_df(fileFigInd,listW[k])    
-    
     fig, ax = subplots(1,2,sharex=False,sharey=False) 
     # strength distributions    
     sub = ax[1]
     sa, psa, sp, psp = CumulativeDistribution(R,1)
-    xsa, ysa, esa, xsp, ysp, esp, me = NsimDist(Nl, w,Na,Np,fl,num_trials,1)    
+    xsa, ysa, esa, xsp, ysp, esp, me = NsimDist(Nl, w,Na,Np,num_trials,1)    
     sub.loglog(sa,psa,'ro',sp,psp,'go')
     sub.loglog(xsa,ysa,'rx',xsp,ysp,'gx')
     esa[esa>=ysa] = ysa[esa>=ysa]*.999 # prevents errorbars <= 0
@@ -464,7 +401,7 @@ def CompareDistributions(web_name,num_trials,fl):
     # degree distributions
     sub = ax[0]
     ka, pka, kp, pkp = CumulativeDistribution(R,0)
-    xka, yka, eka, xkp, ykp, ekp, me = NsimDist(Nl, w,Na,Np,fl,num_trials,0)    
+    xka, yka, eka, xkp, ykp, ekp, me = NsimDist(Nl, w,Na,Np,num_trials,0)    
     sub.loglog(ka,pka,'r*',kp,pkp,'g*') 
     sub.loglog(xka,yka,'rx',xkp,ykp,'gx') 
     eka[eka>=yka] = yka[eka>=yka]*.999 # prevents errorbars <= 0
@@ -478,18 +415,14 @@ def CompareDistributions(web_name,num_trials,fl):
     # empirical and average simulated number of links
     t = '$E_{emp}= '+str(sum(R>0))+'$\n'+'$E_{sim}= '+str(round(me))+'$'     
     sub.text(1.04,min(min(pka),min(pkp)),t)
-    
-    
-
     fileFig = web_name.replace("data","plots")
-    fileFig = fileFig.replace(".txt","_"+str(fl)+"FigCD.png")
+    fileFig = fileFig.replace(".txt","_FigCD.png")
     myFig = sub.get_figure()  
     pathFile = fileFig         # Get the figure
     myFig.savefig(pathFile)  # Save to file
     return 
     
 def save_to_file(filename,*text):
-
     with open(filename, mode='wt', encoding='utf-8') as myfile:
         for lines in text:
             myfile.write('\n'.join(str(line) for line in lines))
@@ -499,46 +432,32 @@ def save_df(filename,matriz):
     gg = pd.DataFrame(matriz)
     pieces_path = filename.split("\\")
     directory = "/".join(pieces_path[0:-1])
-    print("save_df",filename,directory)
     if not os.path.exists(directory):
         os.makedirs(directory)
     gg.to_csv(filename,sep = '\t',header= False, index=False)
         
 #_____________________________________________________________________________    
 
-def ExecuteExperiment(i):
-#Executes experiment i
+def ExecuteExperiment():
 
     global nameFile
     global emptyW
-    print("Path:"+nameFile)
+    start_time = datetime.datetime.now().time().strftime('%H:%M:%S')
     R = ReadWeb(nameFile)
     numexper = 1
     (Na,Np) = shape(R)
-    
-    print("Na")
-    print(Na)
-    print("Np")
-    print(Np)
-    
+    print("Importers: ",Na)
+    print("Exporters: ",Np)
     emptyW = np.zeros((Na,Np),dtype=float)
-    CompareDistributions(nameFile,numexper,i*0)
-    end_time = datetime.datetime.now().time().strftime('%H:%M:%S')
-    total_time=(datetime.datetime.strptime(end_time,'%H:%M:%S') - datetime.datetime.strptime(start_time,'%H:%M:%S'))
-    print("CompareDistributions ")
-    print(total_time)
-    CompareMatrix(nameFile,i*0)    
-    end_time = datetime.datetime.now().time().strftime('%H:%M:%S')
-    total_time=(datetime.datetime.strptime(end_time,'%H:%M:%S') - datetime.datetime.strptime(start_time,'%H:%M:%S'))
-    print("CompareMatrix ")
-    print(total_time)
+    CompareDistributions(nameFile,numexper)
+    CompareMatrix(nameFile)    
 
+# MAIN PROGRAM 
+print(sys.argv)
 start_time = datetime.datetime.now().time().strftime('%H:%M:%S')
-for nameFile in glob.glob(os.getcwd() + "\\"+"..\data\\RedAdyCom2010_ff_1.txt"): 
-    print("nameFile")
-    print(nameFile) 
-    [ExecuteExperiment(k) for k in range(1, 2)]
+print("*** BEGIN *** File: ",nameFile)
+for nameFile in glob.glob(os.getcwd() + "\\"+"..\data\\RedAdyCom1962_ff_1.txt"):  
+    ExecuteExperiment()
 end_time = datetime.datetime.now().time().strftime('%H:%M:%S')
 total_time=(datetime.datetime.strptime(end_time,'%H:%M:%S') - datetime.datetime.strptime(start_time,'%H:%M:%S'))
-print("*** END ***")
-print(total_time)
+print("*** END *** Elapsed time: ",total_time)
