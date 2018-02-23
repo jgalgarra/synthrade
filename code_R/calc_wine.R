@@ -19,7 +19,7 @@ MPack <- function(matrix,normalize = TRUE)
 
 
 NREPS <- 1000
-orig_file <- "RedAdyCom1962"
+orig_file <- "RedAdyCom2006"
 file_name <- paste0(orig_file,"_FILT")
 experiment_files <- Sys.glob(paste0("../results/",file_name,"_W_*.txt"))
 dfanid <- data.frame("wine"=c(),"volume"=c(),"max"=c(),"exper"=c())

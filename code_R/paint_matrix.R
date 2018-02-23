@@ -2,7 +2,7 @@ library(grid)
 library(gridExtra)
 library(ggplot2)
 
-file_name <- "RedAdyCom1962_ff_1"
+file_name <- "RedAdyCom2006_FILT"
 experiment_files <- Sys.glob(paste0("../results/",file_name,"_W_*.txt"))
 
 zero_matrix <- read.table(experiment_files[1],sep="\t")

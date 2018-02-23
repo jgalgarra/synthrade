@@ -430,7 +430,7 @@ def save_to_file(filename,*text):
    
 def save_df(filename,matriz):
     gg = pd.DataFrame(matriz)
-    pieces_path = filename.split("\\")
+    pieces_path = filename.split("/")
     directory = "/".join(pieces_path[0:-1])
     if not os.path.exists(directory):
         os.makedirs(directory)
@@ -452,9 +452,6 @@ def ExecuteExperiment(numexper=1):
     CompareMatrix(nameFile)    
 
 # MAIN PROGRAM 
-# Call example: python MutualisticModel.py nexper datafile
-print('Number of arguments:', len(sys.argv), 'arguments.')
-print('Argument List:', str(sys.argv))
 relpath = os.getcwd() + "/"+"../data/"
 nargs = len(sys.argv)
 start_time = datetime.datetime.now().time().strftime('%H:%M:%S')
