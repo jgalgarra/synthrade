@@ -12,14 +12,17 @@ for (i in xperiment_files){
   df_all_nestvalues <- rbind(df_all_nestvalues,data_file)
 }
 df_empirical_nestvalues <- df_all_nestvalues[df_all_nestvalues$exper==0,]
+df_unfiltered_nestvalues <- df_all_nestvalues[df_all_nestvalues$exper==-1,]
 df_synthetic_nestvalues <- df_all_nestvalues[df_all_nestvalues$exper>0,]
 p <- ggplot(df_synthetic_nestvalues, aes(as.factor(year),as.numeric(wine)))
 p <- p + geom_boxplot() + theme_bw() + ylim(c(0,1))
 p <- p + geom_boxplot(data=df_empirical_nestvalues,aes(as.factor(year),as.numeric(wine)),color="red")
 
 q <- ggplot(df_synthetic_nestvalues, aes(as.factor(year),as.numeric(wine)))
-q <- q + geom_point(color="blue",alpha=0.1) + theme_bw() + ylim(c(0,1))
+q <- q + geom_point(color="blue",alpha=0.1) + theme_bw() + ylim(c(0.7,1))
 q <- q + geom_boxplot(data=df_empirical_nestvalues,aes(as.factor(year),as.numeric(wine)),color="red")
+q <- q + geom_boxplot(data=df_unfiltered_nestvalues,aes(as.factor(year),as.numeric(wine)),color="green")
+
 
 df_diffs <- df_empirical_nestvalues
 df_diffs$diff <- 0

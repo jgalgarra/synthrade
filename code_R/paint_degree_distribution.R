@@ -192,7 +192,8 @@ if (languageEl == "EN"){
   xscale = "escala degree"
 }
 
-red <- "RedAdyCom1962_ff_1"
+nred <- "RedAdyCom1962"
+red <- paste0(nred,"_FILT")
 #red <- "kaka1"
 
 #series = "Both"

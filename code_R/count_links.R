@@ -15,4 +15,4 @@ for (i in data_files)
   nldf <- rbind(nldf,data.frame("file"=nfile,"year"=year,"links"=nlinks))
 }
 
-write.table(nldf,"../results/NUMLINKS.txt")
+write.table(nldf,"../results/NUMLINKS.txt",row.names = FALSE)

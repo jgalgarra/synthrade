@@ -1,12 +1,42 @@
+ISO_CC <- c("AFG","ALB","DZA","ASM","AND","AGO","AIA","ATA","ATA","ARG",
+            "ARM","ABW","AUS","AUT","AZE","BHS","BHR","BGD","BRB","BLR","BEL","BEL",
+            "BLZ","BEN","BMU","BTN","BOL","BES","BIH","BWA","IOT","VGB",
+            "BRA","BRN","BGR","BFA","BDI","CPV","KHM","CMR","CAN",
+            "CYM","CAF","TCD","CHL","CHN","HKG","MAC","CXR","CCK","COL","COM","COG",
+            "COK","CRI","CIV","HRV","CUB","CUW","CYP","CZE","CSK","PRK","COD","DNK",
+            "DJI","DMA","DOM","PAK","ECU","EGY","SLV","GNQ","ERI","EST","ETH",
+            "FRO","FLK","FJI","FIN","YEM","DDR","VDR","YMD",
+            "DEU","PCI","PAN","PCZ","VNM","SDN","SUN","YUG","ATF",
+            "FRA","GUF","PYF","FSM","GAB","GMB","GEO","DEU","GHA","GIB","GRC",
+            "GRL","GRD","GLP","GUM","GTM","GIN","GNB","GUY","HTI","HMD","VAT","HND",
+            "HUN","ISL","IND","IND","IDN","IRN","IRQ","IRL","ISR","ITA","JAM","JPN",
+            "JOR","KAZ","KEN","KIR","KWT","KGZ","LAO","LVA","LBN","LSO","LBR",
+            "LBY","LTU","LUX","MDG","MWI","MYS","MDV","MLI","MLT","MHL","MTQ","MRT",
+            "MUS","MYT","MEX","MNG","MNE","MSR","MAR","MOZ","MMR","MNP","NAM","NRU",
+            "NPL","ANT","ANT","NLD","NCL","NZL","NIC","NER","NGA","NIU","NFK",
+            "NOR","OMN","PAK","PLW","PAN","PNG","PRY",
+            "PER","PHL","PCN","POL","PRT","QAT","KOR","MDA","REU","ROU","RUS",
+            "RWA","BLM","SHN","KNA","KNA","LCA","SXM","SPM","VCT","WSM",
+            "SMR","STP","SAU","SEN","SRB","SCG","SYC","SLE","SGP","SVK",
+            "SVN","ZAF","SLB","SOM","ZAF","SGS","SSD","ESP","LKA","PSE","SDN",
+            "SUR","SWZ","SWE","CHE","SYR","TJK","MKD","THA","TLS","TGO","TKL","TON",
+            "TTO","TUN","TUR","TKM","TCA","TUV","UGA","UKR","ARE","GBR","TZA","UMI",
+            "URY","VIR","USA","USA","UZB","VUT","VEN","VNM","WLF","ESH",
+            "YEM","ZMB","ZWE")
+
 
 files <- seq(1962,2014)
+files <- seq(2011,2011)
 for (nfile in files)
 {
   print(nfile)
-  raw_data <- read.table(paste0("../data/RedCom",nfile,".txt"))
+  #raw_data <- read.table(paste0("../data/RedCom",nfile,".txt"))
+  raw_data <- read.table(paste0("../data/RedRaw",nfile,".txt"))
   names(raw_data) <- c("or","dest","imp")
-  clean_data <- raw_data[raw_data$or != 'wld',]
-  clean_data <- clean_data[clean_data$dest != 'wld',]
+  raw_data$or <- toupper(raw_data$or)
+  raw_data$dest <- toupper(raw_data$dest)
+  clean_data <- raw_data[is.element(raw_data$or,ISO_CC),]
+  clean_data <- clean_data[is.element(clean_data$dest,ISO_CC),]
   countries1 <- unique(clean_data$or)
   countries2 <- unique(clean_data$dest)
   if (length(countries1) > length(countries2))

@@ -1,4 +1,4 @@
-get_data <- function(file_name)
+get_data <- function(file_name,filter=FALSE)
 {
 r_df <- read.table(paste0("../data/",file_name,".txt"),sep="\t")
 r_matrix <- as.matrix(r_df);
@@ -9,7 +9,8 @@ cs <- cumsum(r_aux)
 partial <- r_aux[cs < 0.001*sum_tot]
 min_allowed <- partial[length(partial)]
 maximo <- max(r_matrix)
-r_matrix <- r_matrix[r_matrix >= min_allowed]
+if (filter)
+  r_matrix <- r_matrix[r_matrix >= min_allowed]
 maximo <- max(r_matrix)
 minimo <- min(r_matrix)
 ratio <- maximo/minimo
@@ -25,11 +26,11 @@ return(r_df)
 }
 
 #files = c("RedAdyCom2000","RedAdyCom1984","RedAdyCom1970")
-files = paste0("RedAdyCom",seq(1962,2014))
+files = paste0("RedAdyCom",seq(2005,2011))
 for (nf in files){
   print("Unfiltered")
   get_data(nf)
   print("Filtered")
-  r <- get_data(nf)
+  r <- get_data(nf, filter = TRUE)
   write.table(r,paste0("../data/",nf,"_FILT.txt"),row.names = FALSE,col.names = FALSE,sep="\t")
 }
