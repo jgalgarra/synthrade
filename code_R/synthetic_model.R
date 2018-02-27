@@ -20,8 +20,7 @@ PrefAttachment <- function(vecprob,lvec)
         if (rbinom(1,1,vecprob[i])>0)
           listanodes <- append(listanodes,i)
   }
-  # pick_A = np.random.choice(longitud,1,vecprob.all())[0]
-  # listanodes = [[pick_A]]
+  #node = sample(seq(1,lvec),1,vecprob[1:lvec],replace=TRUE)
 return(listanodes)
 }
 
@@ -31,8 +30,8 @@ UpdatableLinks <- function(matrixprob){
   listaedges = c()
   tam = c(nrow(matrixprob),ncol(matrixprob))
   while (!links_found){
-    randunif = runif(tam[1]*tam[2],0,1)
-    newlinks = c()
+    randunif <- runif(tam[1]*tam[2],0,1)
+    newlinks <- c()
     while (length(newlinks) == 0){
       randunif = matrix(randunif,nrow=tam[1],ncol=tam[2])
       newlinks = randunif < matrixprob  
@@ -144,4 +143,5 @@ SynthMatrix <- function(matrixemp, year){
 
 matrix_emp <- ReadMatrix(lyear)
 matrix_experiment <- SynthMatrix(matrix_emp,lyear)
-write.table(matrix_experiment,paste0("../results/RedAdyCom",lyear,"_FILT_W_",nexper,".txt"))
+write.table(t(matrix_experiment),paste0("../results/RedAdyCom",lyear,"_FILT_W_",nexper,".txt"),
+            row.names = FALSE, col.names = FALSE, sep = "\t")

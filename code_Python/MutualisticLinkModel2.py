@@ -81,11 +81,11 @@ def ReadWeb(web_file,filter_factor=0):
 # MODEL NETWORK BUILDER
 
 def PrefAttachment(vecprob,longitud):
-    listanodes = []
-    for i in range(longitud):
-        if vecprob[i] != 0:
-            if (np.random.binomial(1,vecprob[i])>0):
-                listanodes.append(i)
+#    listanodes = []
+#    for i in range(longitud):
+#        if vecprob[i] != 0:
+#            if (np.random.binomial(1,vecprob[i])>0):
+#                listanodes.append(i)
     pick_A = np.random.choice(longitud,1,vecprob.all())[0]
     listanodes = [[pick_A]]
     return listanodes
