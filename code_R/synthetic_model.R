@@ -29,7 +29,7 @@ UpdatableLinks <- function(matrixprob){
   # positions <- which(sample(mpos,1,prob=matrixprob)==mpos,arr.ind=T)
   while (!links_found){
     newlinks <- c()
-    while (length(newlinks) == 0){
+    while (sum(newlinks) == 0){
       randunif <- runif(tam[1]*tam[2],0,1)
       randunif = matrix(randunif,nrow=tam[1],ncol=tam[2])
       newlinks = randunif < matrixprob
@@ -129,9 +129,9 @@ SynthMatrix <- function(matrixemp, year){
   return(msynth)
 }
 
-years <- c(2000,2014)
+years <- seq(2001,2014)
 for (lyear in years)
-   for (nexper in seq(1,10)){
+   for (nexper in seq(1,1)){
     print(paste(lyear,"Experiment",nexper))
     matrix_emp <- ReadMatrix(lyear)
     nlinks <- sum(matrix_emp>0)
