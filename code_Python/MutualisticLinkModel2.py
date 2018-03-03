@@ -498,8 +498,8 @@ if (nargs == 3):
     print("*** BEGIN *** File: ",nameFile)
     ExecuteExperiment(nexper)
 else:
-    nexper = 1
-    nameFile = relpath+"RedAdyCom1962_FILT.txt"
+    nexper = 2
+    nameFile = relpath+"RedAdyCom2013_FILT.txt"
     print("*** BEGIN *** File: ",nameFile)
     ExecuteExperiment(nexper)
 end_time = datetime.datetime.now().time().strftime('%H:%M:%S')

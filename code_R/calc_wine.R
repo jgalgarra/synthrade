@@ -14,12 +14,12 @@ MPack <- function(matrix,normalize = TRUE)
   for (i in 1:ncol(matrix))
     sum_col[i] <- sum(matrix[,i])
   ord_matrix <- matrix[rev(order(sum_row)),rev(order(sum_col))]
-  return(t(ord_matrix))       # Transpose because of order of python-written matrix
+  return(ord_matrix)      
 }
 
 
 NREPS <- 1000
-files <- paste0("RedAdyCom",seq(1950,1950))
+files <- paste0("RedAdyCom",seq(2008,2008))
 for (orig_file in files)
 {
   file_name <- paste0(orig_file,"_FILT")

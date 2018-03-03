@@ -25,13 +25,17 @@ ISO_CC <- c("AFG","ALB","DZA","ASM","AND","AGO","AIA","ATA","ATA","ARG",
             "YEM","ZMB","ZWE")
 
 
-files <- seq(1962,2014)
-files <- seq(2011,2011)
+
+files <- seq(2013,2014)
 for (nfile in files)
 {
   print(nfile)
-  #raw_data <- read.table(paste0("../data/RedCom",nfile,".txt"))
-  raw_data <- read.table(paste0("../data/RedRaw",nfile,".txt"))
+
+
+  ctdata <- read.csv(paste0("../data/raw_data/TodosYR",nfile,".csv"), sep=";")
+  outdata <- data.frame("or"=ctdata$origin,"dest"=ctdata$dest,"imp"=ctdata$import_val)
+  write.table(outdata,paste0("../data/raw_data/RedRaw",nfile,".txt"),sep=" ",row.names = FALSE, col.names = FALSE)
+  raw_data <- read.table(paste0("../data/raw_data/RedRaw",nfile,".txt"))
   names(raw_data) <- c("or","dest","imp")
   raw_data$or <- toupper(raw_data$or)
   raw_data$dest <- toupper(raw_data$dest)
