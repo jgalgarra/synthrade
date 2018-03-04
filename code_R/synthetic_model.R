@@ -27,15 +27,12 @@ UpdatableLinks <- function(matrixprob){
   tam = c(nrow(matrixprob),ncol(matrixprob))
   # mpos <- matrix(seq(1,tam[1]*tam[2]),nrow=tam[1],ncol=tam[2])
   # positions <- which(sample(mpos,1,prob=matrixprob)==mpos,arr.ind=T)
-  while (!links_found){
-    newlinks <- c()
-    while (sum(newlinks) == 0){
-      randunif <- runif(tam[1]*tam[2],0,1)
-      randunif = matrix(randunif,nrow=tam[1],ncol=tam[2])
-      newlinks = randunif < matrixprob
-      positions <- which(newlinks !=0, arr.ind = T)
-      links_found = length(positions>0)
-    }
+  newlinks <- 0
+  while (sum(newlinks) == 0){
+    randunif <- runif(tam[1]*tam[2],0,1)
+    randunif = matrix(randunif,nrow=tam[1],ncol=tam[2])
+    newlinks = randunif < matrixprob
+    positions <- which(newlinks !=0, arr.ind = T)
   }
   return(positions)
 }
@@ -58,7 +55,7 @@ SynthMatrix <- function(matrixemp, year){
   msynth[3,2] <- min_token
   lambda_imp = (n_imp^2-n_imp)/(2*numlinks)
   lambda_exp = (n_exp^2-n_exp)/(2*numlinks)
-  cuenta_links <- sum(msynth >0)
+  cuenta_links <- 0
   print(paste("lambda imp:",lambda_imp,"lambda_exp",lambda_exp))
   Pr_E <- rowSums(msynth)/sum(msynth)
   Pr_I <- colSums(msynth)/sum(msynth)
@@ -129,7 +126,7 @@ SynthMatrix <- function(matrixemp, year){
   return(msynth)
 }
 
-years <- seq(2001,2014)
+years <- seq(1998,2014)
 for (lyear in years)
    for (nexper in seq(1,1)){
     print(paste(lyear,"Experiment",nexper))

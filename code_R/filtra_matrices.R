@@ -26,7 +26,7 @@ return(r_df)
 }
 
 #files = c("RedAdyCom2000","RedAdyCom1984","RedAdyCom1970")
-files = paste0("RedAdyCom",seq(1962,2014))
+files = paste0("RedAdyCom",seq(1963,2014))
 for (nf in files){
   print("Unfiltered")
   get_data(nf)
