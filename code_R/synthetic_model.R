@@ -40,8 +40,9 @@ UpdatableLinks <- function(matrixprob){
 SynthMatrix <- function(matrixemp, year){
   n_imp <- ncol(matrixemp)
   n_exp <- nrow(matrixemp)
-  print(paste("exporters",n_exp,"importers",n_imp))
   numlinks <- sum(matrixemp > 0)
+  print(paste("exporters",n_exp,"importers",n_imp,"numlinks",numlinks))
+
   # Create a synthetic matrix full of zeroes
   msynth <- matrix(rep(0.0,n_imp*n_exp), nrow = n_exp, byrow = TRUE)
   exp_max <- 3
@@ -55,7 +56,8 @@ SynthMatrix <- function(matrixemp, year){
   msynth[3,2] <- min_token
   lambda_imp = (n_imp^2-n_imp)/(2*numlinks)
   lambda_exp = (n_exp^2-n_exp)/(2*numlinks)
-  cuenta_links <- 0
+  cuenta_links <- sum(msynth > 0)
+  min_links <- cuenta_links
   print(paste("lambda imp:",lambda_imp,"lambda_exp",lambda_exp))
   Pr_E <- rowSums(msynth)/sum(msynth)
   Pr_I <- colSums(msynth)/sum(msynth)
@@ -66,10 +68,11 @@ SynthMatrix <- function(matrixemp, year){
   
   while ((morenewnodes)|| (cuenta_links < numlinks))
   {
+    print(paste("pasa",cuenta_links))
     new_node <- FALSE
     if (cuenta_antciclo != cuenta_links){
       cuenta_antciclo <- cuenta_links
-      if (cuenta_links %% 1000 == 0) 
+      if (cuenta_links %% 100 == 0) 
         print(paste(cuenta_links,"links out of",numlinks))
     }
     if (exp_max < n_exp)
@@ -107,13 +110,15 @@ SynthMatrix <- function(matrixemp, year){
                                      FUN = function(x) {x[1] * x[2]}),
                                nrow = exp_max, ncol = imp_max, byrow = TRUE)
     }
-    update_links <- UpdatableLinks(prob_new_links)
-    for (m in 1:(length(update_links)/2))
-      if (cuenta_links < numlinks) {
-        rowl <- update_links[m,1]
-        coll <- update_links[m,2]
-        msynth[rowl,coll] <- msynth[rowl,coll] + 1/(length(update_links)/2)
-      }
+    if (cuenta_links > min_links){
+      update_links <- UpdatableLinks(prob_new_links)
+      for (m in 1:(length(update_links)/2))
+        if (cuenta_links < numlinks) {
+          rowl <- update_links[m,1]
+          coll <- update_links[m,2]
+          msynth[rowl,coll] <- msynth[rowl,coll] + 1/(length(update_links)/2)
+        }
+    }
 
     cuenta_links <- sum(msynth > 0)
     # Pr_E <- rowSums(msynth)/sum(msynth)
@@ -126,7 +131,7 @@ SynthMatrix <- function(matrixemp, year){
   return(msynth)
 }
 
-years <- seq(1998,2014)
+years <- seq(2003,2014)
 for (lyear in years)
    for (nexper in seq(1,1)){
     print(paste(lyear,"Experiment",nexper))
