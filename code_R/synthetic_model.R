@@ -68,11 +68,10 @@ SynthMatrix <- function(matrixemp, year){
   
   while ((morenewnodes)|| (cuenta_links < numlinks))
   {
-    print(paste("pasa",cuenta_links))
     new_node <- FALSE
     if (cuenta_antciclo != cuenta_links){
       cuenta_antciclo <- cuenta_links
-      if (cuenta_links %% 100 == 0) 
+      if (cuenta_links %% 1000 == 0) 
         print(paste(cuenta_links,"links out of",numlinks))
     }
     if (exp_max < n_exp)
