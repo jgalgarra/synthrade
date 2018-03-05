@@ -17,10 +17,12 @@ crea_lista_heatmap <- function(matriz)
 {
 df <- data.frame("X"=c(),"Y"=c(),"cuenta"=c())
 for (l in 1:nrow(matriz))
-  for(m in 1:ncol(matriz)){
-    dfaux <- data.frame("X"=l,"Y"=m,"cuenta"=matriz[l,m])
-    df <- rbind(df,dfaux)
-  }
+  for(m in 1:ncol(matriz))
+    if (matriz[l,m] >0 )
+    {
+      dfaux <- data.frame("X"=l,"Y"=m,"cuenta"=matriz[l,m])
+      df <- rbind(df,dfaux)
+    }
 return(df)
 }
 
