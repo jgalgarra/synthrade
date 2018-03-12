@@ -42,7 +42,7 @@ SynthMatrix <- function(matrixemp, year){
   n_exp <- nrow(matrixemp)
   numlinks <- sum(matrixemp > 0)
   print(paste("exporters",n_exp,"importers",n_imp,"numlinks",numlinks))
-
+  
   # Create a synthetic matrix full of zeroes
   msynth <- matrix(rep(0.0,n_imp*n_exp), nrow = n_exp, byrow = TRUE)
   exp_max <- 3
@@ -105,9 +105,10 @@ SynthMatrix <- function(matrixemp, year){
     if (new_node){
       Pr_E <- rowSums(msynth)/sum(msynth)
       Pr_I <- colSums(msynth)/sum(msynth)
-      prob_new_links <- matrix(apply(expand.grid(Pr_I[1:imp_max],Pr_E[1:exp_max]), 1, 
-                                     FUN = function(x) {x[1] * x[2]}),
-                               nrow = exp_max, ncol = imp_max, byrow = TRUE)
+      # prob_new_links <- matrix(apply(expand.grid(Pr_I[1:imp_max],Pr_E[1:exp_max]), 1, 
+      #                                FUN = function(x) {x[1] * x[2]}),
+      #                          nrow = exp_max, ncol = imp_max, byrow = TRUE)
+      prob_new_links <- t(Pr_I[1:imp_max] %o% Pr_E[1:exp_max])
     }
     if (cuenta_links > min_links){
       update_links <- UpdatableLinks(prob_new_links)
@@ -118,7 +119,7 @@ SynthMatrix <- function(matrixemp, year){
           msynth[rowl,coll] <- msynth[rowl,coll] + 1/(length(update_links)/2)
         }
     }
-
+    
     cuenta_links <- sum(msynth > 0)
     # Pr_E <- rowSums(msynth)/sum(msynth)
     # Pr_I <- colSums(msynth)/sum(msynth)
@@ -130,13 +131,13 @@ SynthMatrix <- function(matrixemp, year){
   return(msynth)
 }
 
-years <- seq(2003,2014)
+years <- seq(1962,1962)
 for (lyear in years)
-   for (nexper in seq(1,1)){
+  for (nexper in seq(1,1)){
     print(paste(lyear,"Experiment",nexper))
     matrix_emp <- ReadMatrix(lyear)
     nlinks <- sum(matrix_emp>0)
     matrix_experiment <- SynthMatrix(matrix_emp,lyear)
     write.table(matrix_experiment,paste0("../results/RedAdyCom",lyear,"_FILT_W_",nexper,".txt"),
                 row.names = FALSE, col.names = FALSE, sep = "\t")
-    }
+  }

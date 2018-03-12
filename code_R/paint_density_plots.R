@@ -29,8 +29,7 @@ MSimp <- function(matrix,normalize = TRUE)
   return(t(matrix))       # Transpose because of order of python-written matrix
 }
 
-
-anyos <- seq(1998,2014)
+anyos <- seq(1962,1962)
 for (year in anyos){
   
   file_name <- paste0("RedAdyCom",year,"_FILT")
@@ -48,7 +47,8 @@ for (year in anyos){
   
   hist(log10(hm_filt$cuenta),breaks=20)
   hist(log10(hm_sim$cuenta),breaks=20)
-  hist(log10(hm_orig$cuenta),breaks=20)
+  
+  hist(log10(hm_orig$cuenta),breaks=50)
   
   hm_filt$collection <- "Filtered"
   hm_sim$collection <- "Synthetic"

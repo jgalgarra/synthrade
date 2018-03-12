@@ -2,8 +2,9 @@ library(grid)
 library(gridExtra)
 library(ggplot2)
 
-file_name <- "RedAdyCom1980_FILT"
+file_name <- "RedAdyCom1962_FILT"
 experiment_files <- Sys.glob(paste0("../results/",file_name,"_W_*.txt"))
+
 zero_matrix <- read.table(experiment_files[1],sep="\t")
 for (l in 1:nrow(zero_matrix))
   for(m in 1:ncol(zero_matrix))
@@ -15,15 +16,21 @@ numexper <- 1
 
 crea_lista_heatmap <- function(matriz)
 {
-df <- data.frame("X"=c(),"Y"=c(),"cuenta"=c())
-for (l in 1:nrow(matriz))
-  for(m in 1:ncol(matriz))
-    if (matriz[l,m] >0 )
-    {
+  df <- data.frame("X"=c(),"Y"=c(),"cuenta"=c())
+  #im <- as.data.frame(matrix(rep(0,3*nrow(matriz)*ncol(matriz)),nrow(matriz)*ncol(matriz),3))
+  #names(im) <- c("X","Y","cuenta")
+  # im$Y <- rep(seq(1,ncol(matriz)),nrow(matriz))
+  # for (i in 1:nrow(im)){
+  #   rowindex <- 1 + ((i-1) %/% nrow(matriz))
+  #   im$X[i] <- rowindex
+  #   im$cuenta[i] <- matriz[rowindex,im$Y[i]]
+  # }
+  for (l in 1:nrow(matriz))
+    for(m in 1:ncol(matriz)){
       dfaux <- data.frame("X"=l,"Y"=m,"cuenta"=matriz[l,m])
       df <- rbind(df,dfaux)
     }
-return(df)
+  return(df)
 }
 
 for (i in 1:numexper){
@@ -68,10 +75,10 @@ paint_int_matrix <- function(mq,titulo="",maximo=100)
                 aes(x = X, y = rev(Y)))
   b <- c(0,1,maximo/2)
   zp1 <- zp1 + geom_tile(aes(fill=cuenta+0.00000001)) + scale_fill_gradientn(colours=c("grey95",
-                                                                                    "blue","red"),
-                                                   trans = "log",  
-                                                   breaks =b, 
-                                                   labels=b)
+                                                                                       "blue","red"),
+                                                                             trans = "log",  
+                                                                             breaks =b, 
+                                                                             labels=b)
   zp1 <- zp1 + coord_equal() + ggtitle(titulo) + xlab("E-exporter") + ylab("I-importer")
   
   zp1 <- zp1 + theme_bw() +theme(panel.grid.major = element_blank(),
@@ -85,8 +92,8 @@ paint_int_matrix <- function(mq,titulo="",maximo=100)
   return(zp1)
 }
 
-hist(log10(hm_emp$cuenta),breaks=20)
-hist(log10(hm_mean$cuenta),breaks=20)
+hist(log10(hm_emp$cuenta),breaks=10)
+hist(log10(hm_mean$cuenta),breaks=10)
 
 m_emp <- paint_int_matrix(hm_emp,titulo=paste(file_name,"Empirical Matrix"))
 m_mean <- paint_int_matrix(hm_mean,titulo=paste0("Simulated Matrix. #Experiments: ",numexper ))
@@ -98,5 +105,4 @@ ppi <- 600
 png(fsal, width=10*ppi, height=4*ppi, res=ppi)
 grid.arrange(m_emp, m_mean, ncol=2)
 dev.off()
-
 

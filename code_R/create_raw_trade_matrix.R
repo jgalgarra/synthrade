@@ -26,7 +26,7 @@ ISO_CC <- c("AFG","ALB","DZA","ASM","AND","AGO","AIA","ATA","ATA","ARG",
 
 
 
-files <- seq(2003,2014)
+files <- seq(2012,2012)
 for (nfile in files)
 {
   print(nfile)
