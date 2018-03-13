@@ -1,8 +1,8 @@
 # Synthetic trade network creation
 
 ReadMatrix <- function(year){
-  #original_file <- read.delim(paste0("../data/RedAdyCom",year,"_FILT.txt"), header=FALSE)
-  original_file <- read.delim(paste0("../data/RedAdyCom",year,".txt"), header=FALSE)
+  original_file <- read.delim(paste0("../data/RedAdyCom",year,"_FILT.txt"), header=FALSE)
+  #original_file <- read.delim(paste0("../data/RedAdyCom",year,".txt"), header=FALSE)
   or_matrix <- as.matrix(original_file)
   # Clean rows and cols full of zeroes
   clean_matrix <- or_matrix[,colSums(or_matrix) > 0]
@@ -18,7 +18,7 @@ PrefAttachment <- function(vecprob,lvec)
       if (rbinom(1,1,vecprob[i])>0)
         listanodes <- append(listanodes,i)
   }
-  #node = sample(seq(1,lvec),1,vecprob[1:lvec],replace=TRUE)
+  #node = sample(seq(1,lvec),1,vecprob[1:lvec],replace=FALSE)
   return(listanodes)
 }
 
@@ -42,6 +42,7 @@ SynthMatrix <- function(matrixemp, year){
   n_imp <- ncol(matrixemp)
   n_exp <- nrow(matrixemp)
   numlinks <- sum(matrixemp > 0)
+  totweight <- sum(matrixemp)
   print(paste("exporters",n_exp,"importers",n_imp,"numlinks",numlinks))
   
   # Create a synthetic matrix full of zeroes
@@ -57,6 +58,7 @@ SynthMatrix <- function(matrixemp, year){
   msynth[3,2] <- min_token
   lambda_imp = (n_imp^2-n_imp)/(2*numlinks)
   lambda_exp = (n_exp^2-n_exp)/(2*numlinks)
+
   cuenta_links <- sum(msynth > 0)
   min_links <- cuenta_links
   print(paste("lambda imp:",lambda_imp,"lambda_exp",lambda_exp))
@@ -72,8 +74,10 @@ SynthMatrix <- function(matrixemp, year){
     new_node <- FALSE
     if (cuenta_antciclo != cuenta_links){
       cuenta_antciclo <- cuenta_links
-      if (cuenta_links %% 1000 == 0) 
-        print(paste(cuenta_links,"links out of",numlinks))
+      if (cuenta_links %% 100 == 0) 
+        print(paste(cuenta_links,"links out of",numlinks,
+                    "exporters",exp_max,"out of",n_exp,"importers",
+                    imp_max,"out of",n_imp))
     }
     if (exp_max < n_exp)
       if (rbinom(1,1,min(1,lambda_exp/exp_max))>0)
@@ -110,21 +114,16 @@ SynthMatrix <- function(matrixemp, year){
       Pr_I <- colSums(msynth)/sum(msynth)
       prob_new_links <- t(Pr_I[1:imp_max] %o% Pr_E[1:exp_max])
     }
-    else{
-      legacye <- sample(seq(1,exp_max),1)#,prob=Pr_E[1:exp_max])
-      legacyi <- sample(seq(1,imp_max),1)#,prob=Pr_I[1:imp_max])
-      msynth[legacye,legacyi] <- msynth[legacye,legacyi] + 1
-      #print(paste(legacye,legacyi,exp_max,imp_max))
+    else if (cuenta_links > min_links){
+      update_links <- UpdatableLinks(prob_new_links)
+      lupdate <- (length(update_links)/2)
+      for (m in 1:lupdate)
+        if (cuenta_links < numlinks) {
+          rowl <- update_links[m,1]
+          coll <- update_links[m,2]
+          msynth[rowl,coll] <- msynth[rowl,coll] + 1/lupdate
+        }
     }
-    # if (cuenta_links > min_links){
-    #   update_links <- UpdatableLinks(prob_new_links)
-    #   for (m in 1:(length(update_links)/2))
-    #     if (cuenta_links < numlinks) {
-    #       rowl <- update_links[m,1]
-    #       coll <- update_links[m,2]
-    #       msynth[rowl,coll] <- msynth[rowl,coll] + 1/(length(update_links)/2)
-    #     }
-    # }
     
     cuenta_links <- sum(msynth > 0)
     Pr_E <- rowSums(msynth)/sum(msynth)
@@ -135,7 +134,7 @@ SynthMatrix <- function(matrixemp, year){
   return(msynth)
 }
 
-years <- seq(1950,1950)
+years <- seq(2008,2008)
 for (lyear in years)
   for (nexper in seq(1,1)){
     print(paste(lyear,"Experiment",nexper))

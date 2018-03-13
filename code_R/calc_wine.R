@@ -19,7 +19,7 @@ MPack <- function(matrix,normalize = TRUE)
 
 
 NREPS <- 1000
-files <- paste0("RedAdyCom",seq(2008,2008))
+files <- paste0("RedAdyCom",seq(1962,1962))
 for (orig_file in files)
 {
   file_name <- paste0(orig_file,"_FILT")
