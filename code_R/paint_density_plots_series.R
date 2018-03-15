@@ -85,7 +85,33 @@ PaintDensPlot <- function(datos,titletext,xlabel)
   return(p)
 }
 
-anyos <- seq(2008,2008)
+PaintBoxPlot <- function(datos,titletext,xlabel)
+{
+  p <- ggplot() + geom_boxplot(aes(x=as.factor(collection),y= cuenta, color = collection, fill = collection),  alpha = .1,
+                               data=datos, position = "identity",bins = 50)+ 
+    xlab(xlabel)+ylab("Count\n")+
+    ggtitle(titletext)+ scale_y_log10()+
+    scale_fill_manual(values=c("blue","white","red"))+
+    scale_color_manual(values=c("blue","grey","red"))+
+    theme_bw() +
+    theme(panel.border = element_blank(),
+          legend.key = element_blank(),
+          panel.grid.minor.x = element_blank(),
+          panel.grid.minor.y = element_blank(),
+          panel.grid.major.y = element_line(linetype = 2, color="ivory3"),
+          panel.grid.major.x = element_blank(), 
+          legend.title = element_blank(),
+          legend.text = element_text(size=12, face="bold"),
+          axis.line = element_line(colour = "black"),
+          plot.title = element_text(lineheight=.8, face="bold"),
+          axis.text = element_text(face="bold", size=13),
+          axis.title.x = element_text(face="bold", size=13),
+          axis.title.y  = element_text(face="bold", size=13) )
+  
+  return(p)
+}
+
+anyos <- seq(1963,1965)
 for (year in anyos){
   
   file_name <- paste0("RedAdyCom",year,"_FILT")
@@ -130,13 +156,20 @@ for (year in anyos){
   s <- PaintDensPlot(hm_all_exporters_deg,"Exporters","Degree")
   t <- PaintDensPlot(hm_all_exporters_weight,"Exporters","Normalized strength")
   
+  bq <- PaintBoxPlot(hm_all_importers_deg,"Importers","Degree")
+  br <- PaintBoxPlot(hm_all_importers_weight,"Importers","Normalized strength")
+  bs <- PaintBoxPlot(hm_all_exporters_deg,"Exporters","Degree")
+  bt <- PaintBoxPlot(hm_all_exporters_weight,"Exporters","Normalized strength")
   dir.create("../figures/densities/", showWarnings = FALSE)
   fsal <- paste0("../figures/densities/Density_DegStr_",year,".png")
-
   ppi <- 600
   png(fsal, width=12*ppi, height=6*ppi, res=ppi)
   grid.arrange(q,r,s,t, ncol=2, nrow=2,top=year )
-
+  dev.off()
+  fsal2 <- paste0("../figures/densities/Boxplot_DegStr_",year,".png")
+  ppi <- 600
+  png(fsal2, width=12*ppi, height=6*ppi, res=ppi)
+  grid.arrange(bq,br,bs,bt, ncol=2, nrow=2,top=year )
   dev.off()
 }
 

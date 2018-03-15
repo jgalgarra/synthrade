@@ -58,7 +58,7 @@ SynthMatrix <- function(matrixemp, year){
   msynth[3,2] <- min_token
   lambda_imp = (n_imp^2-n_imp)/(2*numlinks)
   lambda_exp = (n_exp^2-n_exp)/(2*numlinks)
-
+  
   cuenta_links <- sum(msynth > 0)
   min_links <- cuenta_links
   print(paste("lambda imp:",lambda_imp,"lambda_exp",lambda_exp))
@@ -88,12 +88,12 @@ SynthMatrix <- function(matrixemp, year){
         for (i in linkstoI)
           if ((cuenta_links < numlinks) && (exp_max < n_exp)){
             exp_max <- exp_max + 1
-            msynth[exp_max,i] <- 1/length(linkstoI)
+            msynth[exp_max,i] <- 1#/length(linkstoI)
             cuenta_links <-  cuenta_links + 1
             new_node <- TRUE
           }
       }
-        
+    
     if (imp_max < n_imp)
       if (rbinom(1,1,min(1,lambda_imp/imp_max))>0)
       {
@@ -103,15 +103,16 @@ SynthMatrix <- function(matrixemp, year){
         for (i in linkstoE)
           if ((cuenta_links < numlinks) && (imp_max < n_imp)){
             imp_max <- imp_max + 1
-            msynth[i,imp_max] <- 1/length(linkstoE)
+            msynth[i,imp_max] <- 1#/length(linkstoE)
             cuenta_links <-  cuenta_links + 1
             new_node <- TRUE
           }
       }
-
+    
     if (new_node){
-      Pr_E <- rowSums(msynth)/sum(msynth)
-      Pr_I <- colSums(msynth)/sum(msynth)
+      smat <- sum(msynth)
+      Pr_E <- rowSums(msynth)/smat
+      Pr_I <- colSums(msynth)/smat
       prob_new_links <- t(Pr_I[1:imp_max] %o% Pr_E[1:exp_max])
     }
     else if (cuenta_links > min_links){
@@ -121,22 +122,23 @@ SynthMatrix <- function(matrixemp, year){
         if (cuenta_links < numlinks) {
           rowl <- update_links[m,1]
           coll <- update_links[m,2]
-          msynth[rowl,coll] <- msynth[rowl,coll] + 1/lupdate
+          msynth[rowl,coll] <- msynth[rowl,coll] + 1#/lupdate
         }
     }
     
     cuenta_links <- sum(msynth > 0)
-    Pr_E <- rowSums(msynth)/sum(msynth)
-    Pr_I <- colSums(msynth)/sum(msynth)
+    smat <- sum(msynth)
+    Pr_E <- rowSums(msynth)/smat
+    Pr_I <- colSums(msynth)/smat
     prob_new_links <- t(Pr_I[1:imp_max] %o% Pr_E[1:exp_max])
     morenewnodes <- (exp_max < n_exp) || (imp_max < n_imp)
   }
   return(msynth)
 }
 
-years <- seq(2008,2008)
+years <- seq(1962,2014)
 for (lyear in years)
-  for (nexper in seq(1,1)){
+  for (nexper in seq(1,30)){
     print(paste(lyear,"Experiment",nexper))
     matrix_emp <- ReadMatrix(lyear)
     nlinks <- sum(matrix_emp>0)
