@@ -51,10 +51,6 @@ MSimp <- function(matrix,normalize = TRUE)
   sum_col <- rep(0,ncol(matrix))
   if (normalize)
     matrix = matrix/max(matrix)
-  # for (i in 1:nrow(matrix))
-  #   sum_row[i] <- sum(matrix[i,])
-  # for (i in 1:ncol(matrix))
-  #   sum_col[i] <- sum(matrix[,i])
   sum_row <- rowSums(matrix)
   sum_col <- colSums(matrix)
   matrix <- matrix[sum_row>0,]
@@ -153,9 +149,6 @@ for (year in anyos){
   hm_all_weight <- rbind(hm_filt,hm_sim,hm_orig)
   hm_all_exporters_weight <- hm_all_weight[hm_all_weight$type=="EXP",]
  
-  
-  #hist_filt_imp <- PaintHist(hm_all_importers) 
-
   q <- PaintDensPlot(hm_all_importers_deg,"Importers","Degree")
   r <- PaintDensPlot(hm_all_importers_weight,"Importers","Normalized strength")
   s <- PaintDensPlot(hm_all_exporters_deg,"Exporters","Degree")
