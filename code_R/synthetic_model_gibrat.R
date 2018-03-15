@@ -136,9 +136,9 @@ SynthMatrix <- function(matrixemp, year){
   return(msynth)
 }
 
-years <- seq(1962,2014)
+years <- seq(2000,2014)
 for (lyear in years)
-  for (nexper in seq(1,30)){
+  for (nexper in seq(1,3)){
     print(paste(lyear,"Experiment",nexper))
     matrix_emp <- ReadMatrix(lyear)
     nlinks <- sum(matrix_emp>0)

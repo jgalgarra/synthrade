@@ -17,9 +17,10 @@ MPack <- function(matrix,normalize = TRUE)
   return(ord_matrix)      
 }
 
+source("parse_command_line_args.R")
 
 NREPS <- 1000
-files <- paste0("RedAdyCom",seq(1965,1965))
+files <- paste0("RedAdyCom",seq(ini_seq,end_seq))
 for (orig_file in files)
 {
   file_name <- paste0(orig_file,"_FILT")

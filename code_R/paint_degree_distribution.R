@@ -135,7 +135,7 @@ gen_deg_distribution <- function(red,series, colors, seq_breaks = c(1,5,10,20,30
   }
   
   emp_matrix <- read.table(paste0("../data/",red,".txt"),sep="\t")
-  auxdf_emp <- gen_deg_data_frame(emp_matrix,"Empirical",1.5,0.25,series)
+  auxdf_emp <- gen_deg_data_frame(emp_matrix,"Empirical",1,0.2,series)
   auxdf <- auxdf_emp[["auxdf"]]
   auxdfw <- auxdf_emp[["auxdfw"]]
   ficheros <- Sys.glob(paste0("../results/",red,"_W_*",".txt"))
@@ -191,32 +191,24 @@ if (languageEl == "EN"){
   cumulativetxt = "Distribución acumulada de probabilidad"
   xscale = "escala degree"
 }
+source("parse_command_line_args.R")
 
-nred <- "RedAdyCom1965"
-red <- paste0(nred,"_FILT")
-#red <- "kaka1"
-
-#series = "Both"
-#grafs <- gen_deg_distribution(paste0(red),"Importer","red")
-series = "Exporter"
-grafs <- gen_deg_distribution(paste0(red),series,"blue")
-e_degree <- grafs$dist_deg
-e_weight <- grafs$dist_wdeg
-series = "Importer"
-grafs <- gen_deg_distribution(paste0(red),series,"red")
-i_degree <- grafs$dist_deg
-i_weight <- grafs$dist_wdeg
-titulo=strsplit(red,"RedAdyCom")[[1]][-1]
-title1=textGrob(paste0(titulo,"\n"), gp=gpar(fontface="bold",fontsize=30))
-
-ppi <- 300
-#print(grafs$dist_deg)
-
-#png(paste0("../figures/ALLdist_",red,"_",series,"_",languageEl,".png"), width=(16*ppi), height=8*ppi, res=ppi)
-# print(grafs$dist_deg)
-# dev.off()
-# png(paste0("../figures/weightdist_",red,"_",series,"_",languageEl,".png"), width=(8*ppi), height=8*ppi, res=ppi)
-#print(grafs$dist_wdeg)
-png(paste0("../figures/ALLdist_",red,"_",languageEl,".png"), width=(16*ppi), height=16*ppi, res=ppi)
-grid.arrange(e_degree,e_weight,i_degree,i_weight, ncol=2, nrow=2,top=title1 )
-dev.off()
+files <- paste0("RedAdyCom",seq(ini_seq,end_seq))
+for (orig_file in files)
+{
+  red <- paste0(orig_file,"_FILT")
+  series = "Exporter"
+  grafs <- gen_deg_distribution(paste0(red),series,"blue")
+  e_degree <- grafs$dist_deg
+  e_weight <- grafs$dist_wdeg
+  series = "Importer"
+  grafs <- gen_deg_distribution(paste0(red),series,"red")
+  i_degree <- grafs$dist_deg
+  i_weight <- grafs$dist_wdeg
+  titulo=strsplit(red,"RedAdyCom")[[1]][-1]
+  title1=textGrob(paste0(titulo,"\n"), gp=gpar(fontface="bold",fontsize=30))
+  ppi <- 300
+  png(paste0("../figures/ALLdist_",red,"_",languageEl,".png"), width=(16*ppi), height=16*ppi, res=ppi)
+  grid.arrange(e_degree,e_weight,i_degree,i_weight, ncol=2, nrow=2,top=title1 )
+  dev.off()
+}

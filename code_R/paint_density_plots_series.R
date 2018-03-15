@@ -51,11 +51,14 @@ MSimp <- function(matrix,normalize = TRUE)
   sum_col <- rep(0,ncol(matrix))
   if (normalize)
     matrix = matrix/max(matrix)
-  for (i in 1:nrow(matrix))
-    sum_row[i] <- sum(matrix[i,])
-  for (i in 1:ncol(matrix))
-    sum_col[i] <- sum(matrix[,i])
-  matrix <- matrix[sum_row>0,sum_col>0]
+  # for (i in 1:nrow(matrix))
+  #   sum_row[i] <- sum(matrix[i,])
+  # for (i in 1:ncol(matrix))
+  #   sum_col[i] <- sum(matrix[,i])
+  sum_row <- rowSums(matrix)
+  sum_col <- colSums(matrix)
+  matrix <- matrix[sum_row>0,]
+  matrix <- matrix[,sum_col>0]
   return(t(matrix))       # Transpose because of order of python-written matrix
 }
 
@@ -111,7 +114,9 @@ PaintBoxPlot <- function(datos,titletext,xlabel)
   return(p)
 }
 
-anyos <- seq(1963,1965)
+source("parse_command_line_args.R")
+
+anyos <- seq(ini_seq,end_seq)
 for (year in anyos){
   
   file_name <- paste0("RedAdyCom",year,"_FILT")
