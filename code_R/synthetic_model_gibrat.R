@@ -74,7 +74,7 @@ SynthMatrix <- function(matrixemp, year){
     new_node <- FALSE
     if (cuenta_antciclo != cuenta_links){
       cuenta_antciclo <- cuenta_links
-      if (cuenta_links %% 100 == 0) 
+      if (cuenta_links %% 1000 == 0) 
         print(paste(cuenta_links,"links out of",numlinks,
                     "exporters",exp_max,"out of",n_exp,"importers",
                     imp_max,"out of",n_imp))
@@ -144,16 +144,17 @@ if (length(args)==0){
 } else{
   ini_seq <- as.numeric(args[1])
   end_seq <- as.numeric(args[2])
-  maxepxer <- as.numeric(args[3]) 
+  maxexper <- as.numeric(args[3]) 
 }
 
 years <- seq(ini_seq,end_seq)
 for (lyear in years)
-  for (nexper in seq(1,3)){
+  for (nexper in seq(1,maxexper)){
     print(paste(lyear,"Experiment",nexper))
     matrix_emp <- ReadMatrix(lyear)
     nlinks <- sum(matrix_emp>0)
     matrix_experiment <- SynthMatrix(matrix_emp,lyear)
+    dir.create("../results", showWarnings = FALSE)
     write.table(matrix_experiment,paste0("../results/RedAdyCom",lyear,"_FILT_W_",nexper,".txt"),
                 row.names = FALSE, col.names = FALSE, sep = "\t")
   }
