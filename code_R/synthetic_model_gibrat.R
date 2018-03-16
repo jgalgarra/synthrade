@@ -136,7 +136,18 @@ SynthMatrix <- function(matrixemp, year){
   return(msynth)
 }
 
-years <- seq(2000,2014)
+args = commandArgs(trailingOnly=TRUE)
+if (length(args)==0){
+  ini_seq <- 1962
+  end_seq <- 1962
+  maxexper <- 1
+} else{
+  ini_seq <- as.numeric(args[1])
+  end_seq <- as.numeric(args[2])
+  maxepxer <- as.numeric(args[3]) 
+}
+
+years <- seq(ini_seq,end_seq)
 for (lyear in years)
   for (nexper in seq(1,3)){
     print(paste(lyear,"Experiment",nexper))
