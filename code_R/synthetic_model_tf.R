@@ -69,7 +69,7 @@ SynthMatrix <- function(matrixemp, year){
   morenewnodes <- TRUE
   cuenta_antciclo <- 0
   
-  while ((morenewnodes)|| (cuenta_links < numlinks))
+  while ((morenewnodes)) #|| (cuenta_links < numlinks))
   {
     new_node <- FALSE
     if (cuenta_antciclo != cuenta_links){
@@ -138,8 +138,8 @@ SynthMatrix <- function(matrixemp, year){
 
 args = commandArgs(trailingOnly=TRUE)
 if (length(args)==0){
-  ini_seq <- 1962
-  end_seq <- 1962
+  ini_seq <- 1000
+  end_seq <- 1000
   maxexper <- 1
 } else{
   ini_seq <- as.numeric(args[1])
@@ -149,7 +149,7 @@ if (length(args)==0){
 
 years <- seq(ini_seq,end_seq)
 for (lyear in years)
-  for (nexper in seq(1,maxexper)){
+  for (nexper in seq(1,3)){
     print(paste(lyear,"Experiment",nexper))
     matrix_emp <- ReadMatrix(lyear)
     nlinks <- sum(matrix_emp>0)
