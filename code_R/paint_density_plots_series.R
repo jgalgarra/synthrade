@@ -113,11 +113,16 @@ PaintBoxPlot <- function(datos,titletext,xlabel)
 source("parse_command_line_args.R")
 
 anyos <- seq(ini_seq,end_seq)
+
+
+anyos <- seq(1962,2014)
+
+bestlillies <- read.table("../results/BestLillies.txt",header=TRUE)
 for (year in anyos){
-  
+  posbest <- bestlillies[bestlillies$Year==year,]$Experiment
   file_name <- paste0("RedAdyCom",year,"_FILT")
   file_orig <- paste0("RedAdyCom",year)
-  experiment_files <- Sys.glob(paste0("../results/",file_name,"_W_1.txt"))
+  experiment_files <- Sys.glob(paste0("../results/",file_name,"_W_",posbest,".txt"))
   numexper <- 1
   filt_matrix <- read.table(paste0("../data/",file_name,".txt"),sep="\t")
   orig_matrix <- read.table(paste0("../data/",file_orig,".txt"),sep="\t")
@@ -169,5 +174,7 @@ for (year in anyos){
   png(fsal2, width=12*ppi, height=6*ppi, res=ppi)
   grid.arrange(bq,br,bs,bt, ncol=2, nrow=2,top=year )
   dev.off()
+
+  
 }
 
