@@ -1,9 +1,3 @@
-# Creates the correlation plot of degree vs kdegree and cumulative distribution plots
-# Output data at "graphs/"
-#
-# Requires: "datos_analisis_condegs.RData"
-
-
 library(grid)
 library(gridExtra)
 library(igraph)
@@ -192,6 +186,9 @@ if (languageEl == "EN"){
   xscale = "escala degree"
 }
 source("parse_command_line_args.R")
+
+ini_seq <- 1962
+fun_seq <- 1965
 
 files <- paste0("RedAdyCom",seq(ini_seq,end_seq))
 for (orig_file in files)

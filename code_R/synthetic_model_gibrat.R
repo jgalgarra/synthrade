@@ -26,8 +26,6 @@ UpdatableLinks <- function(matrixprob){
   links_found = FALSE
   listaedges = c()
   tam = c(nrow(matrixprob),ncol(matrixprob))
-  # mpos <- matrix(seq(1,tam[1]*tam[2]),nrow=tam[1],ncol=tam[2])
-  # positions <- which(sample(mpos,1,prob=matrixprob)==mpos,arr.ind=T)
   newlinks <- 0
   while (sum(newlinks) == 0){
     randunif <- runif(tam[1]*tam[2],0,1)
@@ -47,8 +45,9 @@ SynthMatrix <- function(matrixemp, year){
   
   # Create a synthetic matrix full of zeroes
   msynth <- matrix(rep(0.0,n_imp*n_exp), nrow = n_exp, byrow = TRUE)
-  exp_max <- 3
-  imp_max <- 3
+  seed_size <- 3
+  exp_max <- seed_size
+  imp_max <- seed_size
   min_token <- 1
   msynth[1,2] <- min_token 
   msynth[1,3] <- min_token
@@ -56,14 +55,13 @@ SynthMatrix <- function(matrixemp, year){
   msynth[2,3] <- min_token
   msynth[3,1] <- min_token
   msynth[3,2] <- min_token
-  lambda_imp = (n_imp^2-n_imp)/(2*numlinks)
-  lambda_exp = (n_exp^2-n_exp)/(2*numlinks)
-  
-  # lambda_exp <- exp(1)*0.2
-  # lambda_imp <- exp(1)*0.2
-  
+  # lambda_imp = (n_imp^2-n_imp)/(2*numlinks)
+  # lambda_exp = (n_exp^2-n_exp)/(2*numlinks)
   cuenta_links <- sum(msynth > 0)
   min_links <- cuenta_links
+  eff_links <- max(n_exp*(n_exp-1)/(2*seed_size),n_imp*(n_imp-1)/(2*seed_size))
+  lambda_imp = (n_imp^2-n_imp)/(2*eff_links)
+  lambda_exp = (n_exp^2-n_exp)/(2*eff_links)
   print(paste("lambda imp:",lambda_imp,"lambda_exp",lambda_exp))
   Pr_E <- rowSums(msynth)/sum(msynth)
   Pr_I <- colSums(msynth)/sum(msynth)
@@ -146,8 +144,8 @@ SynthMatrix <- function(matrixemp, year){
 
 args = commandArgs(trailingOnly=TRUE)
 if (length(args)==0){
-  ini_seq <- 1963
-  end_seq <- 1965
+  ini_seq <- 1962
+  end_seq <- 1963
   maxexper <- 1
 } else{
   ini_seq <- as.numeric(args[1])

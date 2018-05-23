@@ -115,11 +115,15 @@ source("parse_command_line_args.R")
 anyos <- seq(ini_seq,end_seq)
 
 
-anyos <- seq(1962,2014)
-
+#anyos <- seq(1962,1965)
+sbestlillies <- FALSE        # If set to TRUE searches the best GOF in BestLillies.txt
+                             # else chooses experiment number 1
 bestlillies <- read.table("../results/BestLillies.txt",header=TRUE)
 for (year in anyos){
-  posbest <- bestlillies[bestlillies$Year==year,]$Experiment
+  if (sbestlillies)
+    posbest <- bestlillies[bestlillies$Year==year,]$Experiment
+  else
+    posbest <- 1
   file_name <- paste0("RedAdyCom",year,"_FILT")
   file_orig <- paste0("RedAdyCom",year)
   experiment_files <- Sys.glob(paste0("../results/",file_name,"_W_",posbest,".txt"))
