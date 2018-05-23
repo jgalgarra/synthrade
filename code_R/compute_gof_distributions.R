@@ -1,3 +1,5 @@
+library(nortest)
+
 crea_lista_heatmap <- function(matriz, justcount = FALSE)
 {
   df <- data.frame("N"=c(),"cuenta"=c(),"type"=c())
@@ -25,8 +27,6 @@ MSimp <- function(matrix,normalize = TRUE)
     matrix = matrix/mean(as.matrix(matrix))
   sum_row <- rowSums(matrix)
   sum_col <- colSums(matrix)
-  # matrix <- matrix[sum_row>0,]
-  # matrix <- matrix[,sum_col>0]
   return(t(matrix))       # Transpose because of order of python-written matrix
 }
 
@@ -47,6 +47,7 @@ for (year in anyos){
   
   experiment_files <- Sys.glob(paste0("../results/",file_name,"_W_*.txt"))
   sim_matrix <- read.table(experiment_files[1],sep="\t")
+  hm_filt <- crea_lista_heatmap(MSimp(filt_matrix,normalize = TRUE))
   hm_sim <- crea_lista_heatmap(MSimp(sim_matrix,normalize = TRUE))
   maxlilliescore <- 0
   poslilliescore <- 0
@@ -63,8 +64,15 @@ for (year in anyos){
       poslilliescore <- i
     }
   }
+  hm_filt <- hm_filt[hm_filt$cuenta>0,]
+  ll_filt_exp <- lillie.test(log(hm_filt[hm_filt$type == "EXP",]$cuenta))$p.value
+  ll_filt_imp <- lillie.test(log(hm_filt[hm_filt$type == "IMP",]$cuenta))$p.value
   print(paste("Year",year,"Experiment",poslilliescore))
-  dfbestlillies <- rbind(dfbestlillies,data.frame("Year"=year,"Experiment"=poslilliescore))
+  dfbestlillies <- rbind(dfbestlillies,data.frame("Year"=year,"Experiment"=poslilliescore,"Geom_mean"=sqrt(plillie),
+                                                  "Synthetic_exporter" = plillieexp,
+                                                  "Synthetic_importer" = plillieimp,
+                                                  "Empirical_exporter"=ll_filt_exp,
+                                                  "Empirical_importer"=ll_filt_imp))
   write.table(dfbestlillies,"../results/BestLillies.txt",sep="\t",row.names = FALSE)
 
 }

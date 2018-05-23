@@ -59,6 +59,9 @@ SynthMatrix <- function(matrixemp, year){
   lambda_imp = (n_imp^2-n_imp)/(2*numlinks)
   lambda_exp = (n_exp^2-n_exp)/(2*numlinks)
   
+  # lambda_exp <- exp(1)*0.2
+  # lambda_imp <- exp(1)*0.2
+  
   cuenta_links <- sum(msynth > 0)
   min_links <- cuenta_links
   print(paste("lambda imp:",lambda_imp,"lambda_exp",lambda_exp))
@@ -68,9 +71,14 @@ SynthMatrix <- function(matrixemp, year){
   prob_new_links <- void_prob
   morenewnodes <- TRUE
   cuenta_antciclo <- 0
+  tf <- 0
   
   while ((morenewnodes)|| (cuenta_links < numlinks))
   {
+    if ((!morenewnodes) && (tf == 0)){
+      tf <- cuenta_links
+      print(paste("tf time",tf,100*cuenta_links/numlinks))
+    }
     new_node <- FALSE
     if (cuenta_antciclo != cuenta_links){
       cuenta_antciclo <- cuenta_links
@@ -138,8 +146,8 @@ SynthMatrix <- function(matrixemp, year){
 
 args = commandArgs(trailingOnly=TRUE)
 if (length(args)==0){
-  ini_seq <- 1962
-  end_seq <- 1962
+  ini_seq <- 1963
+  end_seq <- 1965
   maxexper <- 1
 } else{
   ini_seq <- as.numeric(args[1])
