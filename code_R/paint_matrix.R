@@ -1,8 +1,9 @@
 library(grid)
 library(gridExtra)
 library(ggplot2)
+source("aux_functions_matrix.R")
 
-crea_lista_heatmap <- function(matriz)
+crea_lista_heatsimp <- function(matriz)
 {
   df <- data.frame("X"=c(),"Y"=c(),"cuenta"=c())
   for (l in 1:nrow(matriz))
@@ -12,21 +13,6 @@ crea_lista_heatmap <- function(matriz)
     }
   return(df)
 }
-
-MPack <- function(matrix,normalize = TRUE)
-{
-  sum_row <- rep(0,nrow(matrix))
-  sum_col <- rep(0,ncol(matrix))
-  if (normalize)
-    matrix = matrix/max(matrix)
-  for (i in 1:nrow(matrix))
-    sum_row[i] <- sum(matrix[i,])
-  for (i in 1:ncol(matrix))
-    sum_col[i] <- sum(matrix[,i])
-  ord_matrix <- matrix[rev(order(sum_row)),rev(order(sum_col))]
-  return(t(ord_matrix))       # Transpose because of order of python-written matrix
-}
-
 
 paint_int_matrix <- function(mq,titulo="",maximo=100)
 {
@@ -54,7 +40,7 @@ paint_int_matrix <- function(mq,titulo="",maximo=100)
 
 source("parse_command_line_args.R")
 ini_seq <- 1962
-end_seq <- 1965
+end_seq <- 1962
 
 files <- paste0("RedAdyCom",seq(ini_seq,end_seq),"_FILT")
 for (file_name in files)
@@ -77,8 +63,8 @@ for (file_name in files)
   sum_col <- colSums(emp_matrix)
   emp_matrix <- emp_matrix[sum_row>0,]
   emp_matrix <- emp_matrix[,sum_col>0]
-  hm_emp <- crea_lista_heatmap(MPack(emp_matrix))
-  hm_mean <- crea_lista_heatmap(MPack(mean_matrix))
+  hm_emp <- crea_lista_heatsimp(MPack(emp_matrix))
+  hm_mean <- crea_lista_heatsimp(MPack(mean_matrix))
   maxleg <- (1+round(max(max(emp_matrix),max(mean_matrix)))%/%100)*100
   m_emp <- paint_int_matrix(hm_emp,titulo=paste(file_name,"Empirical Matrix"))
   m_mean <- paint_int_matrix(hm_mean,titulo=paste0("Simulated Matrix. #Experiments: ",numexper ))

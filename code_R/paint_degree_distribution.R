@@ -187,8 +187,8 @@ if (languageEl == "EN"){
 }
 source("parse_command_line_args.R")
 
-ini_seq <- 2000
-end_seq <- 2000
+# ini_seq <- 2000
+# end_seq <- 2000
 
 files <- paste0("RedAdyCom",seq(ini_seq,end_seq))
 for (orig_file in files)

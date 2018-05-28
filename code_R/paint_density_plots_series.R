@@ -1,25 +1,26 @@
 library(grid)
 library(gridExtra)
 library(ggplot2)
+source("aux_functions_matrix.R")
 
-crea_lista_heatmap <- function(matriz, justcount = FALSE)
-{
-  df <- data.frame("N"=c(),"cuenta"=c(),"type"=c())
-  # Only sum 1 per filled cell to return degree instead of weight
-  if (justcount)
-    matriz[matriz>0] = 1
-  for (l in 1:nrow(matriz))
-  {
-    dfaux <- data.frame("N"=l,"cuenta"=sum(matriz[l,]),"type"="EXP")
-    df <- rbind(df,dfaux)
-  }
-  for(m in 1:ncol(matriz))
-  {
-    dfaux <- data.frame("N"=m,"cuenta"=sum(matriz[,m]),"type"="IMP")
-    df <- rbind(df,dfaux)
-  }
-  return(df)
-}
+# crea_lista_heatmap <- function(matriz, justcount = FALSE)
+# {
+#   df <- data.frame("N"=c(),"cuenta"=c(),"type"=c())
+#   # Only sum 1 per filled cell to return degree instead of weight
+#   if (justcount)
+#     matriz[matriz>0] = 1
+#   for (l in 1:nrow(matriz))
+#   {
+#     dfaux <- data.frame("N"=l,"cuenta"=sum(matriz[l,]),"type"="EXP")
+#     df <- rbind(df,dfaux)
+#   }
+#   for(m in 1:ncol(matriz))
+#   {
+#     dfaux <- data.frame("N"=m,"cuenta"=sum(matriz[,m]),"type"="IMP")
+#     df <- rbind(df,dfaux)
+#   }
+#   return(df)
+# }
 
 PaintHist <- function(serie)
 {
@@ -115,8 +116,7 @@ source("parse_command_line_args.R")
 
 anyos <- seq(ini_seq,end_seq)
 
-
-anyos <- seq(1962,2014)
+#anyos <- seq(1962,2014)
 sbestlillies <- FALSE        # If set to TRUE searches the best GOF in BestLillies.txt
                              # else chooses experiment number 1
 bestlillies <- read.table("../results/BestLillies.txt",header=TRUE)
