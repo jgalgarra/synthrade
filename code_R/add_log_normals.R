@@ -51,6 +51,7 @@ MSimp <- function(matrix,normalize = TRUE)
   sum_col <- rep(0,ncol(matrix))
   if (normalize)
     matrix = matrix/sum(matrix)
+    #matrix = matrix
   sum_row <- rowSums(matrix)
   sum_col <- colSums(matrix)
   matrix <- matrix[sum_row>0,]
@@ -58,15 +59,14 @@ MSimp <- function(matrix,normalize = TRUE)
   return(t(matrix))       # Transpose because of order of python-written matrix
 }
 
-
 PaintDensPlot <- function(datos,titletext,xlabel)
 {
   p <- ggplot() + geom_density(aes(x= cuenta, color = collection, fill = collection),  alpha = .1,
                                data=datos, position = "identity", adjust=2)+ 
     xlab(xlabel)+ylab("Count\n")+
     ggtitle(titletext)+ scale_x_log10()+
-    scale_fill_manual(values=c("blue","white","red"))+
-    scale_color_manual(values=c("blue","grey","red"))+
+    scale_fill_manual(values=c("blue","white","red","green"))+
+    scale_color_manual(values=c("blue","grey","red","green"))+
     theme_bw() +
     theme(panel.border = element_blank(),
           legend.key = element_blank(),
@@ -84,6 +84,7 @@ PaintDensPlot <- function(datos,titletext,xlabel)
   
   return(p)
 }
+
 
 PaintBoxPlot <- function(datos,titletext,xlabel)
 {
@@ -116,10 +117,10 @@ source("parse_command_line_args.R")
 anyos <- seq(ini_seq,end_seq)
 
 
-anyos <- seq(1962,2014)
+anyos <- seq(1980,1980)
 sbestlillies <- FALSE        # If set to TRUE searches the best GOF in BestLillies.txt
-                             # else chooses experiment number 1
-bestlillies <- read.table("../results/BestLillies.txt",header=TRUE)
+# else chooses experiment number 1
+#bestlillies <- read.table("../results/BestLillies.txt",header=TRUE)
 for (year in anyos){
   if (sbestlillies)
     posbest <- bestlillies[bestlillies$Year==year,]$Experiment
@@ -127,59 +128,92 @@ for (year in anyos){
     posbest <- 1
   file_name <- paste0("RedAdyCom",year,"_FILT")
   file_orig <- paste0("RedAdyCom",year)
-  experiment_files <- Sys.glob(paste0("../results/",file_name,"_W_",posbest,".txt"))
-  numexper <- 1
   filt_matrix <- read.table(paste0("../data/",file_name,".txt"),sep="\t")
   orig_matrix <- read.table(paste0("../data/",file_orig,".txt"),sep="\t")
-  sim_matrix <- read.table(experiment_files[1],sep="\t")
   hm_filt <- crea_lista_heatmap(MSimp(filt_matrix,normalize = FALSE),justcount = TRUE)
-  hm_sim <- crea_lista_heatmap(MSimp(sim_matrix,normalize = FALSE),justcount = TRUE)
-  hm_orig <- crea_lista_heatmap(MSimp(orig_matrix,normalize = FALSE),justcount = TRUE)
-  hm_filt$collection <- "Filtered"
-  hm_sim$collection <- "Synthetic"
-  hm_orig$collection <- "Original"
-  hm_all_deg <- rbind(hm_filt,hm_sim,hm_orig)
-  hm_all_importers_deg <- hm_all_deg[hm_all_deg$type=="IMP",]
-  hm_filt <- crea_lista_heatmap(MSimp(filt_matrix,normalize = TRUE))
-  hm_sim <- crea_lista_heatmap(MSimp(sim_matrix,normalize = TRUE))
-  hm_orig <- crea_lista_heatmap(MSimp(orig_matrix,normalize = TRUE))
-  hm_filt$collection <- "Filtered"
-  hm_sim$collection <- "Synthetic"
-  hm_orig$collection <- "Original"
-  hm_all_weight <- rbind(hm_filt,hm_sim,hm_orig)
-  hm_all_importers_weight <- hm_all_weight[hm_all_weight$type=="IMP",]
+  experiment_files <- Sys.glob(paste0("../results/",file_name,"_W_*.txt"))
+  numexper <- 1
+  for (j in experiment_files){
+    print(paste("Numexper",numexper))
+    sim_matrix <- read.table(j,sep="\t")
+    
+    hm_sim <- crea_lista_heatmap(MSimp(sim_matrix,normalize = FALSE),justcount = TRUE)
+    hm_orig <- crea_lista_heatmap(MSimp(orig_matrix,normalize = FALSE),justcount = TRUE)
+    hm_filt$collection <- "Filtered"
+    hm_sim$collection <- "Synthetic"
+    hm_orig$collection <- "Original"
+    hm_all_deg <- rbind(hm_filt,hm_sim,hm_orig)
+    hm_all_importers_deg <- hm_all_deg[hm_all_deg$type=="IMP",]
+    hm_filt <- crea_lista_heatmap(MSimp(filt_matrix,normalize = TRUE))
+    hm_sim <- crea_lista_heatmap(MSimp(sim_matrix,normalize = TRUE))
+    hm_orig <- crea_lista_heatmap(MSimp(orig_matrix,normalize = TRUE))
+    hm_filt$collection <- "Filtered"
+    hm_sim$collection <- "Synthetic"
+    hm_orig$collection <- "Original"
+    #hm_all_weight <- rbind(hm_filt,hm_sim,hm_orig)
+    hm_all_weight <- rbind(hm_filt,hm_orig)
+    hm_all_importers_weight <- hm_all_weight[hm_all_weight$type=="IMP",]
+
+    hm_all_exporters_deg <- hm_all_deg[hm_all_deg$type=="EXP",]
+    hm_filt <- crea_lista_heatmap(MSimp(filt_matrix,normalize = TRUE))
+    hm_sim <- crea_lista_heatmap(MSimp(sim_matrix,normalize = TRUE))
+    hm_orig <- crea_lista_heatmap(MSimp(orig_matrix,normalize = TRUE))
+    hm_filt$collection <- "Filtered"
+    hm_sim$collection <- "Synthetic"
+    hm_orig$collection <- "Original"
+    #hm_all_weight <- rbind(hm_filt,hm_sim,hm_orig)
+    
+    hm_all_weight <- rbind(hm_filt,hm_orig)
+    
+    hm_all_exporters_weight <- hm_all_weight[hm_all_weight$type=="EXP",]
+    hm_sim_exp_cuenta <- hm_sim[(hm_sim$collection=="Synthetic") & (hm_sim$type=="EXP"),]$cuenta
+    hm_sim_imp_cuenta <- hm_sim[(hm_sim$collection=="Synthetic") & (hm_sim$type=="IMP"),]$cuenta
+    if (numexper == 1){
+      hm_sim_exporters_weight_log <- log10(hm_sim_exp_cuenta)
+      hm_sim_importers_weight_log <- log10(hm_sim_imp_cuenta)
+    }
+    else{
+      hm_sim_exporters_weight_log <- c(hm_sim_exporters_weight_log,log10(hm_sim_exp_cuenta))
+      hm_sim_importers_weight_log <- c(hm_sim_importers_weight_log,log10(hm_sim_imp_cuenta))
+    }
+    numexper <- numexper + 1
+  }
+  hm_sim_avg_exporters_weight <- 10^hm_sim_exporters_weight_log
+  veces <- length(hm_sim_avg_exporters_weight)
+  df <- data.frame("N"=seq(1,veces),"cuenta"=rep(0,veces),"type"=rep("EXP",veces),"collection"=rep("Synthetic_Avg",veces))
+  zeros <- rep(0,length(hm_sim_avg_exporters_weight))
+  df$cuenta <- zeros
+  for (k in seq(1:length(hm_sim_avg_exporters_weight))){
+    df$cuenta[k] <- hm_sim_avg_exporters_weight[k]
+  }
+  hm_all_exporters_weight <- rbind(hm_all_exporters_weight,df)
   
-  hm_all_exporters_deg <- hm_all_deg[hm_all_deg$type=="EXP",]
-  hm_filt <- crea_lista_heatmap(MSimp(filt_matrix,normalize = TRUE))
-  hm_sim <- crea_lista_heatmap(MSimp(sim_matrix,normalize = TRUE))
-  hm_orig <- crea_lista_heatmap(MSimp(orig_matrix,normalize = TRUE))
-  hm_filt$collection <- "Filtered"
-  hm_sim$collection <- "Synthetic"
-  hm_orig$collection <- "Original"
-  hm_all_weight <- rbind(hm_filt,hm_sim,hm_orig)
-  hm_all_exporters_weight <- hm_all_weight[hm_all_weight$type=="EXP",]
- 
-  q <- PaintDensPlot(hm_all_importers_deg,"Importers","Degree")
+  hm_sim_avg_importers_weight <- 10^hm_sim_importers_weight_log
+  veces <- length(hm_sim_avg_importers_weight)
+  df <- data.frame("N"=seq(1,veces),"cuenta"=rep(0,veces),"type"=rep("IMP",veces),"collection"=rep("Synthetic_Avg",veces))
+  zeros <- rep(0,length(hm_sim_avg_importers_weight))
+  df$cuenta <- zeros
+  for (k in seq(1:length(hm_sim_avg_importers_weight))){
+    df$cuenta[k] <- hm_sim_avg_importers_weight[k]
+  }
+  hm_all_importers_weight <- rbind(hm_all_importers_weight,df)
+  
   r <- PaintDensPlot(hm_all_importers_weight,"Importers","Normalized strength")
-  s <- PaintDensPlot(hm_all_exporters_deg,"Exporters","Degree")
   t <- PaintDensPlot(hm_all_exporters_weight,"Exporters","Normalized strength")
   
-  bq <- PaintBoxPlot(hm_all_importers_deg,"Importers","Degree")
   br <- PaintBoxPlot(hm_all_importers_weight,"Importers","Normalized strength")
-  bs <- PaintBoxPlot(hm_all_exporters_deg,"Exporters","Degree")
   bt <- PaintBoxPlot(hm_all_exporters_weight,"Exporters","Normalized strength")
   dir.create("../figures/densities/", showWarnings = FALSE)
-  fsal <- paste0("../figures/densities/Density_DegStr_",year,".png")
+  fsal <- paste0("../figures/densities/Density_DegStr_Average_",year,".png")
   ppi <- 600
-  png(fsal, width=12*ppi, height=6*ppi, res=ppi)
-  grid.arrange(q,r,s,t, ncol=2, nrow=2,top=year )
+  png(fsal, width=12*ppi, height=3*ppi, res=ppi)
+  grid.arrange(r,t, ncol=2, nrow=1,top=year )
   dev.off()
-  fsal2 <- paste0("../figures/densities/Boxplot_DegStr_",year,".png")
+  fsal2 <- paste0("../figures/densities/Boxplot_DegStr_Average_",year,".png")
   ppi <- 600
-  png(fsal2, width=12*ppi, height=6*ppi, res=ppi)
-  grid.arrange(bq,br,bs,bt, ncol=2, nrow=2,top=year )
+  png(fsal2, width=12*ppi, height=3*ppi, res=ppi)
+  grid.arrange(br,bt, ncol=2, nrow =1,top=year )
   dev.off()
-
+  
   
 }
-

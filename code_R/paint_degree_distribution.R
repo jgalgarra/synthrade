@@ -72,7 +72,7 @@ gen_deg_distribution <- function(red,series, colors, seq_breaks = c(1,5,10,20,30
       dfdeg$weight[k] <- sum(dr$m[,indice])
     }
   }
-  dfdeg$weight <- dfdeg$weight/max(dfdeg$weight)
+  dfdeg$weight <- dfdeg$weight/sum(dfdeg$weight)
   ddeg_exporter <- dfdeg[dfdeg$type == "Exporter",]
   occur <- ddeg_exporter$degree
 
@@ -187,8 +187,8 @@ if (languageEl == "EN"){
 }
 source("parse_command_line_args.R")
 
-ini_seq <- 1962
-fun_seq <- 1965
+ini_seq <- 2000
+end_seq <- 2000
 
 files <- paste0("RedAdyCom",seq(ini_seq,end_seq))
 for (orig_file in files)
