@@ -55,6 +55,7 @@ SynthMatrix <- function(matrixemp, year){
   msynth[2,3] <- min_token
   msynth[3,1] <- min_token
   msynth[3,2] <- min_token
+  cuenta_token <- 6
   # lambda_imp = (n_imp^2-n_imp)/(2*numlinks)
   # lambda_exp = (n_exp^2-n_exp)/(2*numlinks)
   cuenta_links <- sum(msynth > 0)
@@ -76,6 +77,9 @@ SynthMatrix <- function(matrixemp, year){
     if ((!morenewnodes) && (tf == 0)){
       tf <- cuenta_links
       print(paste("tf time",tf,100*cuenta_links/numlinks))
+      con <- file("../results/symlog.txt", "a")
+      cat(paste0("FT;",lyear,";",nexper,";",cuenta_links,";",numlinks,";",cuenta_token,"\n"), file=con)
+      close(con)
     }
     new_node <- FALSE
     if (cuenta_antciclo != cuenta_links){
@@ -83,7 +87,7 @@ SynthMatrix <- function(matrixemp, year){
       if (cuenta_links %% 1000 == 0) 
         print(paste(cuenta_links,"links out of",numlinks,
                     "exporters",exp_max,"out of",n_exp,"importers",
-                    imp_max,"out of",n_imp))
+                    imp_max,"out of",n_imp,"tokens",cuenta_token))
     }
     if (exp_max < n_exp)
       if (rbinom(1,1,min(1,lambda_exp/exp_max))>0)
@@ -96,6 +100,7 @@ SynthMatrix <- function(matrixemp, year){
             exp_max <- exp_max + 1
             msynth[exp_max,i] <- 1#/length(linkstoI)
             cuenta_links <-  cuenta_links + 1
+            cuenta_token <- cuenta_token + 1
             new_node <- TRUE
           }
       }
@@ -110,6 +115,7 @@ SynthMatrix <- function(matrixemp, year){
           if ((cuenta_links < numlinks) && (imp_max < n_imp)){
             imp_max <- imp_max + 1
             msynth[i,imp_max] <- 1#/length(linkstoE)
+            cuenta_token <- cuenta_token + 1
             cuenta_links <-  cuenta_links + 1
             new_node <- TRUE
           }
@@ -129,6 +135,7 @@ SynthMatrix <- function(matrixemp, year){
           rowl <- update_links[m,1]
           coll <- update_links[m,2]
           msynth[rowl,coll] <- msynth[rowl,coll] + 1#/lupdate
+          cuenta_token <- cuenta_token + 1
         }
     }
     
@@ -139,6 +146,9 @@ SynthMatrix <- function(matrixemp, year){
     prob_new_links <- t(Pr_I[1:imp_max] %o% Pr_E[1:exp_max])
     morenewnodes <- (exp_max < n_exp) || (imp_max < n_imp)
   }
+  con <- file("../results/symlog.txt", "a")
+  cat(paste0("TT;",lyear,";",nexper,";",cuenta_links,";",numlinks,";",cuenta_token,"\n"), file=con)
+  close(con)
   return(msynth)
 }
 
