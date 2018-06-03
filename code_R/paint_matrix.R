@@ -39,8 +39,6 @@ paint_int_matrix <- function(mq,titulo="",maximo=100)
 
 
 source("parse_command_line_args.R")
-ini_seq <- 1962
-end_seq <- 1962
 
 files <- paste0("RedAdyCom",seq(ini_seq,end_seq),"_FILT")
 for (file_name in files)

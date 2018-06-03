@@ -182,7 +182,7 @@ if (languageEl == "EN"){
   cumulativetxt = "Cumulative distribution probability"
   xscale = "degree scale"
 } else {
-  cumulativetxt = "Distribución acumulada de probabilidad"
+  cumulativetxt = "Distribuci?n acumulada de probabilidad"
   xscale = "escala degree"
 }
 source("parse_command_line_args.R")
