@@ -1,4 +1,9 @@
 library(nortest)
+source("read_filter_condition.R")
+if (length(filtered_string)>1) {
+  fcond <- "YES"
+} else
+  fcond <- "NO"
 
 crea_lista_heatmap <- function(matriz, justcount = FALSE)
 {
@@ -34,14 +39,13 @@ source("parse_command_line_args.R")
 
 anyos <- seq(ini_seq,end_seq)
 
-anyos <- seq(1962,2014)
 
 dfbestlillies <- data.frame("Year"=c(),"Experiment"=c())
 
 for (year in anyos){
   
   unfilt_name <- paste0("RedAdyCom",year)
-  file_name <- paste0("RedAdyCom",year,"_FILT")
+  file_name <- paste0("RedAdyCom",year,filtered_string)
   file_orig <- paste0("RedAdyCom",year)
   filt_matrix <- read.table(paste0("../data/",file_name,".txt"),sep="\t")
   unfilt_matrix <- read.table(paste0("../data/",unfilt_name,".txt"),sep="\t")
@@ -82,7 +86,10 @@ for (year in anyos){
                                                   "Empirical_importer_filtered"=ll_filt_imp,
                                                   "Empirical_exporter_unfiltered"=ll_unfilt_exp,
                                                   "Empirical_importer_unfiltered"=ll_unfilt_imp))
-  write.table(dfbestlillies,"../results/BestLillies.txt",sep="\t",row.names = FALSE)
+  if (fcond == "YES")
+    write.table(dfbestlillies,"../results/BestLillies.txt",sep="\t",row.names = FALSE)
+  else
+    write.table(dfbestlillies,"../results/BestLilliesUnfiltered.txt",sep="\t",row.names = FALSE)
 
 }
 

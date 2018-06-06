@@ -173,6 +173,6 @@ for (lyear in years)
     nlinks <- sum(matrix_emp>0)
     matrix_experiment <- SynthMatrix(matrix_emp,lyear)
     dir.create("../results", showWarnings = FALSE)
-    write.table(matrix_experiment,paste0("../results/RedAdyCom",lyear,filtered_Strig,"_W_",nexper,".txt"),
+    write.table(matrix_experiment,paste0("../results/RedAdyCom",lyear,filtered_string,"_W_",nexper,".txt"),
                 row.names = FALSE, col.names = FALSE, sep = "\t")
   }

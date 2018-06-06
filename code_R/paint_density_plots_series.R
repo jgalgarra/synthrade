@@ -2,31 +2,7 @@ library(grid)
 library(gridExtra)
 library(ggplot2)
 source("aux_functions_matrix.R")
-
-
-PaintHist <- function(serie)
-{
-  auxdf <- serie[serie$cuenta > 0,]
-  dist_deg <- ggplot(data = auxdf) + 
-    geom_histogram(aes(x= cuenta, color = collection, fill = collection),  alpha = .1,
-                   data=auxdf, position = "identity")+
-    #scale_y_log10(breaks=c(0.01,0.2,0.5,1.0)) +
-    #scale_x_log10(breaks = seq_breaks) + scale_y_log10(breaks=c(0.1,0.2,0.5,1.0)) + 
-    scale_x_log10()+scale_y_log10()+
-    xlab("Degree") + 
-    #ylab(cumulativetxt) + ggtitle("") +  scale_shape_manual(values=c(21, 15)) +
-    scale_alpha(guide = 'none') +  scale_size_identity() +# ggtitle(series) +
-    theme_bw() +
-    theme(
-      axis.title.x = element_text(color="grey30", size=15),
-      axis.title.y = element_text(color="grey30", size=15),
-      legend.title=element_blank(),
-      legend.text=element_text(size=14),
-      axis.text.x = element_text(face="bold", color="grey30", size=13),
-      axis.text.y = element_text(face="bold", color="grey30", size=13)
-    )
-  return(dist_deg)
-}
+source("read_filter_condition.R")
 
 MSimp <- function(matrix,normalize = TRUE)
 {
@@ -98,16 +74,21 @@ source("parse_command_line_args.R")
 
 anyos <- seq(ini_seq,end_seq)
 
-anyos <- seq(1062,1062)
 sbestlillies <- TRUE        # If set to TRUE searches the best GOF in BestLillies.txt
                              # else chooses experiment number 1
-bestlillies <- read.table("../results/BestLillies.txt",header=TRUE)
+if (length(filtered_string)>1){
+  bestlillies <- read.table("../results/BestLillies.txt",header=TRUE)
+  fstring <- "FILT"
+} else {
+  bestlillies <- read.table("../results/BestLilliesUnfiltered.txt",header=TRUE)
+  fstring <- "UNFILT"
+}
 for (year in anyos){
   if (sbestlillies)
     posbest <- bestlillies[bestlillies$Year==year,]$Experiment
   else
     posbest <- 1
-  file_name <- paste0("RedAdyCom",year,"_FILT")
+  file_name <- paste0("RedAdyCom",year,filtered_string)
   file_orig <- paste0("RedAdyCom",year)
   experiment_files <- Sys.glob(paste0("../results/",file_name,"_W_",posbest,".txt"))
   numexper <- 1
@@ -151,12 +132,12 @@ for (year in anyos){
   bs <- PaintBoxPlot(hm_all_exporters_deg,"Exporters","Degree")
   bt <- PaintBoxPlot(hm_all_exporters_weight,"Exporters","Normalized strength")
   dir.create("../figures/densities/", showWarnings = FALSE)
-  fsal <- paste0("../figures/densities/Density_DegStr_",year,".png")
+  fsal <- paste0("../figures/densities/Density_DegStr_",year,"_",fstring,".png")
   ppi <- 600
   png(fsal, width=12*ppi, height=6*ppi, res=ppi)
   grid.arrange(q,r,s,t, ncol=2, nrow=2,top=year )
   dev.off()
-  fsal2 <- paste0("../figures/densities/Boxplot_DegStr_",year,".png")
+  fsal2 <- paste0("../figures/densities/Boxplot_DegStr_",year,"_",fstring,".png")
   ppi <- 600
   png(fsal2, width=12*ppi, height=6*ppi, res=ppi)
   grid.arrange(bq,br,bs,bt, ncol=2, nrow=2,top=year )
