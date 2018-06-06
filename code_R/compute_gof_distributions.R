@@ -1,6 +1,6 @@
 library(nortest)
 source("read_filter_condition.R")
-if (length(filtered_string)>1) {
+if (nchar(filtered_string)>1) {
   fcond <- "YES"
 } else
   fcond <- "NO"

@@ -76,7 +76,7 @@ anyos <- seq(ini_seq,end_seq)
 
 sbestlillies <- TRUE        # If set to TRUE searches the best GOF in BestLillies.txt
                              # else chooses experiment number 1
-if (length(filtered_string)>1){
+if (nchar(filtered_string)>1){
   bestlillies <- read.table("../results/BestLillies.txt",header=TRUE)
   fstring <- "FILT"
 } else {
