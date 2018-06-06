@@ -40,13 +40,16 @@ dfbestlillies <- data.frame("Year"=c(),"Experiment"=c())
 
 for (year in anyos){
   
+  unfilt_name <- paste0("RedAdyCom",year)
   file_name <- paste0("RedAdyCom",year,"_FILT")
   file_orig <- paste0("RedAdyCom",year)
   filt_matrix <- read.table(paste0("../data/",file_name,".txt"),sep="\t")
+  unfilt_matrix <- read.table(paste0("../data/",unfilt_name,".txt"),sep="\t")
   orig_matrix <- read.table(paste0("../data/",file_orig,".txt"),sep="\t")
   
   experiment_files <- Sys.glob(paste0("../results/",file_name,"_W_*.txt"))
   sim_matrix <- read.table(experiment_files[1],sep="\t")
+  hm_unfilt <- crea_lista_heatmap(MSimp(unfilt_matrix,normalize = TRUE))
   hm_filt <- crea_lista_heatmap(MSimp(filt_matrix,normalize = TRUE))
   hm_sim <- crea_lista_heatmap(MSimp(sim_matrix,normalize = TRUE))
   maxlilliescore <- 0
@@ -67,12 +70,18 @@ for (year in anyos){
   hm_filt <- hm_filt[hm_filt$cuenta>0,]
   ll_filt_exp <- lillie.test(log(hm_filt[hm_filt$type == "EXP",]$cuenta))$p.value
   ll_filt_imp <- lillie.test(log(hm_filt[hm_filt$type == "IMP",]$cuenta))$p.value
+  
+  hm_unfilt <- hm_unfilt[hm_unfilt$cuenta>0,]
+  ll_unfilt_exp <- lillie.test(log(hm_unfilt[hm_unfilt$type == "EXP",]$cuenta))$p.value
+  ll_unfilt_imp <- lillie.test(log(hm_unfilt[hm_unfilt$type == "IMP",]$cuenta))$p.value
   print(paste("Year",year,"Experiment",poslilliescore))
   dfbestlillies <- rbind(dfbestlillies,data.frame("Year"=year,"Experiment"=poslilliescore,"Geom_mean"=sqrt(plillie),
                                                   "Synthetic_exporter" = plillieexp,
                                                   "Synthetic_importer" = plillieimp,
-                                                  "Empirical_exporter"=ll_filt_exp,
-                                                  "Empirical_importer"=ll_filt_imp))
+                                                  "Empirical_exporter_filtered"=ll_filt_exp,
+                                                  "Empirical_importer_filtered"=ll_filt_imp,
+                                                  "Empirical_exporter_unfiltered"=ll_unfilt_exp,
+                                                  "Empirical_importer_unfiltered"=ll_unfilt_imp))
   write.table(dfbestlillies,"../results/BestLillies.txt",sep="\t",row.names = FALSE)
 
 }

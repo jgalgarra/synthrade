@@ -1,8 +1,10 @@
 # Synthetic trade network creation
 
+source("read_filter_condition.R")
+
+
 ReadMatrix <- function(year){
-  original_file <- read.delim(paste0("../data/RedAdyCom",year,"_FILT.txt"), header=FALSE)
-  #original_file <- read.delim(paste0("../data/RedAdyCom",year,".txt"), header=FALSE)
+  original_file <- read.delim(paste0("../data/RedAdyCom",year,filtered_string,".txt"), header=FALSE)
   or_matrix <- as.matrix(original_file)
   # Clean rows and cols full of zeroes
   clean_matrix <- or_matrix[,colSums(or_matrix) > 0]
@@ -171,6 +173,6 @@ for (lyear in years)
     nlinks <- sum(matrix_emp>0)
     matrix_experiment <- SynthMatrix(matrix_emp,lyear)
     dir.create("../results", showWarnings = FALSE)
-    write.table(matrix_experiment,paste0("../results/RedAdyCom",lyear,"_FILT_W_",nexper,".txt"),
+    write.table(matrix_experiment,paste0("../results/RedAdyCom",lyear,filtered_Strig,"_W_",nexper,".txt"),
                 row.names = FALSE, col.names = FALSE, sep = "\t")
   }
