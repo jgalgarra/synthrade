@@ -62,9 +62,18 @@ SynthMatrix <- function(matrixemp, year){
   # lambda_exp = (n_exp^2-n_exp)/(2*numlinks)
   cuenta_links <- sum(msynth > 0)
   min_links <- cuenta_links
-  eff_links <- max(n_exp*(n_exp-1)/(2*seed_size),n_imp*(n_imp-1)/(2*seed_size))
-  lambda_imp = (n_imp^2-n_imp)/(2*eff_links)
-  lambda_exp = (n_exp^2-n_exp)/(2*eff_links)
+  #eff_links <- max(n_exp*(n_exp-1)/(2*seed_size),n_imp*(n_imp-1)/(2*seed_size))
+  texp <- n_exp*(n_exp-seed_size)/(2*seed_size)
+  timp <- n_imp*(n_imp-seed_size)/(2*seed_size)
+  
+  tf <- max(texp,timp)
+  
+  lambda_exp = n_exp*(n_exp-seed_size)/(2*tf)
+  lambda_imp = n_imp*(n_imp-seed_size)/(2*tf)
+
+#  lambda_imp <- seed_size
+#  lambda_exp <- seed_size
+  
   print(paste("lambda imp:",lambda_imp,"lambda_exp",lambda_exp))
   Pr_E <- rowSums(msynth)/sum(msynth)
   Pr_I <- colSums(msynth)/sum(msynth)

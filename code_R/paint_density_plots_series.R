@@ -74,15 +74,19 @@ source("parse_command_line_args.R")
 
 anyos <- seq(ini_seq,end_seq)
 
-sbestlillies <- TRUE        # If set to TRUE searches the best GOF in BestLillies.txt
+sbestlillies <- FALSE       # If set to TRUE searches the best GOF in BestLillies.txt
                              # else chooses experiment number 1
+
 if (nchar(filtered_string)>1){
-  bestlillies <- read.table("../results/BestLillies.txt",header=TRUE)
+  if (sbestlillies)
+    bestlillies <- read.table("../results/BestLillies.txt",header=TRUE)
   fstring <- "FILT"
 } else {
-  bestlillies <- read.table("../results/BestLilliesUnfiltered.txt",header=TRUE)
+  if (sbestlillies)
+    bestlillies <- read.table("../results/BestLilliesUnfiltered.txt",header=TRUE)
   fstring <- "UNFILT"
 }
+
 for (year in anyos){
   if (sbestlillies)
     posbest <- bestlillies[bestlillies$Year==year,]$Experiment
