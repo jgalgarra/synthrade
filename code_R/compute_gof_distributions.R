@@ -72,6 +72,8 @@ for (year in anyos){
       if (plillie > maxlilliescore){
         maxlilliescore <- plillie
         poslilliescore <- i
+        maxlillieexp <- plillieexp
+        maxlillieimp <- plillieimp
       }
     }
     hm_filt <- hm_filt[hm_filt$cuenta>0,]
@@ -83,8 +85,8 @@ for (year in anyos){
     ll_unfilt_imp <- lillie.test(log(hm_unfilt[hm_unfilt$type == "IMP",]$cuenta))$p.value
     print(paste("Year",year,"Experiment",poslilliescore))
     dfbestlillies <- rbind(dfbestlillies,data.frame("Year"=year,"Experiment"=poslilliescore,"Geom_mean"=sqrt(plillie),
-                                                    "Synthetic_exporter" = plillieexp,
-                                                    "Synthetic_importer" = plillieimp,
+                                                    "Synthetic_exporter" = maxlillieexp,
+                                                    "Synthetic_importer" = maxlillieimp,
                                                     "Empirical_exporter_filtered"=ll_filt_exp,
                                                     "Empirical_importer_filtered"=ll_filt_imp,
                                                     "Empirical_exporter_unfiltered"=ll_unfilt_exp,

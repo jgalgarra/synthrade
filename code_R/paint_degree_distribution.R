@@ -41,10 +41,10 @@ lread_network <- function(namenetwork, guild_astr = "pl", guild_bstr = "pol", di
   
 }
 
-gen_deg_distribution <- function(red,series, colors, seq_breaks = c(1,5,10,20,30))
+gen_deg_distribution <- function(red,series, colors, seq_breaks = c(1,5,10,20,30), TFS = "")
 {
   
-  gen_deg_data_frame <- function(input_matrix,tipo,tamanyo,nalpha,serie)
+  gen_deg_data_frame <- function(input_matrix,tipo,tamanyo,nalpha,serie, TFS = TFS)
   {
   
   # Remove all zeroes columns and rows
@@ -127,12 +127,16 @@ gen_deg_distribution <- function(red,series, colors, seq_breaks = c(1,5,10,20,30
   calc_values <- list("auxdf" = auxdf, "auxdfw" = auxdfw)
   return(calc_values)
   }
-  
-  emp_matrix <- read.table(paste0("../data/",red,".txt"),sep="\t")
+  dred <- gsub(TFstring,"",red)
+  emp_matrix <- read.table(paste0("../data/",dred,".txt"),sep="\t")
   auxdf_emp <- gen_deg_data_frame(emp_matrix,"Empirical",1,0.2,series)
   auxdf <- auxdf_emp[["auxdf"]]
   auxdfw <- auxdf_emp[["auxdfw"]]
-  ficheros <- Sys.glob(paste0("../results/",red,"_W_*",".txt"))
+  if (TFS == "")
+    subdir <- ""
+  else
+    subdir <- "TFMatrix"
+  ficheros <- Sys.glob(paste0("../results/",subdir,red,"_W_*",".txt"))
   for (j in ficheros){
   #for (j in ficheros[2]){           # Solo para pruebas
     sim_matrix <- read.table(j,sep="\t")
@@ -187,10 +191,17 @@ if (languageEl == "EN"){
 }
 source("parse_command_line_args.R")
 
+# Third command argument allows to plot densities at build up time
+TFstring <- as.character(args[3])
+if (is.na(TFstring)){
+  TFstring <- ""
+} else
+  TFstring <- "TF_"
+
 # ini_seq <- 2000
 # end_seq <- 2000
 
-files <- paste0("RedAdyCom",seq(ini_seq,end_seq))
+files <- paste0(TFstring,"RedAdyCom",seq(ini_seq,end_seq))
 for (orig_file in files)
 {
   red <- paste0(orig_file,"_FILT")
@@ -199,13 +210,14 @@ for (orig_file in files)
   e_degree <- grafs$dist_deg
   e_weight <- grafs$dist_wdeg
   series = "Importer"
-  grafs <- gen_deg_distribution(paste0(red),series,"red")
+  grafs <- gen_deg_distribution(paste0(red),series,"red",TFS = TFstring)
   i_degree <- grafs$dist_deg
   i_weight <- grafs$dist_wdeg
   titulo=strsplit(red,"RedAdyCom")[[1]][-1]
   title1=textGrob(paste0(titulo,"\n"), gp=gpar(fontface="bold",fontsize=30))
   ppi <- 300
-  png(paste0("../figures/ALLdist_",red,"_",languageEl,".png"), width=(16*ppi), height=16*ppi, res=ppi)
+  dir.create("../figures/degdistributions/", showWarnings = FALSE)
+  png(paste0("../figures/degdistributions/ALLdist_",red,"_",languageEl,".png"), width=(16*ppi), height=16*ppi, res=ppi)
   grid.arrange(e_degree,e_weight,i_degree,i_weight, ncol=2, nrow=2,top=title1 )
   dev.off()
 }
