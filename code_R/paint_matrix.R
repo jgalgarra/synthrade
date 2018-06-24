@@ -2,6 +2,15 @@ library(grid)
 library(gridExtra)
 library(ggplot2)
 source("aux_functions_matrix.R")
+source("parse_command_line_args.R")
+
+# Third command argument allows to plot densities at build up time
+TFstring <- as.character(args[3])
+if (is.na(TFstring)){
+  TFstring <- ""
+} else
+  TFstring <- "TF_"
+
 
 crea_lista_heatsimp <- function(matriz)
 {
@@ -37,13 +46,15 @@ paint_int_matrix <- function(mq,titulo="",maximo=100)
   return(zp1)
 }
 
+if (TFstring == ""){
+  subdir <- ""
+} else
+  subdir <- "TFMatrix/"
 
-source("parse_command_line_args.R")
-
-files <- paste0("RedAdyCom",seq(ini_seq,end_seq),"_FILT")
+files <- paste0(TFstring,"RedAdyCom",seq(ini_seq,end_seq),"_FILT")
 for (file_name in files)
 {
-  experiment_files <- Sys.glob(paste0("../results/",file_name,"_W_*.txt"))
+  experiment_files <- Sys.glob(paste0("../results/",subdir,file_name,"_W_*.txt"))
   zero_matrix <- read.table(experiment_files[1],sep="\t")
   for (l in 1:nrow(zero_matrix))
     for(m in 1:ncol(zero_matrix))
@@ -55,7 +66,8 @@ for (file_name in files)
     zero_matrix <- zero_matrix + ind_matrix
   }
   mean_matrix <- zero_matrix/numexper
-  emp_matrix <- read.table(paste0("../data/",file_name,".txt"),sep="\t")
+  dred <- gsub(TFstring,"",file_name)
+  emp_matrix <- read.table(paste0("../data/",dred,".txt"),sep="\t")
   # eliminar filas y columnas a cero
   sum_row <- rowSums(emp_matrix)
   sum_col <- colSums(emp_matrix)
@@ -66,8 +78,8 @@ for (file_name in files)
   maxleg <- (1+round(max(max(emp_matrix),max(mean_matrix)))%/%100)*100
   m_emp <- paint_int_matrix(hm_emp,titulo=paste(file_name,"Empirical Matrix"))
   m_mean <- paint_int_matrix(hm_mean,titulo=paste0("Simulated Matrix. #Experiments: ",numexper ))
-  dir.create("../figures", showWarnings = FALSE)
-  fsal <- paste0("../figures/",file_name,"_nexper_",numexper,"_IntMatrix.png")
+  dir.create("../figures/matrixes", showWarnings = FALSE)
+  fsal <- paste0("../figures/matrixes/",file_name,"_nexper_",numexper,"_IntMatrix.png")
   ppi <- 600
   png(fsal, width=10*ppi, height=4*ppi, res=ppi)
   grid.arrange(m_emp, m_mean, ncol=2)

@@ -41,10 +41,10 @@ lread_network <- function(namenetwork, guild_astr = "pl", guild_bstr = "pol", di
   
 }
 
-gen_deg_distribution <- function(red,series, colors, seq_breaks = c(1,5,10,20,30), TFS = "")
+gen_deg_distribution <- function(red,series, colors, seq_breaks = c(1,5,10,20,30))
 {
   
-  gen_deg_data_frame <- function(input_matrix,tipo,tamanyo,nalpha,serie, TFS = TFS)
+  gen_deg_data_frame <- function(input_matrix,tipo,tamanyo,nalpha,serie)
   {
   
   # Remove all zeroes columns and rows
@@ -132,13 +132,12 @@ gen_deg_distribution <- function(red,series, colors, seq_breaks = c(1,5,10,20,30
   auxdf_emp <- gen_deg_data_frame(emp_matrix,"Empirical",1,0.2,series)
   auxdf <- auxdf_emp[["auxdf"]]
   auxdfw <- auxdf_emp[["auxdfw"]]
-  if (TFS == "")
+  if (TFstring == "")
     subdir <- ""
   else
-    subdir <- "TFMatrix"
+    subdir <- "TFMatrix/"
   ficheros <- Sys.glob(paste0("../results/",subdir,red,"_W_*",".txt"))
   for (j in ficheros){
-  #for (j in ficheros[2]){           # Solo para pruebas
     sim_matrix <- read.table(j,sep="\t")
     auxdf_sim <- gen_deg_data_frame(sim_matrix,"Simulated",0.5,0.02,series)
     auxdf <- rbind(auxdf,auxdf_sim[["auxdf"]])
@@ -210,7 +209,7 @@ for (orig_file in files)
   e_degree <- grafs$dist_deg
   e_weight <- grafs$dist_wdeg
   series = "Importer"
-  grafs <- gen_deg_distribution(paste0(red),series,"red",TFS = TFstring)
+  grafs <- gen_deg_distribution(paste0(red),series,"red")
   i_degree <- grafs$dist_deg
   i_weight <- grafs$dist_wdeg
   titulo=strsplit(red,"RedAdyCom")[[1]][-1]
