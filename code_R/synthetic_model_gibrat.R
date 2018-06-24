@@ -91,6 +91,14 @@ SynthMatrix <- function(matrixemp, year){
       con <- file("../results/symlog.txt", "a")
       cat(paste0("FT;",lyear,";",nexper,";",cuenta_links,";",numlinks,";",cuenta_token,"\n"), file=con)
       close(con)
+      # Write probability matrix at that instant
+      dir.create("../results/probs", showWarnings = FALSE)
+      write.table(prob_new_links,paste0("../results/probs/PR_TF_RedAdyCom",lyear,filtered_string,"_W_",nexper,".txt"),
+                  row.names = FALSE, col.names = FALSE, sep = "\t")
+      # Write weight matrix at that instant
+      dir.create("../results/TFMatrix", showWarnings = FALSE)
+      write.table(msynth,paste0("../results/TFMatrix/TF_RedAdyCom",lyear,filtered_string,"_W_",nexper,".txt"),
+                  row.names = FALSE, col.names = FALSE, sep = "\t")
     }
     new_node <- FALSE
     if (cuenta_antciclo != cuenta_links){
@@ -157,6 +165,9 @@ SynthMatrix <- function(matrixemp, year){
     prob_new_links <- t(Pr_I[1:imp_max] %o% Pr_E[1:exp_max])
     morenewnodes <- (exp_max < n_exp) || (imp_max < n_imp)
   }
+  # Write probability matrix at that instant
+  write.table(prob_new_links,paste0("../results/probs/PR_TT_RedAdyCom",lyear,filtered_string,"_W_",nexper,".txt"),
+              row.names = FALSE, col.names = FALSE, sep = "\t")
   con <- file("../results/symlog.txt", "a")
   cat(paste0("TT;",lyear,";",nexper,";",cuenta_links,";",numlinks,";",cuenta_token,"\n"), file=con)
   close(con)
@@ -181,7 +192,6 @@ for (lyear in years)
     matrix_emp <- ReadMatrix(lyear)
     nlinks <- sum(matrix_emp>0)
     matrix_experiment <- SynthMatrix(matrix_emp,lyear)
-    dir.create("../results", showWarnings = FALSE)
     write.table(matrix_experiment,paste0("../results/RedAdyCom",lyear,filtered_string,"_W_",nexper,".txt"),
                 row.names = FALSE, col.names = FALSE, sep = "\t")
   }
