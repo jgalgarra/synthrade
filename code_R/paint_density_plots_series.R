@@ -21,7 +21,7 @@ MSimp <- function(matrix,normalize = TRUE)
 PaintDensPlot <- function(datos,titletext,xlabel)
 {
   p <- ggplot() + geom_density(aes(x= cuenta, color = collection, fill = collection),  alpha = .1,
-                               data=datos, position = "identity", adjust=1)+ 
+                               data=datos, position = "identity", adjust=1.5)+ 
     xlab(xlabel)+ylab("Count\n")+
     ggtitle(titletext)+ scale_x_log10()+
     scale_fill_manual(values=c("blue","white","red"))+
