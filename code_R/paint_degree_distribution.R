@@ -88,6 +88,7 @@ gen_deg_distribution <- function(red,series, colors, seq_breaks = c(1,5,10,20,30
   wdx = woccur
   type = ddeg_exporter$type
   tamanyo = ddeg_exporter$tamanyo
+  tamanyo = 1.2
   nalpha = ddeg_exporter$nalpha
   auxdf_exporter <- data.frame(dx,dy,type,tamanyo,nalpha)
   auxdfw_exporter <- data.frame(wdx,wdy,type,tamanyo,nalpha)
@@ -107,6 +108,7 @@ gen_deg_distribution <- function(red,series, colors, seq_breaks = c(1,5,10,20,30
   wdx = woccur
   type = ddeg_importer$type
   tamanyo = ddeg_importer$tamanyo
+  tamanyo = 1.2
   nalpha = ddeg_importer$nalpha
   auxdf_importer <- data.frame(dx,dy,type,tamanyo,nalpha)
   auxdfw_importer <- data.frame(wdx,wdy,type,tamanyo,nalpha)
@@ -132,11 +134,13 @@ gen_deg_distribution <- function(red,series, colors, seq_breaks = c(1,5,10,20,30
   auxdf_emp <- gen_deg_data_frame(emp_matrix,"Empirical",1,0.2,series)
   auxdf <- auxdf_emp[["auxdf"]]
   auxdfw <- auxdf_emp[["auxdfw"]]
-  if (TFstring == "")
+  if (TFstring == ""){
     subdir <- ""
-  else
+    ficheros <- Sys.glob(paste0("../results/",subdir,red,"_W_*",".txt"))
+  } else {
     subdir <- "TFMatrix/"
-  ficheros <- Sys.glob(paste0("../results/",subdir,red,"_W_*",".txt"))
+    ficheros <- Sys.glob(paste0("../results/",subdir,red,"_W_1",".txt"))
+  }
   for (j in ficheros){
     sim_matrix <- read.table(j,sep="\t")
     auxdf_sim <- gen_deg_data_frame(sim_matrix,"Simulated",0.5,0.02,series)
@@ -148,32 +152,33 @@ gen_deg_distribution <- function(red,series, colors, seq_breaks = c(1,5,10,20,30
   dist_deg <- ggplot(data = auxdf, aes(x = dx, y = dy)) + 
     geom_point(aes(alpha = nalpha,shape=method,size=tamanyo,stroke=tamanyo),color=colors) +
     scale_x_log10(breaks = seq_breaks) + scale_y_log10(breaks=c(0.1,0.2,0.5,1.0)) + xlab("Degree") + 
-    ylab(cumulativetxt) + ggtitle("") +  scale_shape_manual(values=c(21, 15)) +
-    scale_alpha(guide = 'none') +  scale_size_identity() + ggtitle(series) +
+    ylab(cumulativetxt) + ggtitle("") +  scale_shape_manual(values=c(18,16)) +
+    
+    scale_alpha(guide = 'none') + scale_size_identity() + ggtitle(series) +
     theme_bw() +
     theme(
-      axis.title.x = element_text(color="grey30", size=15),
-      axis.title.y = element_text(color="grey30", size=15),
+      axis.title.x = element_text(color="grey30", size = 11),
+      axis.title.y = element_text(color="grey30", size= 11),
       legend.title=element_blank(),
-      legend.text=element_text(size=14),
-      axis.text.x = element_text(face="bold", color="grey30", size=13),
-      axis.text.y = element_text(face="bold", color="grey30", size=13)
+      legend.text=element_text(size=10),
+      axis.text.x = element_text(face="bold", color="grey30", size=10),
+      axis.text.y = element_text(face="bold", color="grey30", size=10)
     )
   
   auxdfw <- auxdfw[auxdfw$wdx > 0,]
   dist_wdeg <- ggplot(data = auxdfw, aes(x = wdx, y = wdy)) + 
     geom_point(aes(alpha = nalpha,shape=method,size=tamanyo,stroke=tamanyo),color=colors) +
     scale_x_log10(breaks=c(0.001,0.01,0.1,1)) + scale_y_log10(breaks=c(0.1,0.2,0.5,1.0)) + xlab("Normalized strength") + 
-    ylab(cumulativetxt) + ggtitle("") +  scale_shape_manual(values=c(21, 15)) +
+    ylab(cumulativetxt) + ggtitle("") +  scale_shape_manual(values=c(18,16)) +
     scale_alpha(guide = 'none') +  scale_size_identity() + ggtitle(series) +
     theme_bw() +
     theme(
-      axis.title.x = element_text(color="grey30", size=15),
-      axis.title.y = element_text(color="grey30", size=15),
+      axis.title.x = element_text(color="grey30", size = 11),
+      axis.title.y = element_text(color="grey30", size= 11),
       legend.title=element_blank(),
-      legend.text=element_text(size=14),
-      axis.text.x = element_text(face="bold", color="grey30", size=13),
-      axis.text.y = element_text(face="bold", color="grey30", size=13)
+      legend.text=element_text(size=10),
+      axis.text.x = element_text(face="bold", color="grey30", size=10),
+      axis.text.y = element_text(face="bold", color="grey30", size=10)
     )
   calc_values <- list("dist_deg" = dist_deg, "dist_wdeg" = dist_wdeg)
   return(calc_values)
@@ -197,9 +202,6 @@ if (is.na(TFstring)){
 } else
   TFstring <- "TF_"
 
-# ini_seq <- 2000
-# end_seq <- 2000
-
 files <- paste0(TFstring,"RedAdyCom",seq(ini_seq,end_seq))
 for (orig_file in files)
 {
@@ -212,11 +214,11 @@ for (orig_file in files)
   grafs <- gen_deg_distribution(paste0(red),series,"red")
   i_degree <- grafs$dist_deg
   i_weight <- grafs$dist_wdeg
-  titulo=strsplit(red,"RedAdyCom")[[1]][-1]
-  title1=textGrob(paste0(titulo,"\n"), gp=gpar(fontface="bold",fontsize=30))
+  titulo=gsub("_FILT","",strsplit(red,"RedAdyCom")[[1]][-1])
+  title1=textGrob(paste0(titulo,"\n"), gp=gpar(fontface="bold",fontsize=20))
   ppi <- 300
   dir.create("../figures/degdistributions/", showWarnings = FALSE)
-  png(paste0("../figures/degdistributions/ALLdist_",red,"_",languageEl,".png"), width=(16*ppi), height=16*ppi, res=ppi)
+  png(paste0("../figures/degdistributions/ALLdist_",red,"_",languageEl,".png"), width=(9*ppi), height=8*ppi, res=ppi)
   grid.arrange(e_degree,e_weight,i_degree,i_weight, ncol=2, nrow=2,top=title1 )
   dev.off()
 }
