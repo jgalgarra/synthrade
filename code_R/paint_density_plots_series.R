@@ -4,19 +4,6 @@ library(ggplot2)
 source("aux_functions_matrix.R")
 source("read_filter_condition.R")
 
-MSimp <- function(matrix,normalize = TRUE)
-{
-  sum_row <- rep(0,nrow(matrix))
-  sum_col <- rep(0,ncol(matrix))
-  if (normalize)
-    matrix = matrix/sum(matrix)
-  sum_row <- rowSums(matrix)
-  sum_col <- colSums(matrix)
-  matrix <- matrix[sum_row>0,]
-  matrix <- matrix[,sum_col>0]
-  return(t(matrix))       # Transpose because of order of python-written matrix
-}
-
 
 PaintDensPlot <- function(datos,titletext,xlabel)
 {
@@ -96,20 +83,20 @@ for (year in anyos){
   file_orig <- paste0("RedAdyCom",year)
   experiment_files <- Sys.glob(paste0("../results/",file_name,"_W_",posbest,".txt"))
   numexper <- 1
-  filt_matrix <- read.table(paste0("../data/",file_name,".txt"),sep="\t")
-  orig_matrix <- read.table(paste0("../data/",file_orig,".txt"),sep="\t")
-  sim_matrix <- read.table(experiment_files[1],sep="\t")
-  hm_filt <- crea_lista_heatmap(MSimp(filt_matrix,normalize = FALSE),justcount = TRUE)
-  hm_sim <- crea_lista_heatmap(MSimp(sim_matrix,normalize = FALSE),justcount = TRUE)
-  hm_orig <- crea_lista_heatmap(MSimp(orig_matrix,normalize = FALSE),justcount = TRUE)
+  filt_matrix <- read_and_remove_zeroes(paste0("../data/",file_name,".txt"))
+  orig_matrix <- read_and_remove_zeroes(paste0("../data/",file_orig,".txt"))
+  sim_matrix <- read_and_remove_zeroes(experiment_files[1])
+  hm_filt <- crea_lista_heatmap(MPack(filt_matrix,normalize = FALSE),justcount = TRUE)
+  hm_sim <- crea_lista_heatmap(MPack(sim_matrix,normalize = FALSE),justcount = TRUE)
+  hm_orig <- crea_lista_heatmap(MPack(orig_matrix,normalize = FALSE),justcount = TRUE)
   hm_filt$collection <- "Filtered"
   hm_sim$collection <- "Synthetic"
   hm_orig$collection <- "Original"
   hm_all_deg <- rbind(hm_filt,hm_sim,hm_orig)
   hm_all_importers_deg <- hm_all_deg[hm_all_deg$type=="IMP",]
-  hm_filt <- crea_lista_heatmap(MSimp(filt_matrix,normalize = TRUE))
-  hm_sim <- crea_lista_heatmap(MSimp(sim_matrix,normalize = TRUE))
-  hm_orig <- crea_lista_heatmap(MSimp(orig_matrix,normalize = TRUE))
+  hm_filt <- crea_lista_heatmap(MPack(filt_matrix,normalize = TRUE))
+  hm_sim <- crea_lista_heatmap(MPack(sim_matrix,normalize = TRUE))
+  hm_orig <- crea_lista_heatmap(MPack(orig_matrix,normalize = TRUE))
   hm_filt$collection <- "Filtered"
   hm_sim$collection <- "Synthetic"
   hm_orig$collection <- "Original"
@@ -117,9 +104,9 @@ for (year in anyos){
   hm_all_importers_weight <- hm_all_weight[hm_all_weight$type=="IMP",]
   
   hm_all_exporters_deg <- hm_all_deg[hm_all_deg$type=="EXP",]
-  hm_filt <- crea_lista_heatmap(MSimp(filt_matrix,normalize = TRUE))
-  hm_sim <- crea_lista_heatmap(MSimp(sim_matrix,normalize = TRUE))
-  hm_orig <- crea_lista_heatmap(MSimp(orig_matrix,normalize = TRUE))
+  hm_filt <- crea_lista_heatmap(MPack(filt_matrix,normalize = TRUE))
+  hm_sim <- crea_lista_heatmap(MPack(sim_matrix,normalize = TRUE))
+  hm_orig <- crea_lista_heatmap(MPack(orig_matrix,normalize = TRUE))
   hm_filt$collection <- "Filtered"
   hm_sim$collection <- "Synthetic"
   hm_orig$collection <- "Original"

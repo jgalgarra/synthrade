@@ -1,3 +1,13 @@
+# Reads a trade matrix and removes lines with zeroes
+
+read_and_remove_zeroes <- function(filename)
+{
+  or_matrix <- read.table(filename,sep="\t")
+  clean_matrix <- or_matrix[,colSums(or_matrix) > 0]
+  clean_matrix <- clean_matrix[rowSums(clean_matrix) > 0,]
+  return(clean_matrix)
+}
+
 crea_lista_heatmap <- function(matriz, justcount = FALSE)
 {
   df <- data.frame("N"=c(),"cuenta"=c(),"type"=c())

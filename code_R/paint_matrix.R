@@ -55,19 +55,19 @@ files <- paste0(TFstring,"RedAdyCom",seq(ini_seq,end_seq),"_FILT")
 for (file_name in files)
 {
   experiment_files <- Sys.glob(paste0("../results/",subdir,file_name,"_W_*.txt"))
-  zero_matrix <- read.table(experiment_files[1],sep="\t")
+  zero_matrix <- read_and_remove_zeroes(experiment_files[1])
   for (l in 1:nrow(zero_matrix))
     for(m in 1:ncol(zero_matrix))
       zero_matrix[l,m]<-0
   numexper <- length(experiment_files)
   numexper <- 1
   for (i in 1:numexper){
-    ind_matrix <- read.table(experiment_files[i],sep="\t")
+    ind_matrix <- read_and_remove_zeroes(experiment_files[i])
     zero_matrix <- zero_matrix + ind_matrix
   }
   mean_matrix <- zero_matrix/numexper
   dred <- gsub(TFstring,"",file_name)
-  emp_matrix <- read.table(paste0("../data/",dred,".txt"),sep="\t")
+  emp_matrix <- read_and_remove_zeroes(paste0("../data/",dred,".txt"))
   # eliminar filas y columnas a cero
   sum_row <- rowSums(emp_matrix)
   sum_col <- colSums(emp_matrix)
