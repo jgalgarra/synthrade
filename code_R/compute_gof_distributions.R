@@ -29,12 +29,14 @@ for (year in anyos){
     sim_matrix <- read_and_remove_zeroes(experiment_files[1])
     hm_unfilt <- crea_lista_heatmap(MPack(unfilt_matrix,normalize = TRUE))
     hm_filt <- crea_lista_heatmap(MPack(filt_matrix,normalize = TRUE))
+    hm_filt <- hm_filt[hm_filt$cuenta>0,]
     hm_sim <- crea_lista_heatmap(MPack(sim_matrix,normalize = TRUE))
     maxlilliescore <- 0
     poslilliescore <- 0
     for (i in seq(1,length(experiment_files))){
-      other_sim_matrix <- read.table(experiment_files[i],sep="\t")
+      other_sim_matrix <- read_and_remove_zeroes(experiment_files[i])
       other_hm_sim <- crea_lista_heatmap(MPack(other_sim_matrix,normalize = TRUE))
+      
       hm_sim_exp <- other_hm_sim[other_hm_sim$type == "EXP",]$cuenta
       hm_sim_imp <- other_hm_sim[other_hm_sim$type == "IMP",]$cuenta
       plillieexp <- lillie.test(log(hm_sim_exp))$p.value
@@ -46,7 +48,6 @@ for (year in anyos){
         maxlillieexp <- plillieexp
         maxlillieimp <- plillieimp
       }
-      
       hm_filt_exp <- hm_filt[hm_filt$type == "EXP",]$cuenta
       hm_filt_imp <- hm_filt[hm_filt$type == "IMP",]$cuenta
       
@@ -54,17 +55,15 @@ for (year in anyos){
       x <- log(hm_sim_imp)
       y <- log(hm_filt_imp)
       ks_imp_pvalue <- ks.test(x, y)$p.value
-      x <- log(hm_sim_exp)
-      y <- log(hm_filt_exp)
-      ks_exp_pvalue <- ks.test(x, y)$p.value
+      v <- log(hm_sim_exp)
+      w <- log(hm_filt_exp)
+      ks_exp_pvalue <- ks.test(v, w)$p.value
       dfkolmogorov <- rbind(dfkolmogorov, data.frame("Year"=year,"Experiment"=i,
                                                      "Importer"=ks_imp_pvalue,
                                                      "Exporter"=ks_exp_pvalue))
     }
-    hm_filt <- hm_filt[hm_filt$cuenta>0,]
     ll_filt_exp <- lillie.test(log(hm_filt[hm_filt$type == "EXP",]$cuenta))$p.value
     ll_filt_imp <- lillie.test(log(hm_filt[hm_filt$type == "IMP",]$cuenta))$p.value
-    
     hm_unfilt <- hm_unfilt[hm_unfilt$cuenta>0,]
     ll_unfilt_exp <- lillie.test(log(hm_unfilt[hm_unfilt$type == "EXP",]$cuenta))$p.value
     ll_unfilt_imp <- lillie.test(log(hm_unfilt[hm_unfilt$type == "IMP",]$cuenta))$p.value

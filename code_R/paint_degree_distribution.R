@@ -41,7 +41,7 @@ lread_network <- function(namenetwork, guild_astr = "pl", guild_bstr = "pol", di
   
 }
 
-gen_deg_distribution <- function(red,series, colors, seq_breaks = c(1,5,10,20,30))
+gen_deg_distribution <- function(red,series, colors, seq_breaks = c(1,5,10,20,50,100))
 {
   
   gen_deg_data_frame <- function(input_matrix,tipo,tamanyo,nalpha,serie)
@@ -151,15 +151,16 @@ gen_deg_distribution <- function(red,series, colors, seq_breaks = c(1,5,10,20,30
   auxdf <- auxdf[auxdf$dx > 0,]
   dist_deg <- ggplot(data = auxdf, aes(x = dx, y = dy)) + 
     geom_point(aes(alpha = nalpha,shape=method,size=tamanyo,stroke=tamanyo),color=colors) +
-    scale_x_log10(breaks = seq_breaks) + scale_y_log10(breaks=c(0.1,0.2,0.5,1.0)) + xlab("Degree") + 
-    ylab(cumulativetxt) + ggtitle("") +  scale_shape_manual(values=c(18,16)) +
-    
-    scale_alpha(guide = 'none') + scale_size_identity() + ggtitle(series) +
+    scale_x_log10(breaks = seq_breaks) + scale_y_log10(breaks=c(0.1,0.2,0.5,1.0)) + 
+    xlab(paste(year,series,"Degree")) + 
+    ylab(cumulativetxt) + scale_shape_manual(values=c(1,16)) +
+    scale_alpha(guide = 'none') + scale_size_identity()  +
     theme_bw() +
     theme(
       axis.title.x = element_text(color="grey30", size = 11),
       axis.title.y = element_text(color="grey30", size= 11),
       legend.title=element_blank(),
+      legend.position = "top",
       legend.text=element_text(size=10),
       axis.text.x = element_text(face="bold", color="grey30", size=10),
       axis.text.y = element_text(face="bold", color="grey30", size=10)
@@ -168,14 +169,16 @@ gen_deg_distribution <- function(red,series, colors, seq_breaks = c(1,5,10,20,30
   auxdfw <- auxdfw[auxdfw$wdx > 0,]
   dist_wdeg <- ggplot(data = auxdfw, aes(x = wdx, y = wdy)) + 
     geom_point(aes(alpha = nalpha,shape=method,size=tamanyo,stroke=tamanyo),color=colors) +
-    scale_x_log10(breaks=c(0.001,0.01,0.1,1)) + scale_y_log10(breaks=c(0.1,0.2,0.5,1.0)) + xlab("Normalized strength") + 
-    ylab(cumulativetxt) + ggtitle("") +  scale_shape_manual(values=c(18,16)) +
-    scale_alpha(guide = 'none') +  scale_size_identity() + ggtitle(series) +
+    scale_x_log10(breaks=c(0.001,0.01,0.1,1)) + scale_y_log10(breaks=c(0.1,0.2,0.5,1.0)) + 
+    xlab(paste(year,series,"Normalized Strength")) + 
+    ylab(cumulativetxt) + scale_shape_manual(values=c(1,16)) +
+    scale_alpha(guide = 'none') +  scale_size_identity() + 
     theme_bw() +
     theme(
       axis.title.x = element_text(color="grey30", size = 11),
       axis.title.y = element_text(color="grey30", size= 11),
       legend.title=element_blank(),
+      legend.position = "top",
       legend.text=element_text(size=10),
       axis.text.x = element_text(face="bold", color="grey30", size=10),
       axis.text.y = element_text(face="bold", color="grey30", size=10)
@@ -207,6 +210,7 @@ for (orig_file in files)
 {
   red <- paste0(orig_file,"_FILT")
   series = "Exporter"
+  year=gsub("_FILT","",strsplit(red,"RedAdyCom")[[1]][-1])
   grafs <- gen_deg_distribution(paste0(red),series,"blue")
   e_degree <- grafs$dist_deg
   e_weight <- grafs$dist_wdeg
@@ -214,11 +218,9 @@ for (orig_file in files)
   grafs <- gen_deg_distribution(paste0(red),series,"red")
   i_degree <- grafs$dist_deg
   i_weight <- grafs$dist_wdeg
-  titulo=gsub("_FILT","",strsplit(red,"RedAdyCom")[[1]][-1])
-  title1=textGrob(paste0(titulo,"\n"), gp=gpar(fontface="bold",fontsize=20))
   ppi <- 300
   dir.create("../figures/degdistributions/", showWarnings = FALSE)
-  png(paste0("../figures/degdistributions/ALLdist_",red,"_",languageEl,".png"), width=(9*ppi), height=8*ppi, res=ppi)
-  grid.arrange(e_degree,e_weight,i_degree,i_weight, ncol=2, nrow=2,top=title1 )
+  png(paste0("../figures/degdistributions/ALLdist_",red,"_",languageEl,".png"), width=(8*ppi), height=8*ppi, res=ppi)
+  grid.arrange(e_degree,e_weight,i_degree,i_weight, ncol=2, nrow=2)
   dev.off()
 }

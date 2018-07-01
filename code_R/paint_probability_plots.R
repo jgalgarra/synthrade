@@ -6,14 +6,12 @@ source("read_filter_condition.R")
 source("parse_command_line_args.R")
 years <- seq(ini_seq,end_seq)
 
-years<- seq(1969, 1969)
-
 PaintProbPlot <- function(datos,titletext,xlabel="")
 {
   p <- ggplot() + geom_density(aes(x= cuenta, color = Instant, fill = Instant),  alpha = .05,
                                data=datos, position = "identity", adjust=1.5)+ 
     xlab(xlabel)+ylab("Density\n")+scale_x_continuous(breaks = c(-6,-4,-2,0), 
-                                                      labels = c("1e-6","1e-4","1e-2","0"), 
+                                                      labels = c("1e-06","1e-04","1e-02","1"), 
                                                       limits = c(-6,0)) +
     ggtitle(titletext)+  
     scale_fill_manual(values=c("orange","blue"))+
@@ -79,8 +77,8 @@ for (lyear in years)
    #title1 <- textGrob(paste0(lyear,"\n"), gp=gpar(fontface="bold",fontsize=30))
    ppi <- 300
    dir.create("../figures/probdensities/", showWarnings = FALSE)
-   png(paste0("../figures/probdensities/PD_",lyear,".png"), width=(24*ppi), height=6*ppi, res=ppi)
-   grid.arrange(pplot1,pplot2,pplot3, ncol=3, nrow=1,top=title1 )
+   png(paste0("../figures/probdensities/PD_",lyear,".png"), width=(24*ppi), height=5*ppi, res=ppi)
+   grid.arrange(pplot1,pplot2,pplot3, ncol=3, nrow=1 )
    dev.off()
    
 

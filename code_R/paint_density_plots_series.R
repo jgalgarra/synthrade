@@ -8,10 +8,14 @@ source("read_filter_condition.R")
 PaintDensPlot <- function(datos,titletext,xlabel)
 {
   p <- ggplot() + geom_density(aes(x= cuenta, color = collection, fill = collection),  alpha = .1,
-                               data=datos, position = "identity", adjust=1.5)+ 
+                               data=datos, position = "identity", adjust=2)+ 
     xlab(xlabel)+ylab("Density\n")+
-    ggtitle(titletext)+ scale_x_log10()+
-    scale_fill_manual(values=c("blue","white","red"))+
+    ggtitle(titletext)
+    if (xlabel == "Degree")
+      p <- p + scale_x_log10(limits=c(0.1,1000))
+    else
+      p <- p + scale_x_log10(limits=c(10^-7,1))
+    p <- p + scale_fill_manual(values=c("blue","white","red"))+
     scale_color_manual(values=c("blue","grey","red"))+
     theme_bw() +
     theme(panel.border = element_blank(),
