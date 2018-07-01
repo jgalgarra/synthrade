@@ -23,13 +23,13 @@ PaintProbPlot <- function(datos,titletext,xlabel="")
           panel.grid.minor.y = element_blank(),
           panel.grid.major.y = element_line(linetype = 2, color="ivory3"),
           panel.grid.major.x = element_blank(), 
-          legend.title = element_text(size=12, face="bold"),
-          legend.text = element_text(size=11),
+          legend.title = element_text(size=15, face="bold"),
+          legend.text = element_text(size=13, face="bold"),
           axis.line = element_line(colour = "black"),
-          plot.title = element_text(lineheight=.8, face="bold", hjust = 0.5),
-          axis.text = element_text(face="bold", size=13),
-          axis.title.x = element_text(face="bold", size=13),
-          axis.title.y  = element_text(face="bold", size=13)
+          plot.title = element_text(size = 20, face="bold", hjust = 0.5),
+          axis.text = element_text(face="bold", size=15),
+          axis.title.x = element_text(face="bold", size=15),
+          axis.title.y  = element_text(face="bold", size=15)
           )
   
   return(p)

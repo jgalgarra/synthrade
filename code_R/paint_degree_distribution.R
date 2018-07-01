@@ -221,6 +221,6 @@ for (orig_file in files)
   ppi <- 300
   dir.create("../figures/degdistributions/", showWarnings = FALSE)
   png(paste0("../figures/degdistributions/ALLdist_",red,"_",languageEl,".png"), width=(8*ppi), height=8*ppi, res=ppi)
-  grid.arrange(e_degree,e_weight,i_degree,i_weight, ncol=2, nrow=2)
+  grid.arrange(i_degree,i_weight, e_degree,e_weight,ncol=2, nrow=2)
   dev.off()
 }

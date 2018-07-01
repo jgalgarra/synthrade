@@ -4,20 +4,37 @@ library(ggplot2)
 source("aux_functions_matrix.R")
 source("read_filter_condition.R")
 
+source("parse_command_line_args.R")
+
+# Third command argument allows to hide original densities
+HOriginal <- as.character(args[3])
+if (is.na(HOriginal)){
+  HOriginal <- FALSE
+  HOstr <- ""
+} else{
+  HOriginal <- TRUE
+  HOstr <- "_HO"
+}
+
 
 PaintDensPlot <- function(datos,titletext,xlabel)
 {
   p <- ggplot() + geom_density(aes(x= cuenta, color = collection, fill = collection),  alpha = .1,
-                               data=datos, position = "identity", adjust=2)+ 
-    xlab(xlabel)+ylab("Density\n")+
-    ggtitle(titletext)
+                               data=datos, position = "identity", adjust=1.5)+ 
+    xlab(paste(year,titletext,xlabel))+ylab("Density\n")#+
+    #ggtitle(titletext)
     if (xlabel == "Degree")
       p <- p + scale_x_log10(limits=c(0.1,1000))
     else
       p <- p + scale_x_log10(limits=c(10^-7,1))
-    p <- p + scale_fill_manual(values=c("blue","white","red"))+
-    scale_color_manual(values=c("blue","grey","red"))+
-    theme_bw() +
+    if (HOriginal){
+      p <- p + scale_fill_manual(values=c("blue","red","red"))+
+        scale_color_manual(values=c("blue","red","red"))
+    } else {
+      p <- p + scale_fill_manual(values=c("blue","white","red"))+
+      scale_color_manual(values=c("blue","grey","red"))
+      }
+    p <-p +theme_bw() +
     theme(panel.border = element_blank(),
           legend.key = element_blank(),
           panel.grid.minor.x = element_blank(),
@@ -25,6 +42,7 @@ PaintDensPlot <- function(datos,titletext,xlabel)
           panel.grid.major.y = element_line(linetype = 2, color="ivory3"),
           panel.grid.major.x = element_blank(), 
           legend.title = element_blank(),
+          legend.position = "top",
           legend.text = element_text(size=12, face="bold"),
           axis.line = element_line(colour = "black"),
           plot.title = element_text(lineheight=.8, face="bold"),
@@ -39,11 +57,16 @@ PaintBoxPlot <- function(datos,titletext,xlabel)
 {
   p <- ggplot() + geom_boxplot(aes(x=as.factor(collection),y= cuenta, color = collection, fill = collection),  alpha = .1,
                                data=datos, position = "identity")+ 
-    xlab(xlabel)+ylab("Density\n")+
-    ggtitle(titletext)+ scale_y_log10()+
-    scale_fill_manual(values=c("blue","white","red"))+
-    scale_color_manual(values=c("blue","grey","red"))+
-    theme_bw() +
+    xlab(paste(year,titletext,xlabel))+ylab("Density\n")+
+    scale_y_log10()
+    if (HOriginal){
+      p <- p + scale_fill_manual(values=c("blue","red","red"))+
+        scale_color_manual(values=c("blue","red","red"))
+    } else {
+      p <- p + scale_fill_manual(values=c("blue","white","red"))+
+        scale_color_manual(values=c("blue","grey","red"))
+    }
+    p <- p + theme_bw() +
     theme(panel.border = element_blank(),
           legend.key = element_blank(),
           panel.grid.minor.x = element_blank(),
@@ -51,12 +74,13 @@ PaintBoxPlot <- function(datos,titletext,xlabel)
           panel.grid.major.y = element_line(linetype = 2, color="ivory3"),
           panel.grid.major.x = element_blank(), 
           legend.title = element_blank(),
+          legend.position = "none",
           legend.text = element_text(size=12, face="bold"),
           axis.line = element_line(colour = "black"),
           plot.title = element_text(lineheight=.8, face="bold"),
           axis.text = element_text(face="bold", size=13),
-          axis.title.x = element_text(face="bold", size=13),
-          axis.title.y  = element_text(face="bold", size=13) )
+          axis.title.x = element_text(face="bold", size=14),
+          axis.title.y  = element_text(face="bold", size=14) )
   
   return(p)
 }
@@ -96,7 +120,10 @@ for (year in anyos){
   hm_filt$collection <- "Filtered"
   hm_sim$collection <- "Synthetic"
   hm_orig$collection <- "Original"
-  hm_all_deg <- rbind(hm_filt,hm_sim,hm_orig)
+  if (HOriginal)
+    hm_all_deg <- rbind(hm_filt,hm_sim)
+  else
+    hm_all_deg <- rbind(hm_filt,hm_sim,hm_orig)
   hm_all_importers_deg <- hm_all_deg[hm_all_deg$type=="IMP",]
   hm_filt <- crea_lista_heatmap(MPack(filt_matrix,normalize = TRUE))
   hm_sim <- crea_lista_heatmap(MPack(sim_matrix,normalize = TRUE))
@@ -104,7 +131,10 @@ for (year in anyos){
   hm_filt$collection <- "Filtered"
   hm_sim$collection <- "Synthetic"
   hm_orig$collection <- "Original"
-  hm_all_weight <- rbind(hm_filt,hm_sim,hm_orig)
+  if (HOriginal)
+    hm_all_weight <- rbind(hm_filt,hm_sim)
+  else
+    hm_all_weight <- rbind(hm_filt,hm_sim,hm_orig)
   hm_all_importers_weight <- hm_all_weight[hm_all_weight$type=="IMP",]
   
   hm_all_exporters_deg <- hm_all_deg[hm_all_deg$type=="EXP",]
@@ -114,7 +144,10 @@ for (year in anyos){
   hm_filt$collection <- "Filtered"
   hm_sim$collection <- "Synthetic"
   hm_orig$collection <- "Original"
-  hm_all_weight <- rbind(hm_filt,hm_sim,hm_orig)
+  if (HOriginal)
+    hm_all_weight <- rbind(hm_filt,hm_sim)
+  else
+    hm_all_weight <- rbind(hm_filt,hm_sim,hm_orig)
   hm_all_exporters_weight <- hm_all_weight[hm_all_weight$type=="EXP",]
  
   q <- PaintDensPlot(hm_all_importers_deg,"Importers","Degree")
@@ -127,15 +160,15 @@ for (year in anyos){
   bs <- PaintBoxPlot(hm_all_exporters_deg,"Exporters","Degree")
   bt <- PaintBoxPlot(hm_all_exporters_weight,"Exporters","Normalized strength")
   dir.create("../figures/densities/", showWarnings = FALSE)
-  fsal <- paste0("../figures/densities/Density_DegStr_",year,"_",fstring,".png")
+  fsal <- paste0("../figures/densities/Density_DegStr_",year,"_",fstring,HOstr,".png")
   ppi <- 600
-  png(fsal, width=12*ppi, height=6*ppi, res=ppi)
+  png(fsal, width=10*ppi, height=8*ppi, res=ppi)
   grid.arrange(q,r,s,t, ncol=2, nrow=2,top=year )
   dev.off()
-  fsal2 <- paste0("../figures/densities/Boxplot_DegStr_",year,"_",fstring,".png")
+  fsal2 <- paste0("../figures/densities/Boxplot_DegStr_",year,"_",fstring,HOstr,".png")
   ppi <- 600
-  png(fsal2, width=12*ppi, height=6*ppi, res=ppi)
-  grid.arrange(bq,br,bs,bt, ncol=2, nrow=2,top=year )
+  png(fsal2, width=10*ppi, height=8*ppi, res=ppi)
+  grid.arrange(bq,br,bs,bt, ncol=2, nrow=2 )
   dev.off()
 
   
