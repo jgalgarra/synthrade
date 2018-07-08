@@ -20,7 +20,7 @@ if (is.na(HOriginal)){
 PaintDensPlot <- function(datos,titletext,xlabel)
 {
   p <- ggplot() + geom_density(aes(x= cuenta, color = collection, fill = collection),  alpha = .1,
-                               data=datos, position = "identity", adjust=1.5)+ 
+                               data=datos, position = "identity", adjust=2)+ 
     xlab(paste(year,titletext,xlabel))+ylab("Density\n")#+
     #ggtitle(titletext)
     if (xlabel == "Degree")

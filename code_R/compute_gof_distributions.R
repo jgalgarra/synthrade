@@ -13,6 +13,14 @@ anyos <- seq(ini_seq,end_seq)
 
 dfbestlillies <- data.frame("Year"=c(),"Experiment"=c())
 dfkolmogorov <- data.frame("Year"=c(),"Experiment"=c(),"Importer"=c(),"Exporter"=c())
+dflillies <- data.frame("Year"=c(),"Experiment"=c(),"Geom_mean"=c(),
+                                                "Synthetic_exporter" = c(),
+                                                "Synthetic_importer" = c(),
+                                                "Empirical_exporter_filtered"=c(),
+                                                "Empirical_importer_filtered"=c(),
+                                                "Empirical_exporter_unfiltered"=c(),
+                                                "Empirical_importer_unfiltered"=c())
+
 
 for (year in anyos){
   
@@ -48,6 +56,21 @@ for (year in anyos){
         maxlillieexp <- plillieexp
         maxlillieimp <- plillieimp
       }
+      ll_filt_exp <- lillie.test(log(hm_filt[hm_filt$type == "EXP",]$cuenta))$p.value
+      ll_filt_imp <- lillie.test(log(hm_filt[hm_filt$type == "IMP",]$cuenta))$p.value
+      hm_unfilt <- hm_unfilt[hm_unfilt$cuenta>0,]
+      ll_unfilt_exp <- lillie.test(log(hm_unfilt[hm_unfilt$type == "EXP",]$cuenta))$p.value
+      ll_unfilt_imp <- lillie.test(log(hm_unfilt[hm_unfilt$type == "IMP",]$cuenta))$p.value
+      
+      
+      dflillies <- rbind(dflillies,data.frame("Year"=year,"Experiment"=i,"Geom_mean"=plillie,
+                                             "Synthetic_exporter" = plillieexp,
+                                             "Synthetic_importer" = plillieimp,
+                                             "Empirical_exporter_filtered"=ll_filt_exp,
+                                             "Empirical_importer_filtered"=ll_filt_imp,
+                                             "Empirical_exporter_unfiltered"=ll_unfilt_exp,
+                                             "Empirical_importer_unfiltered"=ll_unfilt_imp))
+      
       hm_filt_exp <- hm_filt[hm_filt$type == "EXP",]$cuenta
       hm_filt_imp <- hm_filt[hm_filt$type == "IMP",]$cuenta
       
@@ -62,13 +85,9 @@ for (year in anyos){
                                                      "Importer"=ks_imp_pvalue,
                                                      "Exporter"=ks_exp_pvalue))
     }
-    ll_filt_exp <- lillie.test(log(hm_filt[hm_filt$type == "EXP",]$cuenta))$p.value
-    ll_filt_imp <- lillie.test(log(hm_filt[hm_filt$type == "IMP",]$cuenta))$p.value
-    hm_unfilt <- hm_unfilt[hm_unfilt$cuenta>0,]
-    ll_unfilt_exp <- lillie.test(log(hm_unfilt[hm_unfilt$type == "EXP",]$cuenta))$p.value
-    ll_unfilt_imp <- lillie.test(log(hm_unfilt[hm_unfilt$type == "IMP",]$cuenta))$p.value
     print(paste("Year",year,"Experiment",poslilliescore))
-    dfbestlillies <- rbind(dfbestlillies,data.frame("Year"=year,"Experiment"=poslilliescore,"Geom_mean"=sqrt(plillie),
+    dfbestlillies <- rbind(dfbestlillies,data.frame("Year"=year,"Experiment"=poslilliescore,
+                                                    "Geom_mean"=sqrt(maxlillieexp*maxlillieimp),
                                                     "Synthetic_exporter" = maxlillieexp,
                                                     "Synthetic_importer" = maxlillieimp,
                                                     "Empirical_exporter_filtered"=ll_filt_exp,
@@ -80,6 +99,7 @@ for (year in anyos){
     else
       write.table(dfbestlillies,"../results/BestLilliesUnfiltered.txt",sep="\t",row.names = FALSE)
     write.table(dfkolmogorov,"../results/KSTEST.txt",sep="\t",row.names = FALSE)
+    write.table(dflillies,"../results/Lillies.txt",sep="\t",row.names = FALSE)
   }
 }
 
