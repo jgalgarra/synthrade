@@ -18,6 +18,7 @@ for (i in data_files)
                                 "nexp"=sum(rowSums(raw_data)>0),"nimp"=sum(colSums(raw_data)>0),
                                 "connectance" = nlinks/max_possible_links))
 }
+
 plot(nldf$year,nldf$connectance)
 plot(nldf$year,nldf$links)
 print(paste("Average connectnce",mean(nldf$connectance)))

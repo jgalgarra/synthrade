@@ -6,8 +6,9 @@ PaintKS <- function(series,fillcol,title)
 {
   r <- ggplot(data=series,aes(Year,p.value)) +
     #geom_point( color=fillcol,size=1.5,shape=21)+
-    geom_boxplot(aes(group=Year))+
+    geom_boxplot(aes(group=Year),fill=fillcol)+
     geom_hline(aes(yintercept=0.1), colour="green", linetype="dashed", alpha = 0.8, size = 1)+
+    ggtitle(title)+
     theme_bw()
   print(r)
 }
@@ -15,3 +16,5 @@ PaintKS <- function(series,fillcol,title)
 KSdata <- read.table("../results/KSTEST.txt",header=TRUE);
 Exdata <- data.frame("Year" = KSdata$Year, "p.value" = KSdata$Exporter)
 PaintKS(Exdata,"blue","Exporter")
+Impdata <- data.frame("Year" = KSdata$Year, "p.value" = KSdata$Importer)
+PaintKS(Impdata,"orange","Importer")

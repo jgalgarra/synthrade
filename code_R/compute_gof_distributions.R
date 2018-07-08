@@ -12,7 +12,7 @@ source("parse_command_line_args.R")
 anyos <- seq(ini_seq,end_seq)
 
 dfbestlillies <- data.frame("Year"=c(),"Experiment"=c())
-dfkolmogorov <- data.frame("Year"=c(),"Experiment"=c(),"Importer"=c(),"Exporter"=c())
+dfkolmogorov <- data.frame("Year"=c(),"Experiment"=c(),"Importer_W"=c(),"Exporter_W"=c())
 dflillies <- data.frame("Year"=c(),"Experiment"=c(),"Geom_mean"=c(),
                                                 "Synthetic_exporter" = c(),
                                                 "Synthetic_importer" = c(),
@@ -44,7 +44,6 @@ for (year in anyos){
     for (i in seq(1,length(experiment_files))){
       other_sim_matrix <- read_and_remove_zeroes(experiment_files[i])
       other_hm_sim <- crea_lista_heatmap(MPack(other_sim_matrix,normalize = TRUE))
-      
       hm_sim_exp <- other_hm_sim[other_hm_sim$type == "EXP",]$cuenta
       hm_sim_imp <- other_hm_sim[other_hm_sim$type == "IMP",]$cuenta
       plillieexp <- lillie.test(log(hm_sim_exp))$p.value
@@ -82,8 +81,8 @@ for (year in anyos){
       w <- log(hm_filt_exp)
       ks_exp_pvalue <- ks.test(v, w)$p.value
       dfkolmogorov <- rbind(dfkolmogorov, data.frame("Year"=year,"Experiment"=i,
-                                                     "Importer"=ks_imp_pvalue,
-                                                     "Exporter"=ks_exp_pvalue))
+                                                     "Importer_W"=ks_imp_pvalue,
+                                                     "Exporter_W"=ks_exp_pvalue))
     }
     print(paste("Year",year,"Experiment",poslilliescore))
     dfbestlillies <- rbind(dfbestlillies,data.frame("Year"=year,"Experiment"=poslilliescore,
