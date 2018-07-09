@@ -4,9 +4,6 @@ library("igraph")
 library("ggplot2")
 source("parse_command_line_args.R")
 
-ini_seq <- 1983
-end_seq <- 1983
-
 lread_network <- function(namenetwork, guild_astr = "pl", guild_bstr = "pol", directory="")
 {
   # Reading species names

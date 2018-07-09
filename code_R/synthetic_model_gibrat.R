@@ -12,7 +12,7 @@ ReadMatrix <- function(year){
   return(clean_matrix)
 }
 
-PrefAttachment <- function(vecprob,lvec)
+NodeAttachment <- function(vecprob,lvec)
 {
   listanodes = c()
   for (i in 1:lvec){
@@ -82,14 +82,17 @@ SynthMatrix <- function(matrixemp, year){
   morenewnodes <- TRUE
   cuenta_antciclo <- 0
   tf <- 0
+  sim_step <- 0
   
   while ((morenewnodes)|| (cuenta_links < numlinks))
   {
+    sim_step <- sim_step + 1
     if ((!morenewnodes) && (tf == 0)){
       tf <- cuenta_links
       print(paste("tf time",tf,100*cuenta_links/numlinks))
+      dir.create("../results", showWarnings = FALSE)
       con <- file("../results/symlog.txt", "a")
-      cat(paste0("FT;",lyear,";",nexper,";",cuenta_links,";",numlinks,";",cuenta_token,"\n"), file=con)
+      cat(paste0("FT;",lyear,";",nexper,";",sim_step,";",cuenta_token,";",cuenta_links,";",numlinks,"\n"), file=con)
       close(con)
       # Write probability matrix at that instant
       dir.create("../results/probs", showWarnings = FALSE)
@@ -113,7 +116,7 @@ SynthMatrix <- function(matrixemp, year){
       {
         linkstoI <- c()
         while (length(linkstoI) == 0)
-          linkstoI <- PrefAttachment(Pr_I,imp_max)
+          linkstoI <- NodeAttachment(Pr_I,imp_max)
         for (i in linkstoI)
           if ((cuenta_links < numlinks) && (exp_max < n_exp)){
             exp_max <- exp_max + 1
@@ -129,7 +132,7 @@ SynthMatrix <- function(matrixemp, year){
       {
         linkstoE <- c()
         while (length(linkstoE) == 0)
-          linkstoE <- PrefAttachment(Pr_E,exp_max)
+          linkstoE <- NodeAttachment(Pr_E,exp_max)
         for (i in linkstoE)
           if ((cuenta_links < numlinks) && (imp_max < n_imp)){
             imp_max <- imp_max + 1
@@ -169,7 +172,7 @@ SynthMatrix <- function(matrixemp, year){
   write.table(prob_new_links,paste0("../results/probs/PR_TT_RedAdyCom",lyear,filtered_string,"_W_",nexper,".txt"),
               row.names = FALSE, col.names = FALSE, sep = "\t")
   con <- file("../results/symlog.txt", "a")
-  cat(paste0("TT;",lyear,";",nexper,";",cuenta_links,";",numlinks,";",cuenta_token,"\n"), file=con)
+  cat(paste0("TT;",lyear,";",nexper,";",sim_step,";",cuenta_token,";",cuenta_links,";",numlinks,"\n"), file=con)
   close(con)
   return(msynth)
 }
