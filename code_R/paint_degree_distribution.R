@@ -1,8 +1,11 @@
-library(grid)
-library(gridExtra)
-library(igraph)
-library(ggplot2)
+library("grid")
+library("gridExtra")
+library("igraph")
+library("ggplot2")
+source("parse_command_line_args.R")
 
+ini_seq <- 1983
+end_seq <- 1983
 
 lread_network <- function(namenetwork, guild_astr = "pl", guild_bstr = "pol", directory="")
 {
@@ -46,88 +49,87 @@ gen_deg_distribution <- function(red,series, colors, seq_breaks = c(1,5,10,20,50
   
   gen_deg_data_frame <- function(input_matrix,tipo,tamanyo,nalpha,serie)
   {
-  
-  # Remove all zeroes columns and rows
-  dfint <- as.data.frame(input_matrix)
-  write.csv(dfint,"dfcab.csv")
-  dr <- lread_network("dfcab.csv", guild_astr = "Exporter", guild_bstr = "Importer", directory="")
-  grafo <- as.undirected(dr[["graph"]])
-  ddegree <- igraph::degree(grafo,mode = c("out"), loops = TRUE, normalized = FALSE)
-  dfdeg <- data.frame("degree" = as.numeric(ddegree))
-  dfdeg$type <- "Exporter"
-  dfdeg$tamanyo <- tamanyo
-  dfdeg$nalpha <- nalpha
-  dfdeg$nodename <- names(ddegree)
-  dfdeg[grepl("Importer",dfdeg$nodename),]$type <- as.character("Importer")
-  dfdeg <- dfdeg[order(dfdeg$degree),]
-  for (k in 1:nrow(dfdeg)){
-    if (dfdeg$type[k] == "Importer")
-    {
-      indice <- as.numeric(strsplit(dfdeg$nodename[k],"Importer")[[1]][2])
-      dfdeg$weight[k] <- sum(dr$m[indice,])
+    
+    # Remove all zeroes columns and rows
+    dfint <- as.data.frame(input_matrix)
+    write.csv(dfint,"dfcab.csv")
+    dr <- lread_network("dfcab.csv", guild_astr = "Exporter", guild_bstr = "Importer", directory="")
+    grafo <- as.undirected(dr[["graph"]])
+    ddegree <- igraph::degree(grafo,mode = c("out"), loops = TRUE, normalized = FALSE)
+    dfdeg <- data.frame("degree" = as.numeric(ddegree))
+    dfdeg$type <- "Exporter"
+    dfdeg$tamanyo <- tamanyo
+    dfdeg$nalpha <- nalpha
+    dfdeg$nodename <- names(ddegree)
+    dfdeg[grepl("Importer",dfdeg$nodename),]$type <- as.character("Importer")
+    dfdeg <- dfdeg[order(dfdeg$degree),]
+    dfdeg$weight <- 0
+    for (k in 1:nrow(dfdeg)){
+      if (dfdeg$type[k] == "Importer")
+      {
+        indice <- as.numeric(strsplit(dfdeg$nodename[k],"Importer")[[1]][2])
+        dfdeg$weight[k] <- sum(as.numeric(dr$m[indice,]))
+      }
+      else
+      {
+        indice <- as.numeric(strsplit(dfdeg$nodename[k],"Exporter")[[1]][2])
+        dfdeg$weight[k] <- sum(as.numeric(dr$m[,indice]))
+      }
     }
-    else
-    {
-      indice <- as.numeric(strsplit(dfdeg$nodename[k],"Exporter")[[1]][2])
-      dfdeg$weight[k] <- sum(dr$m[,indice])
+    dfdeg$weight <- dfdeg$weight/sum(as.numeric(dfdeg$weight))
+    ddeg_exporter <- dfdeg[dfdeg$type == "Exporter",]
+    occur <- ddeg_exporter$degree
+    woccur <- ddeg_exporter$weight
+    woccur <- woccur[order(woccur)]
+    alpha_level = 0.25
+    p = occur/sum(occur)
+    dy = rev(cumsum(rev(p)))
+    dx = occur
+    wp = woccur/sum(woccur)
+    wdy = rev(cumsum(rev(wp)))
+    wdx = woccur
+    type = ddeg_exporter$type
+    tamanyo = ddeg_exporter$tamanyo
+    tamanyo = 1.2
+    nalpha = ddeg_exporter$nalpha
+    auxdf_exporter <- data.frame(dx,dy,type,tamanyo,nalpha)
+    auxdfw_exporter <- data.frame(wdx,wdy,type,tamanyo,nalpha)
+    
+    ddeg_importer <- dfdeg[dfdeg$type == "Importer",]
+    occur <- ddeg_importer$degree
+    
+    woccur <- ddeg_importer$weight
+    
+    woccur <- woccur[order(woccur)]
+    alpha_level = 0.5
+    p = occur/sum(occur)
+    dy = rev(cumsum(rev(p)))
+    dx = occur
+    wp = woccur/sum(woccur)
+    wdy = rev(cumsum(rev(wp)))
+    wdx = woccur
+    type = ddeg_importer$type
+    tamanyo = ddeg_importer$tamanyo
+    tamanyo = 1.2
+    nalpha = ddeg_importer$nalpha
+    auxdf_importer <- data.frame(dx,dy,type,tamanyo,nalpha)
+    auxdfw_importer <- data.frame(wdx,wdy,type,tamanyo,nalpha)
+    if (serie == "Exporter"){
+      auxdf <- auxdf_exporter
+      auxdfw <- auxdfw_exporter
     }
-  }
-  dfdeg$weight <- dfdeg$weight/sum(dfdeg$weight)
-  ddeg_exporter <- dfdeg[dfdeg$type == "Exporter",]
-  occur <- ddeg_exporter$degree
-
-  woccur <- ddeg_exporter$weight
-  woccur <- woccur[order(woccur)]
-
-  alpha_level = 0.25
-  p = occur/sum(occur)
-  dy = rev(cumsum(rev(p)))
-  dx = occur
-  wp = woccur/sum(woccur)
-  wdy = rev(cumsum(rev(wp)))
-  wdx = woccur
-  type = ddeg_exporter$type
-  tamanyo = ddeg_exporter$tamanyo
-  tamanyo = 1.2
-  nalpha = ddeg_exporter$nalpha
-  auxdf_exporter <- data.frame(dx,dy,type,tamanyo,nalpha)
-  auxdfw_exporter <- data.frame(wdx,wdy,type,tamanyo,nalpha)
-
-  ddeg_importer <- dfdeg[dfdeg$type == "Importer",]
-  occur <- ddeg_importer$degree
-
-  woccur <- ddeg_importer$weight
-
-  woccur <- woccur[order(woccur)]
-  alpha_level = 0.5
-  p = occur/sum(occur)
-  dy = rev(cumsum(rev(p)))
-  dx = occur
-  wp = woccur/sum(woccur)
-  wdy = rev(cumsum(rev(wp)))
-  wdx = woccur
-  type = ddeg_importer$type
-  tamanyo = ddeg_importer$tamanyo
-  tamanyo = 1.2
-  nalpha = ddeg_importer$nalpha
-  auxdf_importer <- data.frame(dx,dy,type,tamanyo,nalpha)
-  auxdfw_importer <- data.frame(wdx,wdy,type,tamanyo,nalpha)
-  if (serie == "Exporter"){
-    auxdf <- auxdf_exporter
-    auxdfw <- auxdfw_exporter
-  }
-  if (serie == "Importer"){
-    auxdf <- auxdf_importer
-    auxdfw <- auxdfw_importer
-  }
-  if (serie == "Both"){
-    auxdf <- rbind(auxdf_exporter, auxdf_importer)
-    auxdfw <- rbind(auxdfw_exporter, auxdfw_importer)
-  }
-  auxdf$method <- tipo
-  auxdfw$method <- tipo
-  calc_values <- list("auxdf" = auxdf, "auxdfw" = auxdfw)
-  return(calc_values)
+    if (serie == "Importer"){
+      auxdf <- auxdf_importer
+      auxdfw <- auxdfw_importer
+    }
+    if (serie == "Both"){
+      auxdf <- rbind(auxdf_exporter, auxdf_importer)
+      auxdfw <- rbind(auxdfw_exporter, auxdfw_importer)
+    }
+    auxdf$method <- tipo
+    auxdfw$method <- tipo
+    calc_values <- list("auxdf" = auxdf, "auxdfw" = auxdfw)
+    return(calc_values)
   }
   dred <- gsub(TFstring,"",red)
   emp_matrix <- read.table(paste0("../data/",dred,".txt"),sep="\t")
@@ -147,7 +149,7 @@ gen_deg_distribution <- function(red,series, colors, seq_breaks = c(1,5,10,20,50
     auxdf <- rbind(auxdf,auxdf_sim[["auxdf"]])
     auxdfw <- rbind(auxdfw,auxdf_sim[["auxdfw"]])
   }
-
+  
   auxdf <- auxdf[auxdf$dx > 0,]
   dist_deg <- ggplot(data = auxdf, aes(x = dx, y = dy)) + 
     geom_point(aes(alpha = nalpha,shape=method,size=tamanyo,stroke=tamanyo),color=colors) +
@@ -196,7 +198,7 @@ if (languageEl == "EN"){
   cumulativetxt = "Distribuci?n acumulada de probabilidad"
   xscale = "escala degree"
 }
-source("parse_command_line_args.R")
+
 
 # Third command argument allows to plot densities at build up time
 TFstring <- as.character(args[3])
