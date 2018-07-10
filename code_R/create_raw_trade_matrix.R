@@ -24,6 +24,8 @@ ISO_CC <- c("AFG","ALB","DZA","ASM","AND","AGO","AIA","ATA","ATA","ARG",
             "URY","VIR","USA","USA","UZB","VUT","VEN","VNM","WLF","ESH",
             "YEM","ZMB","ZWE")
 
+new1984 <- toupper(c("aia","and","ant","atg","brn","btn","cck","cok","com","cpv","cxr","cym","dma","esh","fro","grd","iot","lca","mdv","msr","mtq","nfk","niu","nru","pci","pcn","pyf","reu","slb","stp","tca","tkl
+tls","ton","tuv","vct","vgb","vut","wlf","yem"))
 
 
 files <- seq(1974,2014)
@@ -40,7 +42,9 @@ for (nfile in files)
   raw_data$or <- toupper(raw_data$or)
   raw_data$dest <- toupper(raw_data$dest)
   clean_data <- raw_data[is.element(raw_data$or,ISO_CC),]
-  clean_data <- clean_data[is.element(clean_data$dest,ISO_CC),]
+  clean_data <- clean_data[is.element(clean_data$dest,ISO_CC),]    # remove aggregations
+  clean_data <- clean_data[!is.element(clean_data$dest,new1984),]  # remove set of small islands added in 1984
+  clean_data <- clean_data[!is.element(clean_data$or,new1984),]
   countries1 <- unique(clean_data$or)
   countries2 <- unique(clean_data$dest)
   if (length(countries1) > length(countries2))

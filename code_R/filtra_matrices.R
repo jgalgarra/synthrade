@@ -1,8 +1,8 @@
-get_data <- function(file_name,filter=FALSE, minconnectance = 0.1)
+get_data <- function(file_name,filter=FALSE, minconnectance = 0.0001)
 {
 
 connectance <- 0
-wiperatio <- 0.002
+wiperatio <- 0.001
 while (connectance < minconnectance)
 {
   r_df <- read.table(paste0("../data/",file_name,".txt"),sep="\t")
@@ -51,7 +51,7 @@ for (nf in files){
   # print("Unfiltered")
   # get_data(nf)
   print("Filtered")
-  r <- get_data(nf, filter = TRUE, minconnectance = 0.23)
+  r <- get_data(nf, filter = TRUE, minconnectance = 0.0001)    
   r <- r[,colSums(r)>0]
   r <- r[rowSums(r)>0,]
   write.table(r,paste0("../data/",nf,"_FILT.txt"),row.names = FALSE,col.names = FALSE,sep="\t")
