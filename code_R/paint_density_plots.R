@@ -89,7 +89,7 @@ source("parse_command_line_args.R")
 
 anyos <- seq(ini_seq,end_seq)
 
-sbestlillies <- FALSE       # If set to TRUE searches the best GOF in BestLillies.txt
+sbestlillies <- TRUE       # If set to TRUE searches the best GOF in BestLillies.txt
                              # else chooses experiment number 1
 
 if (nchar(filtered_string)>1){

@@ -78,7 +78,7 @@ gen_deg_distribution <- function(red,series, colors, seq_breaks = c(1,5,10,20,50
     occur <- ddeg_exporter$degree
     woccur <- ddeg_exporter$weight
     woccur <- woccur[order(woccur)]
-    alpha_level = 0.25
+    alpha_level = 0.8
     p = occur/sum(occur)
     dy = rev(cumsum(rev(p)))
     dx = occur

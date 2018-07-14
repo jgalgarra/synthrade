@@ -19,8 +19,8 @@ for (i in data_files)
                                 "connectance" = nlinks/max_possible_links))
 }
 
-plot(nldf$year,nldf$connectance)
-plot(nldf$year,nldf$links)
+plot(nldf$year,nldf$connectance,main="Connectance")
+plot(nldf$year,nldf$links,main="Number of Links")
 print(paste("Average connectnce",mean(nldf$connectance)))
 
 write.table(nldf,"../results/NUMLINKS.txt",row.names = FALSE)
