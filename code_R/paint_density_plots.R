@@ -89,22 +89,22 @@ source("parse_command_line_args.R")
 
 anyos <- seq(ini_seq,end_seq)
 
-sbestlillies <- TRUE       # If set to TRUE searches the best GOF in BestLillies.txt
+sbestKS <- TRUE       # If set to TRUE searches the best GOF in BestKS.txt
                              # else chooses experiment number 1
 
 if (nchar(filtered_string)>1){
-  if (sbestlillies)
-    bestlillies <- read.table("../results/BestLillies.txt",header=TRUE)
+  if (sbestKS)
+    bestKS <- read.table("../results/BestKS.txt",header=TRUE)
   fstring <- "FILT"
 } else {
-  if (sbestlillies)
-    bestlillies <- read.table("../results/BestLilliesUnfiltered.txt",header=TRUE)
+  if (sbestKS)
+    bestKS <- read.table("../results/BestKSUnfiltered.txt",header=TRUE)
   fstring <- "UNFILT"
 }
 
 for (year in anyos){
-  if (sbestlillies)
-    posbest <- bestlillies[bestlillies$Year==year,]$Experiment
+  if (sbestKS)
+    posbest <- bestKS[bestKS$Year==year,]$Experiment
   else
     posbest <- 1
   file_name <- paste0("RedAdyCom",year,filtered_string)

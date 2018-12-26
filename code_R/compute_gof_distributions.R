@@ -12,7 +12,8 @@ source("parse_command_line_args.R")
 anyos <- seq(ini_seq,end_seq)
 
 dfbestlillies <- data.frame("Year"=c(),"Experiment"=c())
-dfkolmogorov <- data.frame("Year"=c(),"Experiment"=c(),"Importer_W"=c(),"Exporter_W"=c())
+dfbestkolmogorov <- data.frame("Year"=c(),"Experiment"=c(),"geom_mean"=c(),"KS_import"=c(),"KS_export"=c())
+dfkolmogorov <- data.frame("Year"=c(),"Experiment"=c(),"KSimport"=c(),"KSexport"=c())
 dflillies <- data.frame("Year"=c(),"Experiment"=c(),"Geom_mean"=c(),
                                                 "Synthetic_exporter" = c(),
                                                 "Synthetic_importer" = c(),
@@ -81,8 +82,8 @@ for (year in anyos){
       w <- log(hm_filt_exp)
       ks_exp_pvalue <- ks.test(v, w)$p.value
       dfkolmogorov <- rbind(dfkolmogorov, data.frame("Year"=year,"Experiment"=i,
-                                                     "Importer_W"=ks_imp_pvalue,
-                                                     "Exporter_W"=ks_exp_pvalue))
+                                                     "KSimport"=ks_imp_pvalue,
+                                                     "KSexport"=ks_exp_pvalue))
     }
     print(paste("Year",year,"Experiment",poslilliescore))
     dfbestlillies <- rbind(dfbestlillies,data.frame("Year"=year,"Experiment"=poslilliescore,
@@ -100,5 +101,20 @@ for (year in anyos){
     write.table(dfkolmogorov,"../results/KSTEST.txt",sep="\t",row.names = FALSE)
     write.table(dflillies,"../results/Lillies.txt",sep="\t",row.names = FALSE)
   }
-}
 
+}
+# Find best KS test results
+for (year in anyos){
+  dyear <- dfkolmogorov[dfkolmogorov$Year == year,]
+  dyear$geom_mean <- sqrt(dyear$KSimport*dyear$KSexport)
+  posbest <- which(dyear$geom_mean == max(dyear$geom_mean))[1]
+  dfbestkolmogorov <- rbind(dfbestkolmogorov,data.frame("Year" = year,"Experiment" = posbest,
+                                                        "geom_mean"= dyear$geom_mean[posbest],
+                                                        "KS_import" = dyear$KSimport[posbest],
+                                                        "KS_export"= dyear$KSexport[posbest]
+                                                        ))
+}
+if (fcond == "YES"){
+  write.table(dfbestkolmogorov,"../results/BestKS.txt",sep="\t",row.names = FALSE)
+} else
+  write.table(dfbestkolmogorov,"../results/BestKSUnfiltered.txt",sep="\t",row.names = FALSE)
