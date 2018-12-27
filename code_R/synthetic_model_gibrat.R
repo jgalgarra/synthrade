@@ -20,7 +20,6 @@ NodeAttachment <- function(vecprob,lvec)
       if (rbinom(1,1,vecprob[i])>0)
         listanodes <- append(listanodes,i)
   }
-  #node = sample(seq(1,lvec),1,vecprob[1:lvec],replace=FALSE)
   return(listanodes)
 }
 
@@ -58,11 +57,8 @@ SynthMatrix <- function(matrixemp, year){
   msynth[3,1] <- min_token
   msynth[3,2] <- min_token
   cuenta_token <- 6
-  # lambda_imp = (n_imp^2-n_imp)/(2*numlinks)
-  # lambda_exp = (n_exp^2-n_exp)/(2*numlinks)
   cuenta_links <- sum(msynth > 0)
   min_links <- cuenta_links
-  #eff_links <- max(n_exp*(n_exp-1)/(2*seed_size),n_imp*(n_imp-1)/(2*seed_size))
   texp <- n_exp*(n_exp-seed_size)/(2*seed_size)
   timp <- n_imp*(n_imp-seed_size)/(2*seed_size)
   
@@ -70,10 +66,6 @@ SynthMatrix <- function(matrixemp, year){
   
   lambda_exp = n_exp*(n_exp-seed_size)/(2*tf)
   lambda_imp = n_imp*(n_imp-seed_size)/(2*tf)
-
-#  lambda_imp <- seed_size
-#  lambda_exp <- seed_size
-  
   print(paste("lambda imp:",lambda_imp,"lambda_exp",lambda_exp))
   Pr_E <- rowSums(msynth)/sum(msynth)
   Pr_I <- colSums(msynth)/sum(msynth)
@@ -83,6 +75,10 @@ SynthMatrix <- function(matrixemp, year){
   cuenta_antciclo <- 0
   tf <- 0
   sim_step <- 0
+  dir.create("../results/numlinks", showWarnings = FALSE)
+  fich_links <- paste0("../results/numlinks/numlinks_",lyear,filtered_string,"_W_",nexper,".txt")
+  if (cuenta_links)
+    unlink(fich_links)
   
   while ((morenewnodes)|| (cuenta_links < numlinks))
   {
@@ -90,10 +86,11 @@ SynthMatrix <- function(matrixemp, year){
     if ((!morenewnodes) && (tf == 0)){
       tf <- cuenta_links
       print(paste("tf time",tf,100*cuenta_links/numlinks))
-      dir.create("../results", showWarnings = FALSE)
-      con <- file("../results/symlog.txt", "a")
-      cat(paste0("FT;",lyear,";",nexper,";",sim_step,";",cuenta_token,";",cuenta_links,";",numlinks,"\n"), file=con)
-      close(con)
+      if (append_log){
+        con <- file("../results/symlog.txt", "a")
+        cat(paste0("FT;",lyear,";",nexper,";",sim_step,";",cuenta_token,";",cuenta_links,";",numlinks,"\n"), file=con)
+        close(con)
+      }
       # Write probability matrix at that instant
       dir.create("../results/probs", showWarnings = FALSE)
       write.table(prob_new_links,paste0("../results/probs/PR_TF_RedAdyCom",lyear,filtered_string,"_W_",nexper,".txt"),
@@ -104,12 +101,19 @@ SynthMatrix <- function(matrixemp, year){
                   row.names = FALSE, col.names = FALSE, sep = "\t")
     }
     new_node <- FALSE
+    # Write number of links file. 
+    if ((((sim_step < 2000) & (sim_step %% 50 == 0)) | (sim_step %% 500 == 0)) & (write_num_links)){
+        con <- file(fich_links, "a")
+        cat(paste0(sim_step,";",cuenta_links,";",cuenta_token,"\n"), file=con)
+        close(con)
+    }
     if (cuenta_antciclo != cuenta_links){
       cuenta_antciclo <- cuenta_links
-      if (cuenta_links %% 1000 == 0) 
+      if (cuenta_links %% 1000 == 0){
         print(paste(cuenta_links,"links out of",numlinks,
                     "exporters",exp_max,"out of",n_exp,"importers",
                     imp_max,"out of",n_imp,"tokens",cuenta_token))
+        }
     }
     if (exp_max < n_exp)
       if (rbinom(1,1,min(1,lambda_exp/exp_max))>0)
@@ -136,7 +140,7 @@ SynthMatrix <- function(matrixemp, year){
         for (i in linkstoE)
           if ((cuenta_links < numlinks) && (imp_max < n_imp)){
             imp_max <- imp_max + 1
-            msynth[i,imp_max] <- 1#/length(linkstoE)
+            msynth[i,imp_max] <- 1
             cuenta_token <- cuenta_token + 1
             cuenta_links <-  cuenta_links + 1
             new_node <- TRUE
@@ -156,7 +160,7 @@ SynthMatrix <- function(matrixemp, year){
         if (cuenta_links < numlinks) {
           rowl <- update_links[m,1]
           coll <- update_links[m,2]
-          msynth[rowl,coll] <- msynth[rowl,coll] + 1#/lupdate
+          msynth[rowl,coll] <- msynth[rowl,coll] + 1
           cuenta_token <- cuenta_token + 1
         }
     }
@@ -171,9 +175,11 @@ SynthMatrix <- function(matrixemp, year){
   # Write probability matrix at that instant
   write.table(prob_new_links,paste0("../results/probs/PR_TT_RedAdyCom",lyear,filtered_string,"_W_",nexper,".txt"),
               row.names = FALSE, col.names = FALSE, sep = "\t")
-  con <- file("../results/symlog.txt", "a")
-  cat(paste0("TT;",lyear,";",nexper,";",sim_step,";",cuenta_token,";",cuenta_links,";",numlinks,"\n"), file=con)
-  close(con)
+  if (append_log){
+    con <- file("../results/symlog.txt", "a")
+    cat(paste0("TT;",lyear,";",nexper,";",sim_step,";",cuenta_token,";",cuenta_links,";",numlinks,"\n"), file=con)
+    close(con)
+  }
   return(msynth)
 }
 
@@ -189,6 +195,7 @@ if (length(args)==0){
 }
 
 years <- seq(ini_seq,end_seq)
+
 for (lyear in years)
   for (nexper in seq(1,maxexper)){
     print(paste(lyear,"Experiment",nexper))
