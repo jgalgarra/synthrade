@@ -86,7 +86,7 @@ SynthMatrix <- function(matrixemp, year){
     sim_step <- sim_step + 1
     if ((!morenewnodes) && (tf == 0)){
       tf <- cuenta_links
-      print(paste("tf time",tf,100*cuenta_links/numlinks))
+      print(paste("Build up time",sim_step,"numlinks",tf,100*cuenta_links/numlinks))
       if (append_log){
         con <- file("../results/symlog.txt", "a")
         cat(paste0("FT;",lyear,";",nexper,";",sim_step,";",cuenta_token,";",cuenta_links,";",numlinks,"\n"), file=con)
@@ -104,11 +104,15 @@ SynthMatrix <- function(matrixemp, year){
     new_node <- FALSE
     # Write number of links file. 
     if ((((sim_step < 2000) & (sim_step %% 50 == 0)) | (sim_step %% 500 == 0)) & (write_num_links)){
-        fn <- fivenum(prob_new_links)
-        ultprob <- min(prob_new_links[which(msynth==min(msynth[msynth>0]),arr.ind=TRUE)])
-        prob_llenos <- sum( prob_new_links[which(msynth>0,arr.ind=TRUE)])
+        fn <- fivenum(log10(prob_new_links[prob_new_links>0]))
+        ultprob <- min(log10(prob_new_links[which(msynth==min(msynth[msynth>0]),arr.ind=TRUE)]))
+        prob_vacios <- log10(1-sum(prob_new_links[which(msynth>0,arr.ind=TRUE)]))
+        varsigma <- 10**(sd(log10(prob_new_links)))
+        meanprob <- mean(log10(prob_new_links))
         con <- file(fich_links, "a")
-        cat(paste0(sim_step,";",cuenta_links,";",cuenta_token,";",fn[1],";",fn[2],";",fn[3],";",fn[4],";",fn[5],";",ultprob,";",prob_llenos,"\n"), file=con)
+        cat(paste0(sim_step,";",cuenta_links,";",cuenta_token,";",
+                   fn[1],";",fn[2],";",fn[3],";",fn[4],";",fn[5],";",
+                   ultprob,";",prob_vacios,";",meanprob,";",varsigma,"\n"), file=con)
         close(con)
     }
     if (cuenta_antciclo != cuenta_links){
@@ -199,9 +203,7 @@ if (length(args)==0){
 }
 
 years <- seq(ini_seq,end_seq)
-
-    years <- seq(1962,1962)
-
+  years <- seq(2000,2000)
 for (lyear in years)
   for (nexper in seq(1,maxexper)){
     print(paste(lyear,"Experiment",nexper))
