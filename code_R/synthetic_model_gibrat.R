@@ -75,6 +75,7 @@ SynthMatrix <- function(matrixemp, year){
   cuenta_antciclo <- 0
   tf <- 0
   sim_step <- 0
+  dir.create("../results", showWarnings = FALSE)
   dir.create("../results/numlinks", showWarnings = FALSE)
   fich_links <- paste0("../results/numlinks/numlinks_",lyear,filtered_string,"_W_",nexper,".txt")
   if (cuenta_links)
@@ -103,8 +104,11 @@ SynthMatrix <- function(matrixemp, year){
     new_node <- FALSE
     # Write number of links file. 
     if ((((sim_step < 2000) & (sim_step %% 50 == 0)) | (sim_step %% 500 == 0)) & (write_num_links)){
+        fn <- fivenum(prob_new_links)
+        ultprob <- min(prob_new_links[which(msynth==min(msynth[msynth>0]),arr.ind=TRUE)])
+        prob_llenos <- sum( prob_new_links[which(msynth>0,arr.ind=TRUE)])
         con <- file(fich_links, "a")
-        cat(paste0(sim_step,";",cuenta_links,";",cuenta_token,"\n"), file=con)
+        cat(paste0(sim_step,";",cuenta_links,";",cuenta_token,";",fn[1],";",fn[2],";",fn[3],";",fn[4],";",fn[5],";",ultprob,";",prob_llenos,"\n"), file=con)
         close(con)
     }
     if (cuenta_antciclo != cuenta_links){
@@ -195,6 +199,8 @@ if (length(args)==0){
 }
 
 years <- seq(ini_seq,end_seq)
+
+    years <- seq(1962,1962)
 
 for (lyear in years)
   for (nexper in seq(1,maxexper)){
