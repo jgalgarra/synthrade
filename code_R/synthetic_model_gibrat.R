@@ -203,7 +203,7 @@ if (length(args)==0){
 }
 
 years <- seq(ini_seq,end_seq)
-  years <- seq(2000,2000)
+  years <- seq(1983,1983)
 for (lyear in years)
   for (nexper in seq(1,maxexper)){
     print(paste(lyear,"Experiment",nexper))
