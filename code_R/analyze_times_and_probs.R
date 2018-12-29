@@ -20,6 +20,7 @@ names(datalog) <- c("Instant", "Year", "NumExper", "SimStep", "TokenCount", "Lin
 experiment <- 1
 
 years <- seq(ini_seq,end_seq)
+
 for (year in years){
   logfilt <- datalog[datalog$Year==year & datalog$Instant=="FT" & datalog$NumExper == experiment,]
   ftdata <- logfilt[1,]
@@ -91,7 +92,9 @@ for (year in years){
   q <- ggplot(data=simdata,aes(x=SimStep))+geom_line(aes(y=Links,colour="Links"))+
                                geom_line(aes(y=Tokens/transfrate,colour="Tokens"))+
        scale_colour_manual(values = c("blue", "red"))+ labs(y = "Links",x = "Tokens",colour = "") + 
-       scale_y_continuous(sec.axis = sec_axis(~.*transfrate, name = "Tokens"))+
+       scale_x_continuous(breaks = c(seq(0,(1+(max(EvoDataProb$Step)%/%timebreak))*timebreak,by=timebreak))) +
+       scale_y_continuous(sec.axis = sec_axis(~.*transfrate, name = "Tokens")
+                          )+
           ggtitle(year)+xlab("Simulation Step")+ theme_bw() +
           theme(legend.title = element_blank(),
                 legend.position = c(0.2, 0.95),

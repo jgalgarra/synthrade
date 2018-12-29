@@ -1,5 +1,6 @@
 # Synthetic trade network creation
 
+source("parse_command_line_args.R")
 source("read_filter_condition.R")
 
 
@@ -28,13 +29,16 @@ UpdatableLinks <- function(matrixprob){
   listaedges = c()
   tam = c(nrow(matrixprob),ncol(matrixprob))
   newlinks <- 0
-  while (sum(newlinks) == 0){
+  #while (sum(newlinks) == 0){
     randunif <- runif(tam[1]*tam[2],0,1)
     randunif = matrix(randunif,nrow=tam[1],ncol=tam[2])
     newlinks = randunif < matrixprob
     positions <- which(newlinks !=0, arr.ind = T)
-  }
-  return(positions)
+  #}
+  if (sum(newlinks) == 0)
+    return(c())
+  else
+    return(positions)
 }
 
 SynthMatrix <- function(matrixemp, year){
@@ -163,6 +167,10 @@ SynthMatrix <- function(matrixemp, year){
     }
     else if (cuenta_links > min_links){
       update_links <- UpdatableLinks(prob_new_links)
+      while(length(update_links) == 0) {
+        sim_step = sim_step + 1
+        update_links <- UpdatableLinks(prob_new_links)
+      } 
       lupdate <- (length(update_links)/2)
       for (m in 1:lupdate)
         if (cuenta_links < numlinks) {
@@ -193,8 +201,6 @@ SynthMatrix <- function(matrixemp, year){
 
 args = commandArgs(trailingOnly=TRUE)
 if (length(args)==0){
-  ini_seq <- 1962
-  end_seq <- 1963
   maxexper <- 1
 } else{
   ini_seq <- as.numeric(args[1])
@@ -203,7 +209,7 @@ if (length(args)==0){
 }
 
 years <- seq(ini_seq,end_seq)
-  years <- seq(1983,1983)
+
 for (lyear in years)
   for (nexper in seq(1,maxexper)){
     print(paste(lyear,"Experiment",nexper))
