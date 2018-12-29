@@ -61,7 +61,7 @@ for (year in years){
     timebreak <- 50000
   
   p <- ggplot(data=EvoDataProb,aes(x=Step, y=10**Prob, color=Type))+geom_line(size=0.7)+
-       scale_x_continuous(trans = sqrt_trans(), 
+       scale_x_continuous(trans = sqrt_trans(),
                           breaks = c(50,500,ftdata$SimStep,10000,seq(0,(1+(max(EvoDataProb$Step)%/%timebreak))*timebreak,by=timebreak))) +
        scale_y_continuous(trans = log10_trans(),
                                          breaks = trans_breaks("log10", function(x) 10^x),
@@ -69,8 +69,32 @@ for (year in years){
        ggtitle(year)+xlab("Simulation Step")+ylab("Probability")+
        geom_vline(data=ftdata, aes(xintercept=SimStep),
                linetype="dashed", size=0.7, colour="lightblue")+
-       theme_bw() +  
-       theme(legend.title = element_blank(), 
+       theme_bw() +
+       theme(legend.title = element_blank(),
+          panel.border = element_blank(),
+          axis.line.x = element_line(color="black", size = 0.5),
+          axis.line.y = element_line(color="black", size = 0.5),
+          panel.grid.minor.x = element_blank(),
+          panel.grid.minor.y = element_blank(),
+          legend.text = element_text(size=9, face="bold"),
+          plot.title = element_text(size=12,lineheight=.5, face="bold",hjust = 0.5),
+          axis.text = element_text(size=10),
+          axis.title.x = element_text(face="bold", size=10),
+          axis.title.y  = element_text(face="bold", size=11) )
+
+  dir.create("../figures/probevolution/", showWarnings = FALSE)
+  ppi <- 300
+  png(paste0("../figures/probevolution/",year,"_probevo.png"), width=(8*ppi), height=4*ppi, res=ppi)
+  print(p)
+  dev.off()
+  transfrate <- max(simdata$Tokens/simdata$Links)
+  q <- ggplot(data=simdata,aes(x=SimStep))+geom_line(aes(y=Links,colour="Links"))+
+                               geom_line(aes(y=Tokens/transfrate,colour="Tokens"))+
+       scale_colour_manual(values = c("blue", "red"))+ labs(y = "Links",x = "Tokens",colour = "") + 
+       scale_y_continuous(sec.axis = sec_axis(~.*transfrate, name = "Tokens"))+
+          ggtitle(year)+xlab("Simulation Step")+ theme_bw() +
+          theme(legend.title = element_blank(),
+                legend.position = c(0.2, 0.95),
           panel.border = element_blank(),
           axis.line.x = element_line(color="black", size = 0.5),
           axis.line.y = element_line(color="black", size = 0.5),
@@ -82,9 +106,9 @@ for (year in years){
           axis.title.x = element_text(face="bold", size=10),
           axis.title.y  = element_text(face="bold", size=11) )
   
-  dir.create("../figures/probevolution/", showWarnings = FALSE)
+  dir.create("../figures/linksandtokens/", showWarnings = FALSE)
   ppi <- 300
-  png(paste0("../figures/probevolution/",year,"_probevo.png"), width=(8*ppi), height=4*ppi, res=ppi)
-  print(p)
+  png(paste0("../figures/linksandtokens/",year,"_links_tokens.png"), width=(6*ppi), height=4*ppi, res=ppi)
+  print(q)
   dev.off()
 }
