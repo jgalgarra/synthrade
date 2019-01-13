@@ -164,8 +164,9 @@ SynthMatrix <- function(matrixemp, year){
       Pr_E <- rowSums(msynth)/smat
       Pr_I <- colSums(msynth)/smat
       prob_new_links <- t(Pr_I[1:imp_max] %o% Pr_E[1:exp_max])
+      sim_step <- sim_step + 1    # Modification to avoid throwing a token when there is a new node
     }
-    else if (cuenta_links > min_links){
+    else if (cuenta_links > min_links) {
       update_links <- UpdatableLinks(prob_new_links)
       while(length(update_links) == 0) {
         sim_step = sim_step + 1
