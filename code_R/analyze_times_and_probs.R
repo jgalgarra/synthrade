@@ -26,7 +26,7 @@ for (year in years){
   ftdata <- logfilt[1,]
   file_name <- paste0("numlinks_",year,"_FILT_W_",experiment,".txt")
   simdata <- read.csv(paste0("../results/numlinks/",file_name), header=FALSE, sep=";")
-  names(simdata) <- c("SimStep","Links","Tokens","T5Min","T5Q25","T5Median","T5Q75","T5Max",
+  names(simdata) <- c("SimStep","Links","Tokens","Exporters","Importers","T5Min","T5Q25","T5Median","T5Q75","T5Max",
                       "LastLink","EmptyCells","meanprob","varsigma")
   levplot <- c("Min","Median","Max","LastLink","EmptyCells")
   rowsEvo <- nrow(simdata)*length(levplot)
@@ -63,7 +63,7 @@ for (year in years){
   
   p <- ggplot(data=EvoDataProb,aes(x=Step, y=10**Prob, color=Type))+geom_line(size=0.7)+
        scale_x_continuous(trans = sqrt_trans(),
-                          breaks = c(50,500,ftdata$SimStep,10000,seq(0,(1+(max(EvoDataProb$Step)%/%timebreak))*timebreak,by=timebreak))) +
+                          breaks = c(50,500,ftdata$SimStep,15000,seq(0,(1+(max(EvoDataProb$Step)%/%timebreak))*timebreak,by=timebreak))) +
        scale_y_continuous(trans = log10_trans(),
                                          breaks = trans_breaks("log10", function(x) 10^x),
                                          labels = trans_format("log10", math_format(10^.x)))+
@@ -95,7 +95,8 @@ for (year in years){
        scale_x_continuous(breaks = c(seq(0,(1+(max(EvoDataProb$Step)%/%timebreak))*timebreak,by=timebreak))) +
        scale_y_continuous(sec.axis = sec_axis(~.*transfrate, name = "Tokens")
                           )+
-          ggtitle(year)+xlab("Simulation Step")+ theme_bw() +
+          ggtitle(year)+xlab("Simulation Step")+ theme_bw() +       
+          geom_vline(data=ftdata, aes(xintercept=SimStep), linetype="dashed", size=0.7, colour="lightblue")+
           theme(legend.title = element_blank(),
                 legend.position = c(0.2, 0.95),
           panel.border = element_blank(),
@@ -111,7 +112,7 @@ for (year in years){
   
   dir.create("../figures/linksandtokens/", showWarnings = FALSE)
   ppi <- 300
-  png(paste0("../figures/linksandtokens/",year,"_links_tokens.png"), width=(6*ppi), height=4*ppi, res=ppi)
+  png(paste0("../figures/linksandtokens/",year,"_links_tokens.png"), width=(7*ppi), height=4*ppi, res=ppi)
   print(q)
   dev.off()
 }

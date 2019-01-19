@@ -107,17 +107,19 @@ SynthMatrix <- function(matrixemp, year){
     }
     new_node <- FALSE
     # Write number of links file. 
-    if ((((sim_step < 2000) & (sim_step %% 50 == 0)) | (sim_step %% 500 == 0)) & (write_num_links)){
-        fn <- fivenum(log(prob_new_links[prob_new_links>0]))
-        ultprob <- min(log(prob_new_links[which(msynth==min(msynth[msynth>0]),arr.ind=TRUE)]))
-        prob_vacios <- log(1-sum(prob_new_links[which(msynth>0,arr.ind=TRUE)]))
-        varsigma <- exp(sd(log(prob_new_links)))
-        meanprob <- mean(log(prob_new_links))
-        con <- file(fich_links, "a")
-        cat(paste0(sim_step,";",cuenta_links,";",cuenta_token,";",
-                   fn[1],";",fn[2],";",fn[3],";",fn[4],";",fn[5],";",
-                   ultprob,";",prob_vacios,";",meanprob,";",varsigma,"\n"), file=con)
-        close(con)
+    if (write_num_links){
+      if ((((sim_step < 2000) & (sim_step %% 50 == 0)) | (sim_step %% 500 == 0))){
+          fn <- fivenum(log(prob_new_links[prob_new_links>0]))
+          ultprob <- min(log(prob_new_links[which(msynth==min(msynth[msynth>0]),arr.ind=TRUE)]))
+          prob_vacios <- log(1-sum(prob_new_links[which(msynth>0,arr.ind=TRUE)]))
+          varsigma <- exp(sd(log(prob_new_links)))
+          meanprob <- mean(log(prob_new_links))
+          con <- file(fich_links, "a")
+          cat(paste0(sim_step,";",cuenta_links,";",cuenta_token,";",exp_max,";",imp_max,";",
+                     fn[1],";",fn[2],";",fn[3],";",fn[4],";",fn[5],";",
+                     ultprob,";",prob_vacios,";",meanprob,";",varsigma,"\n"), file=con)
+          close(con)
+      }
     }
     if (cuenta_antciclo != cuenta_links){
       cuenta_antciclo <- cuenta_links

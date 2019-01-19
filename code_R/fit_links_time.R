@@ -16,7 +16,7 @@ for (year in years) {
   ftdata <- logfilt[1,]
   file_name <- paste0("numlinks_",year,"_FILT_W_",experiment,".txt")
   simdata <- read.csv(paste0("../results/numlinks/",file_name), header=FALSE, sep=";")
-  names(simdata) <- c("SimStep","Links","Tokens","T5Min","T5Q25","T5Median","T5Q75","T5Max",
+  names(simdata) <- c("SimStep","Links","Tokens","Exporters","Importers","T5Min","T5Q25","T5Median","T5Q75","T5Max",
                       "LastLink","EmptyCells","meanprob","varsigma")
   
   # Relación lineal entre tokens y 1/p
