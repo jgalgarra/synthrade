@@ -2,11 +2,16 @@
 #
 # numlinks fields:
 #         Simulation Step
-#         Number of inks
+#         Number of links
 #         Number of tokens
+#         Exporters
+#         Importers
 #         Probability matrix Tukey five number
 #         Probability of last existing link
-#         Cumulative probability of existing links
+#         Cumulative probability of empty links
+#         Median probability of prob matrix
+#         Variance of prob matrix
+
 
 library("ggplot2")
 library(scales)
@@ -23,7 +28,7 @@ years <- seq(ini_seq,end_seq)
 
 for (year in years){
   logfilt <- datalog[datalog$Year==year & datalog$Instant=="FT" & datalog$NumExper == experiment,]
-  ftdata <- logfilt[1,]
+  ftdata <- logfilt[nrow(logfilt),]
   file_name <- paste0("numlinks_",year,"_FILT_W_",experiment,".txt")
   simdata <- read.csv(paste0("../results/numlinks/",file_name), header=FALSE, sep=";")
   names(simdata) <- c("SimStep","Links","Tokens","Exporters","Importers","T5Min","T5Q25","T5Median","T5Q75","T5Max",

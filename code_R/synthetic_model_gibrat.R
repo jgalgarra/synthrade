@@ -77,6 +77,7 @@ SynthMatrix <- function(matrixemp, year){
   prob_new_links <- void_prob
   morenewnodes <- TRUE
   cuenta_antciclo <- 0
+  last_logged_step <- 0
   tf <- 0
   sim_step <- 0
   dir.create("../results", showWarnings = FALSE)
@@ -108,7 +109,7 @@ SynthMatrix <- function(matrixemp, year){
     new_node <- FALSE
     # Write number of links file. 
     if (write_num_links){
-      if ((((sim_step < 2000) & (sim_step %% 50 == 0)) | (sim_step %% 500 == 0))){
+      if ((((morenewnodes) & (sim_step - last_logged_step >= 20)) | (sim_step %% 500 == 0))){
           fn <- fivenum(log(prob_new_links[prob_new_links>0]))
           ultprob <- min(log(prob_new_links[which(msynth==min(msynth[msynth>0]),arr.ind=TRUE)]))
           prob_vacios <- log(1-sum(prob_new_links[which(msynth>0,arr.ind=TRUE)]))
@@ -119,6 +120,7 @@ SynthMatrix <- function(matrixemp, year){
                      fn[1],";",fn[2],";",fn[3],";",fn[4],";",fn[5],";",
                      ultprob,";",prob_vacios,";",meanprob,";",varsigma,"\n"), file=con)
           close(con)
+          last_logged_step <- sim_step
       }
     }
     if (cuenta_antciclo != cuenta_links){
