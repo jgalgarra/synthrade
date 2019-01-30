@@ -145,4 +145,4 @@ for (year in seq(ini_seq,end_seq)){
     dfslopes <- rbind(dfslopes,dfexp)
   }
 }
-write.table(dfslopes,"../results/Slooes.txt",sep="\t",row.names = FALSE)
+write.table(dfslopes,"../results/Slopes.txt",sep="\t",row.names = FALSE)
