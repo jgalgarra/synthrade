@@ -93,7 +93,7 @@ gen_links_strength_distribution <- function(red,series, colors, seq_breaks = c(1
     return(calc_values)
   }
   
-  experiment <- 3
+  experiment <- 1
   
   if (!empirical)
   {
