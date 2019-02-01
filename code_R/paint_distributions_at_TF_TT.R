@@ -140,13 +140,13 @@ plot_sq_fit <- function(datosplot,titlestr="",dcol="red")
   minx <- min(sqrt(datatrf$log10_degree))
   maxx <- round(max(sqrt(datatrf$log10_degree)))
 
-  etmodel <- sprintf("log10 s = %.4f (log10 d)^2 %.4f     Adj. R^2 = %0.3f",as.numeric(mod[[1]][2]),as.numeric(mod[[1]][1]),summary(mod)$adj.r.squared)
+  etmodel <- sprintf("log10 s = %.3f (log10 d)^2 %.3f     Adj. R^2 = %0.2f",as.numeric(mod[[1]][2]),as.numeric(mod[[1]][1]),summary(mod)$adj.r.squared)
   imptf <- ggplot(datatrf,aes(x=log10_degree,y=log10_strength))+geom_point(color=dcol,alpha=0.5)+
     ggtitle(titlestr)+xlab("Degree")+ylab("Normalized strength")+
     scale_x_continuous(breaks=c(0,1,4),labels=c(1,10,100))+
     scale_y_continuous(breaks=c(0,-2,-4),labels=c("1","1e-02","1e-04"))+
     geom_smooth(method = "lm", se = FALSE, show.legend = TRUE,color="grey50",linetype = "dashed")+
-    geom_text(x=2, y=max(datatrf$log10_strength),label=etmodel, size = 5)+
+    geom_text(x=2, y=min(datatrf$log10_strength),label=etmodel, size = 5)+
     theme_bw() +  theme(plot.title = element_text(hjust = 0.5, size = 18),
                         axis.title.x = element_text(color="grey30", size = 15, face="bold"),
                         axis.title.y = element_text(color="grey30", size= 15, face="bold"),
@@ -170,6 +170,13 @@ for (orig_file in files)
   series = "Exporter"
   year=gsub("_FILT","",strsplit(red,"RedAdyCom")[[1]][-1])
   grafs <- gen_links_strength_distribution(red,series,"blue",empirical = FALSE)
+  
+  data_e_TF <- grafs$plots_TF$data_exp
+  data_i_TF <- grafs$plots_TF$data_imp
+  
+  sqe_TF <- plot_sq_fit(data_e_TF, titlestr = "Synthetic Exporters at TF", dcol="blue")
+  sqi_TF <- plot_sq_fit(data_i_TF, titlestr = "Synthetic Importers at TF", dcol="red")
+  
   data_e <- grafs$plots_final$data_exp
   data_i <- grafs$plots_final$data_imp
   
@@ -183,23 +190,24 @@ for (orig_file in files)
   sqi_emp <- plot_sq_fit(data_i_emp, titlestr = "Empricial Importers", dcol="red")
   
 
-  dir.create("../figures/linksstrength/", showWarnings = FALSE)
-  ppi <- 300
-  png(paste0("../figures/linksstrength/LS_SYNTH_",red,".png"), width=(16*ppi), height=12*ppi, res=ppi)
-  # grid.arrange(grafs$plots_TF$imptf,grafs$plots_final$imptf, sqi, grafs$plots_TF$exptf,
-  #             grafs$plots_final$exptf,sqe,ncol=3, nrow=2)
-  grid.arrange(grafs$plots_TF$imptf,sqi, grafs$plots_TF$exptf,sqe,ncol=2, nrow=2)
-  dev.off()
-  
-  ppi <- 300
-  png(paste0("../figures/linksstrength/LS_EMP_",red,".png"), width=(16*ppi), height=12*ppi, res=ppi)
-  grid.arrange(sqi,sqi_emp,sqe,sqe_emp,ncol=2, nrow=2)
-  dev.off()
+  # dir.create("../figures/linksstrength/", showWarnings = FALSE)
+  # ppi <- 300
+  # png(paste0("../figures/linksstrength/LS_SYNTH_",red,".png"), width=(16*ppi), height=12*ppi, res=ppi)
+  # # grid.arrange(grafs$plots_TF$imptf,grafs$plots_final$imptf, sqi, grafs$plots_TF$exptf,
+  # #             grafs$plots_final$exptf,sqe,ncol=3, nrow=2)
+  # grid.arrange(grafs$plots_TF$imptf,sqi, grafs$plots_TF$exptf,sqe,ncol=2, nrow=2)
+  # dev.off()
+  # 
+  # ppi <- 300
+  # png(paste0("../figures/linksstrength/LS_EMP_",red,".png"), width=(16*ppi), height=12*ppi, res=ppi)
+  # grid.arrange(sqi,sqi_emp,sqe,sqe_emp,ncol=2, nrow=2)
+  # dev.off()
   
   dir.create("../figures/linksstrength/", showWarnings = FALSE)
   ppi <- 300
   png(paste0("../figures/linksstrength/LS_SYNTH_",red,".png"), width=(22*ppi), height=12*ppi, res=ppi)
-  grid.arrange(grafs$plots_TF$imptf, sqi, sqi_emp, grafs$plots_TF$exptf,
-             sqe, sqe_emp, ncol=3, nrow=2)
+  # grid.arrange(grafs$plots_TF$imptf, sqi, sqi_emp, grafs$plots_TF$exptf,
+  #            sqe, sqe_emp, ncol=3, nrow=2)
+  grid.arrange(sqi_TF, sqi, sqi_emp, sqe_TF, sqe, sqe_emp, ncol=3, nrow=2)
   dev.off()
 }

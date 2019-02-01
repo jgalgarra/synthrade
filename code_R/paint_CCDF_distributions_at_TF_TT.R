@@ -127,75 +127,74 @@ gen_links_strength_distribution <- function(red,series, colors, seq_breaks = c(1
   
   calc_values <- list("plots_TF" = plots_TF, "plots_final" = plots_final)
   return(calc_values)
-
 }
+
 
 plot_ccdf_fit <- function(datosinput,titlestr="",dcol="red")
 {
-  
-  datosinput$strength <- datosinput$strength/sum(as.numeric(datosinput$strength))
-  occur <- datosinput$degree
-  woccur <- datosinput$strength
-  woccur <- woccur[order(woccur)]
-  alpha_level = 0.8
-  p = occur/sum(occur)
-  dy = rev(cumsum(rev(p)))
-  dx = occur
-  wp = woccur/sum(woccur)
-  wdy = rev(cumsum(rev(wp)))
-  wdx = woccur
-  auxdf <- data.frame(dx,dy)
-  auxdfw <- data.frame(wdx,wdy)
-  auxdf <- auxdf[auxdf$dx > 0,]
-  distd_plot <- ggplot(data = auxdf) +
-    geom_point(aes(x = sqrt(dx), y = dy), color=dcol)+
-    #scale_x_log10() + scale_y_log10() 
+datosinput$strength <- datosinput$strength/sum(as.numeric(datosinput$strength))
+occur <- datosinput$degree
+woccur <- datosinput$strength
+woccur <- woccur[order(woccur)]
+alpha_level = 0.8
+p = occur/sum(occur)
+dy = rev(cumsum(rev(p)))
+dx = occur
+wp = woccur/sum(woccur)
+wdy = rev(cumsum(rev(wp)))
+wdx = woccur
+auxdf <- data.frame(dx,dy)
+auxdfw <- data.frame(wdx,wdy)
+auxdf <- auxdf[auxdf$dx > 0,]
+distd_plot <- ggplot(data = auxdf) +
+  geom_point(aes(x = sqrt(dx), y = dy), color=dcol)+
+  #scale_x_log10() + scale_y_log10() 
   scale_x_sqrt()
-  distw_plot <- ggplot(data = auxdfw) +
-    geom_point(aes(x = wdx, y = wdy), color=dcol) +
-    scale_x_sqrt()
-    #scale_x_log10() + scale_y_log10() 
-    # xlab(paste(year,series,"Degree")) + 
-    # ylab("CCDF") + #scale_shape_manual(values=c(1,16)) +
-    # scale_alpha(guide = 'none') + scale_size_identity()  +
-    # theme_bw() +
-    # theme(
-    #   axis.title.x = element_text(color="grey30", size = 11),
-    #   axis.title.y = element_text(color="grey30", size= 11),
-    #   legend.title=element_blank(),
-    #   legend.position = "top",
-    #   legend.text=element_text(size=10),
-    #   axis.text.x = element_text(face="bold", color="grey30", size=10),
-    #   axis.text.y = element_text(face="bold", color="grey30", size=10)
-    # )
-  
-  # datatrf <- datosplot
-  # datatrf$log10_degree <- log10(datosplot$degree)^2
-  # datatrf$log10_strength <- log10(datosplot$strength)
-  # mod <- lm(datatrf$log10_strength ~ datatrf$log10_degree^2)
-  # minx <- min(sqrt(datatrf$log10_degree))
-  # maxx <- round(max(sqrt(datatrf$log10_degree)))
-  # 
-  # etmodel <- sprintf("log10 s = %.4f (log10 d)^2 %.4f     Adj. R^2 = %0.3f",as.numeric(mod[[1]][2]),as.numeric(mod[[1]][1]),summary(mod)$adj.r.squared)
-  # imptf <- ggplot(datatrf,aes(x=log10_degree,y=log10_strength))+geom_point(color=dcol,alpha=0.5)+
-  #   ggtitle(titlestr)+xlab("Degree")+ylab("Normalized strength")+
-  #   scale_x_continuous(breaks=c(0,1,4),labels=c(1,10,100))+
-  #   scale_y_continuous(breaks=c(0,-2,-4),labels=c("1","1e-02","1e-04"))+
-  #   geom_smooth(method = "lm", se = FALSE, show.legend = TRUE,color="grey50",linetype = "dashed")+
-  #   geom_text(x=2, y=max(datatrf$log10_strength),label=etmodel, size = 5)+
-  #   theme_bw() +  theme(plot.title = element_text(hjust = 0.5, size = 18),
-  #                       axis.title.x = element_text(color="grey30", size = 15, face="bold"),
-  #                       axis.title.y = element_text(color="grey30", size= 15, face="bold"),
-  #                       legend.title=element_blank(),
-  #                       legend.position = "top",
-  #                       legend.text=element_text(size=10),
-  #                       panel.grid.minor = element_blank(),
-  #                       axis.text.x = element_text(face="bold", color="grey30", size=14),
-  #                       axis.text.y = element_text(face="bold", color="grey30", size=14)
-  #   )
-  # return(imptf)
-  print(dist_plot)
-  return()
+distw_plot <- ggplot(data = auxdfw) +
+  geom_point(aes(x = wdx, y = wdy), color=dcol) +
+  scale_x_sqrt()
+#scale_x_log10() + scale_y_log10() 
+# xlab(paste(year,series,"Degree")) + 
+# ylab("CCDF") + #scale_shape_manual(values=c(1,16)) +
+# scale_alpha(guide = 'none') + scale_size_identity()  +
+# theme_bw() +
+# theme(
+#   axis.title.x = element_text(color="grey30", size = 11),
+#   axis.title.y = element_text(color="grey30", size= 11),
+#   legend.title=element_blank(),
+#   legend.position = "top",
+#   legend.text=element_text(size=10),
+#   axis.text.x = element_text(face="bold", color="grey30", size=10),
+#   axis.text.y = element_text(face="bold", color="grey30", size=10)
+# )
+
+# datatrf <- datosplot
+# datatrf$log10_degree <- log10(datosplot$degree)^2
+# datatrf$log10_strength <- log10(datosplot$strength)
+# mod <- lm(datatrf$log10_strength ~ datatrf$log10_degree^2)
+# minx <- min(sqrt(datatrf$log10_degree))
+# maxx <- round(max(sqrt(datatrf$log10_degree)))
+# 
+# etmodel <- sprintf("log10 s = %.4f (log10 d)^2 %.4f     Adj. R^2 = %0.3f",as.numeric(mod[[1]][2]),as.numeric(mod[[1]][1]),summary(mod)$adj.r.squared)
+# imptf <- ggplot(datatrf,aes(x=log10_degree,y=log10_strength))+geom_point(color=dcol,alpha=0.5)+
+#   ggtitle(titlestr)+xlab("Degree")+ylab("Normalized strength")+
+#   scale_x_continuous(breaks=c(0,1,4),labels=c(1,10,100))+
+#   scale_y_continuous(breaks=c(0,-2,-4),labels=c("1","1e-02","1e-04"))+
+#   geom_smooth(method = "lm", se = FALSE, show.legend = TRUE,color="grey50",linetype = "dashed")+
+#   geom_text(x=2, y=max(datatrf$log10_strength),label=etmodel, size = 5)+
+#   theme_bw() +  theme(plot.title = element_text(hjust = 0.5, size = 18),
+#                       axis.title.x = element_text(color="grey30", size = 15, face="bold"),
+#                       axis.title.y = element_text(color="grey30", size= 15, face="bold"),
+#                       legend.title=element_blank(),
+#                       legend.position = "top",
+#                       legend.text=element_text(size=10),
+#                       panel.grid.minor = element_blank(),
+#                       axis.text.x = element_text(face="bold", color="grey30", size=14),
+#                       axis.text.y = element_text(face="bold", color="grey30", size=14)
+#   )
+# return(imptf)
+print(dist_plot)
+return()
 }
 
 
