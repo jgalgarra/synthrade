@@ -133,11 +133,24 @@ gen_links_strength_distribution <- function(red,series, colors, seq_breaks = c(1
 plot_ccdf_fit <- function(datosinput,titlestr="",dcol="red")
 {
 datosinput$strength <- datosinput$strength/sum(as.numeric(datosinput$strength))
-occur <- datosinput$degree
+datosacc <- datosinput[order(datosinput$strength),]
+datosacc$ac_degree <- 0
+datosacc$ac_strength <- 0
+datosacc$ac_degree[1] <- datosacc$degree[1]
+datosacc$ac_strength[1] <- datosacc$strength[1]
+for (i in 2:nrow(datosacc)){
+  datosacc$ac_degree[i] <- datosacc$ac_degree[i-1]+datosacc$degree[i]
+  datosacc$ac_strength[i] <- datosacc$ac_strength[i-1]+datosacc$strength[i]
+}
+datosacc$ac_degree <- datosacc$ac_degree/max(datosacc$ac_degree)
+datosacc$ac_strength <- datosacc$ac_strength/max(datosacc$ac_strength)
+datosfit <- datosacc[log10(datosacc$ac_degree)< -0.5,]
+occur <- datosacc[]
 woccur <- datosinput$strength
 woccur <- woccur[order(woccur)]
 alpha_level = 0.8
 p = occur/sum(occur)
+ac_occur <- rev(cumsum(rev(occur)))
 dy = rev(cumsum(rev(p)))
 dx = occur
 wp = woccur/sum(woccur)
@@ -250,7 +263,7 @@ for (orig_file in files)
   sqe_emp <- plot_sq_fit(data_e_emp, titlestr = "Empirical Exporters", dcol="blue")
   sqi_emp <- plot_sq_fit(data_i_emp, titlestr = "Empricial Importers", dcol="red")
   
-  plot_ccdf_fit(data_e_emp, titlestr = "Empirical Exporters", dcol="blue")
+  plot_ccdf_fit(data_i_emp, titlestr = "Empirical Exporters", dcol="blue")
 
   dir.create("../figures/linksstrength/", showWarnings = FALSE)
   ppi <- 300
