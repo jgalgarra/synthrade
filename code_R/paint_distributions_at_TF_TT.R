@@ -189,21 +189,22 @@ plot_log_fit <- function(datosplot,titlestr="",dcol="red")
   datatrf <- datosplot
   datatrf$log10_acdegree <- log10(datatrf$ac_degree)
   datatrf$log10_acstrength <- log10(datatrf$ac_strength)
-  datosfit <- datatrf[datatrf$log10_acstrength< quantile(datatrf$log10_acstrength,probs=c(0.6)),]
-  mod <- lm(datosfit$log10_acdegree ~ datosfit$log10_acstrength)
+  datosfit <- datatrf[(datatrf$log10_acstrength< quantile(datatrf$log10_acstrength,probs=c(0.7))) &
+                        (datatrf$log10_acstrength> quantile(datatrf$log10_acstrength,probs=c(0.1)))  ,]
+  mod <- lm(datosfit$log10_acstrength ~ datosfit$log10_acdegree)
   beta <- mod[[1]][1]
   alpha <- mod[[1]][2]
-  xmin <- min(datosfit$log10_acstrength)
+  xmin <- min(datosfit$log10_acdegree)
   ymin <- alpha*xmin+beta
-  xmax <- max(datosfit$log10_acstrength)
+  xmax <- max(datosfit$log10_acdegree)
   ymax <- alpha*xmax+beta
 
-  etmodel <- sprintf("log10(d) = %.3f log10(s)+%.3f Adj. R^2 = %0.2f",as.numeric(mod[[1]][2]),as.numeric(mod[[1]][1]),summary(mod)$adj.r.squared)
-  imptf <- ggplot(datatrf,aes(y=ac_degree,x=ac_strength))+geom_point(color=dcol,alpha=0.5)+
-    ggtitle(titlestr)+ylab("Cumulative Degree")+xlab("Cumulative Normalized strength")+
+  etmodel <- sprintf("log(Cs) = %.2f log(Cd) %.2f Adj. R^2 = %0.2f",as.numeric(mod[[1]][2]),as.numeric(mod[[1]][1]),summary(mod)$adj.r.squared)
+  imptf <- ggplot(datatrf,aes(x=ac_degree,y=ac_strength))+geom_point(color=dcol,alpha=0.5)+
+    ggtitle(titlestr)+xlab("Cumulative Degree")+ylab("Cumulative Normalized strength")+
     scale_x_log10()+scale_y_log10()+
-    geom_text(x=quantile(datatrf$log10_acstrength,probs=c(0.02)), 
-              y=min(datatrf$log10_acdegree),label=etmodel, size = 5, hjust=0)+
+    geom_text(x=quantile(datatrf$log10_acdegree,probs=c(0.02)), 
+              y=min(datatrf$log10_acstrength),label=etmodel, size = 5, hjust=0)+
     geom_text(x=xmax,y=ymax,label="*")+
     geom_abline(slope = alpha, intercept = beta, color = "black", alpha = 0.5, linetype = 2) +
     theme_bw() +  theme(plot.title = element_text(hjust = 0.5, size = 18),
@@ -253,10 +254,10 @@ for (orig_file in files)
   data_e_emp <- grafsemp$plots_final$data_exp
   data_i_emp <- grafsemp$plots_final$data_imp
   sqe_emp <- plot_sq_fit(data_e_emp, titlestr = "Empirical Exporters", dcol="blue")
-  sqi_emp <- plot_sq_fit(data_i_emp, titlestr = "Empricial Importers", dcol="red")
+  sqi_emp <- plot_sq_fit(data_i_emp, titlestr = "Empirical Importers", dcol="red")
   
   acc_e_emp <- plot_log_fit(data_e_emp, titlestr = "Empirical Exporters", dcol="blue")
-  acc_i_emp <- plot_log_fit(data_i_emp, titlestr = "Empricial Importers", dcol="red")
+  acc_i_emp <- plot_log_fit(data_i_emp, titlestr = "Empirical Importers", dcol="red")
   
   # dir.create("../figures/linksstrength/", showWarnings = FALSE)
   # ppi <- 300
@@ -274,16 +275,12 @@ for (orig_file in files)
   dir.create("../figures/linksstrength/", showWarnings = FALSE)
   ppi <- 300
   png(paste0("../figures/linksstrength/LS_SYNTH_",red,".png"), width=(22*ppi), height=12*ppi, res=ppi)
-  # grid.arrange(grafs$plots_TF$imptf, sqi, sqi_emp, grafs$plots_TF$exptf,
-  #            sqe, sqe_emp, ncol=3, nrow=2)
   grid.arrange(sqi_TF, sqi, sqi_emp, sqe_TF, sqe, sqe_emp, ncol=3, nrow=2)
   dev.off()
   
   dir.create("../figures/linksstrength/", showWarnings = FALSE)
   ppi <- 300
   png(paste0("../figures/linksstrength/LS_SYNTH_LOG_",red,".png"), width=(22*ppi), height=12*ppi, res=ppi)
-  # grid.arrange(grafs$plots_TF$imptf, sqi, sqi_emp, grafs$plots_TF$exptf,
-  #            sqe, sqe_emp, ncol=3, nrow=2)
   grid.arrange(acc_i_TF, acc_i, acc_i_emp, acc_e_TF, acc_e, acc_e_emp, ncol=3, nrow=2)
   dev.off()
 }

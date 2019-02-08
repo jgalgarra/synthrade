@@ -14,12 +14,6 @@ while (connectance < minconnectance)
   sum_tot <- sum(r_matrix)
   cs <- cumsum(r_aux)
   partial <- r_aux[cs < wiperatio*sum_tot]
-  # if ((length(r_aux)-length(partial)) < round(minconnectance*(nrow(r_df)*ncol(r_df))))
-  #   min_allowed <- r_aux[length(r_aux)-round(minconnectance*nrow(r_df)*ncol(r_df))] 
-  # else{
-  #   posimin <- length(partial)
-  #   min_allowed <- partial[posimin]
-  # }
   posimin <- length(partial)
   min_allowed <- partial[posimin]
   print(paste("min_allowed",min_allowed))
@@ -48,8 +42,6 @@ return(r_df)
 
 files = paste0("RedAdyCom",seq(1962,2014))
 for (nf in files){
-  # print("Unfiltered")
-  # get_data(nf)
   print("Filtered")
   r <- get_data(nf, filter = TRUE, minconnectance = 0.0001)    
   r <- r[,colSums(r)>0]
