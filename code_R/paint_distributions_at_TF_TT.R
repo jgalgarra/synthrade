@@ -199,7 +199,7 @@ plot_log_fit <- function(datosplot,titlestr="",dcol="red")
   xmax <- max(datosfit$log10_acdegree)
   ymax <- alpha*xmax+beta
 
-  etmodel <- sprintf("log(Cs) = %.2f log(Cd) %.2f Adj. R^2 = %0.2f",as.numeric(mod[[1]][2]),as.numeric(mod[[1]][1]),summary(mod)$adj.r.squared)
+  etmodel <- sprintf("log(Cs) = %.2f log(Cd) %.2f Adj. R^2 = %0.3f",as.numeric(mod[[1]][2]),as.numeric(mod[[1]][1]),summary(mod)$adj.r.squared)
   imptf <- ggplot(datatrf,aes(x=ac_degree,y=ac_strength))+geom_point(color=dcol,alpha=0.5)+
     ggtitle(titlestr)+xlab("Cumulative Degree")+ylab("Cumulative Normalized strength")+
     scale_x_log10()+scale_y_log10()+
@@ -283,4 +283,11 @@ for (orig_file in files)
   png(paste0("../figures/linksstrength/LS_SYNTH_LOG_",red,".png"), width=(22*ppi), height=12*ppi, res=ppi)
   grid.arrange(acc_i_TF, acc_i, acc_i_emp, acc_e_TF, acc_e, acc_e_emp, ncol=3, nrow=2)
   dev.off()
+  
+  dir.create("../figures/linksstrength/", showWarnings = FALSE)
+  ppi <- 300
+  png(paste0("../figures/linksstrength/LS_EMP_LOG_",red,".png"), width=(14*ppi), height=6*ppi, res=ppi)
+  grid.arrange(acc_i_emp, acc_e_emp, ncol=2, nrow=1)
+  dev.off()
+  
 }
