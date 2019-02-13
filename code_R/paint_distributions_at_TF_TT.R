@@ -5,6 +5,7 @@ library("ggplot2")
 source("aux_functions_matrix.R")
 source("parse_command_line_args.R")
 
+
 calc_accum <- function(datosinput)
 {
   datosacc <- datosinput[order(datosinput$weight),]
@@ -66,7 +67,8 @@ gen_links_strength_distribution <- function(red,series, colors, seq_breaks = c(1
     dpexp <- datosplot
     
     mod <- lm(datosplot$strength ~ datosplot$degree)
-    etmodel <- sprintf("log10 s = %.4f log10 d %.4f     Adj. R^2 = %0.3f",as.numeric(mod[[1]][2]),as.numeric(mod[[1]][1]),summary(mod)$adj.r.squared)
+    etmodel <- sprintf("log10 s = %.4f log10 d %.4f     Adj. R^2 = %0.3f",
+                       as.numeric(mod[[1]][2]),as.numeric(mod[[1]][1]),summary(mod)$adj.r.squared)
     exptf <- ggplot(datosplot,aes(x=degree,y=strength))+geom_point(color="blue",alpha=0.5)+scale_x_log10()+scale_y_log10()+
       ggtitle(paste0("Exporters at ",titlestr))+ 
       geom_smooth(method = "lm", se = FALSE, show.legend = TRUE,color="grey50",linetype = "dashed")+
@@ -162,7 +164,8 @@ plot_sq_fit <- function(datosplot,titlestr="",dcol="red")
   minx <- min(sqrt(datatrf$log10_degree))
   maxx <- round(max(sqrt(datatrf$log10_degree)))
   
-  etmodel <- sprintf("log10 s = %.3f (log10 d)^2 %.3f     Adj. R^2 = %0.2f",as.numeric(mod[[1]][2]),as.numeric(mod[[1]][1]),summary(mod)$adj.r.squared)
+  etmodel <- sprintf("log10 s = %.3f (log10 d)^2 %.3f     Adj. R^2 = %0.2f",
+                     as.numeric(mod[[1]][2]),as.numeric(mod[[1]][1]),summary(mod)$adj.r.squared)
   imptf <- ggplot(datatrf,aes(x=log10_degree,y=log10_strength))+geom_point(color=dcol,alpha=0.5)+
     ggtitle(titlestr)+xlab("Degree")+ylab("Normalized strength")+
     scale_x_continuous(breaks=c(0,1,4),labels=c(1,10,100))+
@@ -189,8 +192,9 @@ plot_log_fit <- function(datosplot,titlestr="",dcol="red")
   datatrf <- datosplot
   datatrf$log10_acdegree <- log10(datatrf$ac_degree)
   datatrf$log10_acstrength <- log10(datatrf$ac_strength)
-  datosfit <- datatrf[(datatrf$log10_acstrength< quantile(datatrf$log10_acstrength,probs=c(0.7))) &
-                        (datatrf$log10_acstrength> quantile(datatrf$log10_acstrength,probs=c(0.1)))  ,]
+  # datosfit <- datatrf[(datatrf$log10_acstrength< quantile(datatrf$log10_acstrength,probs=c(0.7))) &
+  #                       (datatrf$log10_acstrength> quantile(datatrf$log10_acstrength,probs=c(0.1)))  ,]
+  datosfit <- datatrf[(datatrf$log10_acstrength< quantile(datatrf$log10_acstrength,probs=c(0.6))),]
   mod <- lm(datosfit$log10_acstrength ~ datosfit$log10_acdegree)
   beta <- mod[[1]][1]
   alpha <- mod[[1]][2]

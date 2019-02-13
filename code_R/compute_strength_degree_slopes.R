@@ -11,6 +11,21 @@ source("parse_command_line_args.R")
 ini_seq <- 1962
 end_seq <- 2014
 
+calc_accum <- function(datosinput)
+{
+  datosacc <- datosinput[order(datosinput$weight),]
+  datosacc$ac_degree <- 0
+  datosacc$ac_strength <- 0
+  datosacc$ac_degree[1] <- datosacc$degree[1]
+  datosacc$ac_strength[1] <- datosacc$weight[1]
+  for (i in 2:nrow(datosacc)){
+    datosacc$ac_degree[i] <- datosacc$ac_degree[i-1]+datosacc$degree[i]
+    datosacc$ac_strength[i] <- datosacc$ac_strength[i-1]+datosacc$weight[i]
+  }
+  datosacc$ac_strength <- datosacc$ac_strength/max(datosacc$ac_strength)
+  return(datosacc)
+}
+
 gen_links_strength_models <- function(namefile,red,series, seq_breaks = c(1,5,10,20,50,100), empirical = FALSE)
 {
   
@@ -43,20 +58,26 @@ gen_links_strength_models <- function(namefile,red,series, seq_breaks = c(1,5,10
       }
     }
     dfdeg$weight <- dfdeg$weight /max(as.numeric(dfdeg$weight))
-    
-    ddeg_exporter <- dfdeg[dfdeg$type == "Exporter",]
+    dfaccum <- calc_accum(dfdeg)
+    ddeg_exporter <- dfaccum[dfaccum$type == "Exporter",]
     degree <- ddeg_exporter$degree
     weight <- ddeg_exporter$weight
-    datosplot <- data.frame("degree" = degree, "strength" = weight)
+    ac_strength <- ddeg_exporter$ac_strength
+    ac_degree <- ddeg_exporter$ac_degree
+    datosplot <- data.frame("degree" = degree, "strength" = weight, 
+                            "ac_strength" = ac_strength, "ac_degree" = ac_degree)
     dpexp <- datosplot
     
     exp_mod <- lm(datosplot$strength ~ datosplot$degree)
 
-
-    ddeg_importer <- dfdeg[dfdeg$type == "Importer",]
+    dfaccum <- calc_accum(dfdeg) 
+    ddeg_importer <- dfaccum[dfaccum$type == "Importer",]
     degree <- ddeg_importer$degree
-    weight <- ddeg_importer$weight
-    datosplot <- data.frame("degree" = degree, "strength" = weight)
+    weight <- ddeg_importer$weight    
+    ac_strength <- ddeg_importer$ac_strength
+    ac_degree <- ddeg_importer$ac_degree
+    datosplot <- data.frame("degree" = degree, "strength" = weight, 
+                            "ac_strength" = ac_strength, "ac_degree" = ac_degree)
     dpimp <- datosplot
     imp_mod <- lm(datosplot$strength ~ datosplot$degree)
     
@@ -100,6 +121,19 @@ compute_sq_fit <- function(datosplot,titlestr="",dcol="red")
   return(mod)
 }
 
+
+compute_log_fit <- function(datosplot)
+{
+  
+  datatrf <- datosplot
+  datatrf$log10_acdegree <- log10(datatrf$ac_degree)
+  datatrf$log10_acstrength <- log10(datatrf$ac_strength)
+  datosfit <- datatrf[(datatrf$log10_acstrength< quantile(datatrf$log10_acstrength,probs=c(0.75))),]
+  mod <- lm(datosfit$log10_acstrength ~ datosfit$log10_acdegree)
+  return(mod)
+}
+
+
 TFstring = "TF_"
 files <- paste0(TFstring,"RedAdyCom",seq(ini_seq,end_seq))
 dfslopes <- data.frame("Year"=c(),"Experiment"=c(),
@@ -120,14 +154,14 @@ for (year in seq(ini_seq,end_seq)){
     models_synth <- gen_links_strength_models(name_file,red,series,empirical = FALSE)
     data_e <- models_synth$models_final$data_exp
     data_i <- models_synth$models_final$data_imp
-    sqe_model <- compute_sq_fit(data_e, titlestr = "Synthetic Exporters at TT", dcol="blue")
-    sqi_model <- compute_sq_fit(data_i, titlestr = "Synthetic Importers at TT", dcol="red")
+    sqe_model <- compute_log_fit(data_e)
+    sqi_model <- compute_log_fit(data_i)
     if (nexper == 1){
       models_emp <-  gen_links_strength_models(emp_file,red,series,empirical = TRUE)
       data_e_emp <- models_emp$models_final$data_exp
       data_i_emp <- models_emp$models_final$data_imp
-      sqe_emp_model <- compute_sq_fit(data_e_emp, titlestr = "Empirical Exporters", dcol="blue")
-      sqi_emp_model <- compute_sq_fit(data_i_emp, titlestr = "Empricial Importers", dcol="red")
+      sqe_emp_model <- compute_log_fit(data_e_emp)
+      sqi_emp_model <- compute_log_fit(data_i_emp)
     }
     dfexp<- data.frame("Year"=0,"Experiment"=0,
                            "ExpSlopeSynth"=0,"ExpSynthR2"=0,"ImpSlopeSynth"=0,"ImpSynthR2"=0,
