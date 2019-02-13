@@ -6,10 +6,10 @@ source("aux_functions_matrix.R")
 source("parse_command_line_args.R")
 
 
-gen_deg_distribution <- function(red,series, colors, seq_breaks = c(1,5,10,20,50,100), loglog = FALSE)
+gen_deg_distribution <- function(red,series, colors, seq_breaks = c(1,5,10,20,50,100))
 {
   
-  gen_deg_data_frame <- function(input_matrix,tipo,tamanyo,nalpha,serie, loglog)
+  gen_deg_data_frame <- function(input_matrix,tipo,tamanyo,nalpha,serie)
   {
     
     # Remove all zeroes columns and rows
@@ -43,7 +43,7 @@ gen_deg_distribution <- function(red,series, colors, seq_breaks = c(1,5,10,20,50
     occur <- ddeg_exporter$degree
     woccur <- ddeg_exporter$weight
     woccur <- woccur[order(woccur)]
-    alpha_level = 0.9
+    alpha_level = 0.8
     p = occur/sum(occur)
     dy = rev(cumsum(rev(p)))
     dx = occur
@@ -95,7 +95,7 @@ gen_deg_distribution <- function(red,series, colors, seq_breaks = c(1,5,10,20,50
   }
   dred <- gsub(TFstring,"",red)
   emp_matrix <- read.table(paste0("../data/",dred,".txt"),sep="\t")
-  auxdf_emp <- gen_deg_data_frame(emp_matrix,"Empirical",1,0.2,series,loglog)
+  auxdf_emp <- gen_deg_data_frame(emp_matrix,"Empirical",1,0.2,series)
   auxdf <- auxdf_emp[["auxdf"]]
   auxdfw <- auxdf_emp[["auxdfw"]]
   if (TFstring == ""){
@@ -107,7 +107,7 @@ gen_deg_distribution <- function(red,series, colors, seq_breaks = c(1,5,10,20,50
   }
   for (j in ficheros){
     sim_matrix <- read.table(j,sep="\t")
-    auxdf_sim <- gen_deg_data_frame(sim_matrix,"Simulated",0.5,0.02,series,loglog)
+    auxdf_sim <- gen_deg_data_frame(sim_matrix,"Simulated",0.5,0.02,series)
     auxdf <- rbind(auxdf,auxdf_sim[["auxdf"]])
     auxdfw <- rbind(auxdfw,auxdf_sim[["auxdfw"]])
   }
@@ -115,6 +115,7 @@ gen_deg_distribution <- function(red,series, colors, seq_breaks = c(1,5,10,20,50
   auxdf <- auxdf[auxdf$dx > 0,]
   dist_deg <- ggplot(data = auxdf, aes(x = dx, y = dy)) + 
     geom_point(aes(alpha = nalpha,shape=method,size=tamanyo,stroke=tamanyo),color=colors) +
+    scale_x_log10(breaks = seq_breaks) + scale_y_log10(breaks=c(0.1,0.2,0.5,1.0)) + 
     xlab(paste(year,series,"Degree")) + 
     ylab(cumulativetxt) + scale_shape_manual(values=c(1,16)) +
     scale_alpha(guide = 'none') + scale_size_identity()  +
@@ -128,11 +129,11 @@ gen_deg_distribution <- function(red,series, colors, seq_breaks = c(1,5,10,20,50
       axis.text.x = element_text(face="bold", color="grey30", size=10),
       axis.text.y = element_text(face="bold", color="grey30", size=10)
     )
-  if (loglog)
-    scale_x_log10(breaks = seq_breaks) + scale_y_log10(breaks=c(0.1,0.2,0.5,1.0))
+  
   auxdfw <- auxdfw[auxdfw$wdx > 0,]
   dist_wdeg <- ggplot(data = auxdfw, aes(x = wdx, y = wdy)) + 
     geom_point(aes(alpha = nalpha,shape=method,size=tamanyo,stroke=tamanyo),color=colors) +
+    scale_x_log10(breaks=c(0.001,0.01,0.1,1)) + scale_y_log10(breaks=c(0.1,0.2,0.5,1.0)) + 
     xlab(paste(year,series,"Normalized Strength")) + 
     ylab(cumulativetxt) + scale_shape_manual(values=c(1,16)) +
     scale_alpha(guide = 'none') +  scale_size_identity() + 
@@ -146,10 +147,6 @@ gen_deg_distribution <- function(red,series, colors, seq_breaks = c(1,5,10,20,50
       axis.text.x = element_text(face="bold", color="grey30", size=10),
       axis.text.y = element_text(face="bold", color="grey30", size=10)
     )
-  if (loglog)
-    dist_wdeg <- dist_wdeg + scale_x_log10(breaks=c(0.001,0.01,0.1,1)) + scale_y_log10(breaks=c(0.1,0.2,0.5,1.0)) 
-  else
-    dist_wdeg <- dist_wdeg + scale_x_sqrt()
   calc_values <- list("dist_deg" = dist_deg, "dist_wdeg" = dist_wdeg)
   return(calc_values)
 }
@@ -172,28 +169,22 @@ if (is.na(TFstring)){
 } else
   TFstring <- "TF_"
 
-loglog_global <- FALSE
-
 files <- paste0(TFstring,"RedAdyCom",seq(ini_seq,end_seq))
 for (orig_file in files)
 {
   red <- paste0(orig_file,"_FILT")
   series = "Exporter"
   year=gsub("_FILT","",strsplit(red,"RedAdyCom")[[1]][-1])
-  grafs <- gen_deg_distribution(paste0(red),series,"blue",loglog = loglog_global)
+  grafs <- gen_deg_distribution(paste0(red),series,"blue")
   e_degree <- grafs$dist_deg
   e_weight <- grafs$dist_wdeg
   series = "Importer"
-  grafs <- gen_deg_distribution(paste0(red),series,"red",loglog = loglog_global)
+  grafs <- gen_deg_distribution(paste0(red),series,"red")
   i_degree <- grafs$dist_deg
   i_weight <- grafs$dist_wdeg
   ppi <- 300
-  if (loglog_global)
-    loglogstr <- "loglog"
-  else
-    loglogstr <- ""
   dir.create("../figures/degdistributions/", showWarnings = FALSE)
-  png(paste0("../figures/degdistributions/ALLdist_",red,"_",languageEl,loglogstr,".png"), width=(8*ppi), height=8*ppi, res=ppi)
+  png(paste0("../figures/degdistributions/ALLdist_",red,"_",languageEl,".png"), width=(8*ppi), height=8*ppi, res=ppi)
   grid.arrange(i_degree,i_weight, e_degree,e_weight,ncol=2, nrow=2)
   dev.off()
 }
