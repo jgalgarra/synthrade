@@ -16,6 +16,9 @@
 source("parse_command_line_args.R")
 source("read_filter_condition.R")
 
+ini_seq <- 1000
+end_seq <- 1000
+
 
 ReadMatrix <- function(year){
   original_file <- read.delim(paste0("../data/RedAdyCom",year,filtered_string,".txt"), header=FALSE)
@@ -63,16 +66,16 @@ SynthMatrix <- function(matrixemp, year){
   
   # Create a synthetic matrix full of zeroes
   msynth <- matrix(rep(0.0,n_imp*n_exp), nrow = n_exp, byrow = TRUE)
-  seed_size <- 3
+  seed_size <- 2
   exp_max <- seed_size
   imp_max <- seed_size
   min_token <- 1
   msynth[1,2] <- min_token 
-  msynth[1,3] <- min_token
+  #msynth[1,3] <- min_token
   msynth[2,1] <- min_token
-  msynth[2,3] <- min_token
-  msynth[3,1] <- min_token
-  msynth[3,2] <- min_token
+  #msynth[2,3] <- min_token
+  #msynth[3,1] <- min_token
+  #msynth[3,2] <- min_token
   cuenta_token <- sum(msynth)
   cuenta_links <- sum(msynth > 0)
   min_links <- cuenta_links
@@ -106,11 +109,11 @@ SynthMatrix <- function(matrixemp, year){
     if ((!morenewnodes) && (tf == 0)){
       tf <- cuenta_links
       print(paste("Build up time",sim_step,"numlinks",tf,100*cuenta_links/numlinks))
-      if (append_log){
-        con <- file("../results/symlog.txt", "a")
-        cat(paste0("FT;",lyear,";",nexper,";",sim_step,";",cuenta_token,";",cuenta_links,";",numlinks,"\n"), file=con)
-        close(con)
-      }
+      # if (append_log){
+      #   con <- file("../results/symlog.txt", "a")
+      #   cat(paste0("FT;",lyear,";",nexper,";",sim_step,";",cuenta_token,";",cuenta_links,";",numlinks,"\n"), file=con)
+      #   close(con)
+      # }
       # Write probability matrix at that instant
       dir.create("../results/probs", showWarnings = FALSE)
       write.table(prob_new_links,paste0("../results/probs/PR_TF_RedAdyCom",lyear,filtered_string,"_W_",nexper,".txt"),
@@ -210,11 +213,11 @@ SynthMatrix <- function(matrixemp, year){
   # Write probability matrix at that instant
   write.table(prob_new_links,paste0("../results/probs/PR_TT_RedAdyCom",lyear,filtered_string,"_W_",nexper,".txt"),
               row.names = FALSE, col.names = FALSE, sep = "\t")
-  if (append_log){
-    con <- file("../results/symlog.txt", "a")
-    cat(paste0("TT;",lyear,";",nexper,";",sim_step,";",cuenta_token,";",cuenta_links,";",numlinks,"\n"), file=con)
-    close(con)
-  }
+  # if (append_log){
+  #   con <- file("../results/symlog.txt", "a")
+  #   cat(paste0("TT;",lyear,";",nexper,";",sim_step,";",cuenta_token,";",cuenta_links,";",numlinks,"\n"), file=con)
+  #   close(con)
+  # }
   return(msynth)
 }
 

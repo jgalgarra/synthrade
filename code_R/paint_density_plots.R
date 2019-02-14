@@ -6,8 +6,20 @@ source("read_filter_condition.R")
 
 source("parse_command_line_args.R")
 
-# Third command argument allows to hide original densities
-HOriginal <- as.character(args[3])
+
+# Third argument. If set to TRUE searches the best GOF in BestKS.txt
+# else chooses experiment number 1
+sbestKS <- TRUE 
+
+KSarg <- as.character(args[4])
+
+if (!is.na(KSarg)){
+  if (KSarg == 0)
+    sbestKS <- FALSE
+}
+
+# Fourth command argument allows to hide original densities
+HOriginal <- as.character(args[4])
 if (is.na(HOriginal)){
   HOriginal <- FALSE
   HOstr <- ""
@@ -20,7 +32,7 @@ if (is.na(HOriginal)){
 PaintDensPlot <- function(datos,titletext,xlabel)
 {
   p <- ggplot() + geom_density(aes(x= cuenta, color = collection, fill = collection),  alpha = .1,
-                               data=datos, position = "identity", adjust=2)+ 
+                           data=datos, position = "identity", adjust= 2)+
     xlab(paste(year,titletext,xlabel))+ylab("Density\n")#+
     #ggtitle(titletext)
     if (xlabel == "Degree")
@@ -43,7 +55,7 @@ PaintDensPlot <- function(datos,titletext,xlabel)
           panel.grid.major.x = element_blank(), 
           legend.title = element_blank(),
           legend.position = "top",
-          legend.text = element_text(size=12, face="bold"),
+          legend.text = element_text(size=10, face="bold"),
           axis.line = element_line(colour = "black"),
           plot.title = element_text(lineheight=.8, face="bold"),
           axis.text = element_text(face="bold", size=13),
@@ -89,8 +101,7 @@ source("parse_command_line_args.R")
 
 anyos <- seq(ini_seq,end_seq)
 
-sbestKS <- TRUE       # If set to TRUE searches the best GOF in BestKS.txt
-                             # else chooses experiment number 1
+
 
 if (nchar(filtered_string)>1){
   if (sbestKS)

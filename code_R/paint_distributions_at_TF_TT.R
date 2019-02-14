@@ -118,9 +118,14 @@ gen_links_strength_distribution <- function(red,series, colors, seq_breaks = c(1
   }
   
   experiment <- 1
+  sbestKS <- TRUE
+  if (sbestKS)
+    bestKS <- read.table("../results/BestKS.txt",header=TRUE)
   
   if (!empirical)
   {
+    if (sbestKS)
+      experiment<- bestKS[bestKS$Year==year,]$Experiment
     dred <- gsub(TFstring,"",red)
     subdir <- "TFMatrix/"
     ficheros <- Sys.glob(paste0("../results/",subdir,red,"_W_",experiment,".txt"))
@@ -129,7 +134,7 @@ gen_links_strength_distribution <- function(red,series, colors, seq_breaks = c(1
       plots_TF <- gen_ls_data_frame(sim_matrix,"Simulated",0.5,0.02,series,"TF")
     }
     subdir <- ""
-    ficheros <- Sys.glob(gsub("TF_","",paste0("../results/",subdir,red,"_W_1",".txt")))
+    ficheros <- Sys.glob(gsub("TF_","",paste0("../results/",subdir,red,"_W_",experiment,".txt")))
     for (j in ficheros){
       sim_matrix <- read.table(j,sep="\t")
       plots_final <- gen_ls_data_frame(sim_matrix,"Simulated",0.5,0.02,series,"TT")
