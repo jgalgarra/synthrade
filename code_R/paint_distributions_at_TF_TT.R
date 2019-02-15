@@ -229,6 +229,46 @@ plot_log_fit <- function(datosplot,titlestr="",dcol="red")
   return(imptf)
 }
 
+
+plot_linear_fit <- function(datosplot,titlestr="",dcol="red")
+{
+  
+  datatrf <- datosplot
+  datatrf$log10_degree <- log10(datatrf$degree)
+  datatrf$log10_strength <- log10(datatrf$strength)
+  datosfit <- datatrf[(datatrf$log10_strength< quantile(datatrf$log10_strength,probs=c(0.9))),]
+  mod <- lm(datosfit$log10_strength ~ datosfit$log10_degree)
+  beta <- mod[[1]][1]
+  alpha <- mod[[1]][2]
+  xmin <- min(datosfit$log10_degree)
+  ymin <- alpha*xmin+beta
+  xmax <- max(datosfit$log10_degree)
+  ymax <- alpha*xmax+beta
+  
+  etmodel <- sprintf("log(s) = %.2f log(d) %.2f Adj. R^2 = %0.3f",as.numeric(mod[[1]][2]),as.numeric(mod[[1]][1]),summary(mod)$adj.r.squared)
+  imptf <- ggplot(datatrf,aes(x=degree,y=strength))+geom_point(color=dcol,alpha=0.5)+
+    ggtitle(titlestr)+xlab("Degree")+ylab("Normalized strength")+
+    scale_x_log10()+scale_y_log10()+
+    geom_text(x=quantile(datatrf$log10_degree,probs=c(0.02)), 
+              y=min(datatrf$log10_strength),label=etmodel, size = 5, hjust=0)+
+    geom_text(x=xmax,y=ymax,label="*")+
+    geom_abline(slope = alpha, intercept = beta, color = "black", alpha = 0.5, linetype = 2) +
+    theme_bw() +  theme(plot.title = element_text(hjust = 0.5, size = 18),
+                        axis.title.x = element_text(color="grey30", size = 15, face="bold"),
+                        axis.title.y = element_text(color="grey30", size= 15, face="bold"),
+                        legend.title=element_blank(),
+                        legend.position = "top",
+                        legend.text=element_text(size=10),
+                        panel.grid.minor = element_blank(),
+                        axis.text.x = element_text(face="bold", color="grey30", size=14),
+                        axis.text.y = element_text(face="bold", color="grey30", size=14)
+    )
+  return(imptf)
+}
+
+
+
+
 TFstring = "TF_"
 files <- paste0(TFstring,"RedAdyCom",seq(ini_seq,end_seq))
 
@@ -246,15 +286,21 @@ for (orig_file in files)
   sqe_TF <- plot_sq_fit(data_e_TF, titlestr = "Synthetic Exporters at TF", dcol="blue")
   sqi_TF <- plot_sq_fit(data_i_TF, titlestr = "Synthetic Importers at TF", dcol="red")
  
+  line_TF <- plot_linear_fit(data_e_TF, titlestr = "Synthetic Exporters at TF", dcol="blue")
+  lini_TF <- plot_linear_fit(data_i_TF, titlestr = "Synthetic Importers at TF", dcol="red")
+  
   acc_e_TF <- plot_log_fit(data_e_TF, titlestr = "Synthetic Exporters at TF", dcol="blue")
   acc_i_TF <- plot_log_fit(data_i_TF, titlestr = "Synthetic Importers at TF", dcol="red")
   
-   
+
   data_e <- grafs$plots_final$data_exp
   data_i <- grafs$plots_final$data_imp
   
   sqe <- plot_sq_fit(data_e, titlestr = "Synthetic Exporters at TT", dcol="blue")
   sqi <- plot_sq_fit(data_i, titlestr = "Synthetic Importers at TT", dcol="red")
+  
+  line <- plot_linear_fit(data_e, titlestr = "Synthetic Exporters at TT", dcol="blue")
+  lini <- plot_linear_fit(data_i, titlestr = "Synthetic Importers at TT", dcol="red")
   
   acc_e <- plot_log_fit(data_e, titlestr = "Synthetic Exporters at TT", dcol="blue")
   acc_i <- plot_log_fit(data_i, titlestr = "Synthetic Importers at TT", dcol="red")
@@ -265,38 +311,31 @@ for (orig_file in files)
   sqe_emp <- plot_sq_fit(data_e_emp, titlestr = "Empirical Exporters", dcol="blue")
   sqi_emp <- plot_sq_fit(data_i_emp, titlestr = "Empirical Importers", dcol="red")
   
+  line_emp <- plot_linear_fit(data_e_emp, titlestr = "Empirical Exporters", dcol="blue")
+  lini_emp <- plot_linear_fit(data_i_emp, titlestr = "Empirical Importers", dcol="red")
+  
   acc_e_emp <- plot_log_fit(data_e_emp, titlestr = "Empirical Exporters", dcol="blue")
   acc_i_emp <- plot_log_fit(data_i_emp, titlestr = "Empirical Importers", dcol="red")
   
-  # dir.create("../figures/linksstrength/", showWarnings = FALSE)
-  # ppi <- 300
-  # png(paste0("../figures/linksstrength/LS_SYNTH_",red,".png"), width=(16*ppi), height=12*ppi, res=ppi)
-  # # grid.arrange(grafs$plots_TF$imptf,grafs$plots_final$imptf, sqi, grafs$plots_TF$exptf,
-  # #             grafs$plots_final$exptf,sqe,ncol=3, nrow=2)
-  # grid.arrange(grafs$plots_TF$imptf,sqi, grafs$plots_TF$exptf,sqe,ncol=2, nrow=2)
-  # dev.off()
-  # 
-  # ppi <- 300
-  # png(paste0("../figures/linksstrength/LS_EMP_",red,".png"), width=(16*ppi), height=12*ppi, res=ppi)
-  # grid.arrange(sqi,sqi_emp,sqe,sqe_emp,ncol=2, nrow=2)
-  # dev.off()
-  
   dir.create("../figures/linksstrength/", showWarnings = FALSE)
   ppi <- 300
-  png(paste0("../figures/linksstrength/LS_SYNTH_",red,".png"), width=(22*ppi), height=12*ppi, res=ppi)
-  grid.arrange(sqi_TF, sqi, sqi_emp, sqe_TF, sqe, sqe_emp, ncol=3, nrow=2)
+  # LOG S ~ LOG D^2
+  # png(paste0("../figures/linksstrength/LS_SYNTH_SQ_",red,".png"), width=(22*ppi), height=12*ppi, res=ppi)
+  # grid.arrange(sqi_TF, sqi, sqi_emp, sqe_TF, sqe, sqe_emp, ncol=3, nrow=2)
+  # dev.off()
+  
+  # LOG S ~ LOG D
+  png(paste0("../figures/linksstrength/LS_SYNTH_LIN_",red,".png"), width=(22*ppi), height=12*ppi, res=ppi)
+  grid.arrange(lini_TF, lini, lini_emp, line_TF, line, line_emp, ncol=3, nrow=2)
   dev.off()
   
-  dir.create("../figures/linksstrength/", showWarnings = FALSE)
-  ppi <- 300
+  # LOG CS ~ LOG CD
   png(paste0("../figures/linksstrength/LS_SYNTH_LOG_",red,".png"), width=(22*ppi), height=12*ppi, res=ppi)
   grid.arrange(acc_i_TF, acc_i, acc_i_emp, acc_e_TF, acc_e, acc_e_emp, ncol=3, nrow=2)
   dev.off()
   
-  dir.create("../figures/linksstrength/", showWarnings = FALSE)
-  ppi <- 300
-  png(paste0("../figures/linksstrength/LS_EMP_LOG_",red,".png"), width=(14*ppi), height=6*ppi, res=ppi)
-  grid.arrange(acc_i_emp, acc_e_emp, ncol=2, nrow=1)
+  png(paste0("../figures/linksstrength/LS_EMP_LOG_",red,".png"), width=(14*ppi), height=12*ppi, res=ppi)
+  grid.arrange(lini_emp, acc_i_emp, line_emp, acc_e_emp, ncol=2, nrow=2)
   dev.off()
   
 }

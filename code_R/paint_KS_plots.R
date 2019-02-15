@@ -14,7 +14,7 @@ PaintKS <- function(series,fillcol,title)
 }
 
 KSdata <- read.table("../results/KSTEST.txt",header=TRUE);
-Exdata <- data.frame("Year" = KSdata$Year, "p.value" = KSdata$Exporter)
+Exdata <- data.frame("Year" = KSdata$Year, "p.value" = KSdata$KSexport)
 PaintKS(Exdata,"blue","Exporter")
-Impdata <- data.frame("Year" = KSdata$Year, "p.value" = KSdata$Importer)
+Impdata <- data.frame("Year" = KSdata$Year, "p.value" = KSdata$KSimport)
 PaintKS(Impdata,"orange","Importer")
