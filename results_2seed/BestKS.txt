@@ -1,0 +1,2 @@
+"Year"	"Experiment"	"geom_mean"	"KS_import"	"KS_export"
+1962	7	0.0701180700298317	0.146140685183113	0.0336425393007291

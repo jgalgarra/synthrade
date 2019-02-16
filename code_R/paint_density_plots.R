@@ -1,9 +1,23 @@
+# Density and boxplots of synthetic and empirical networks
+#
+# Author: Javier Garcia Algarra
+#
+# Invocation: Rscript paint_density_plots iniseq finseq KSarg HOriginal
+#                    iniseq : Initial year
+#                    finseq : Final year
+#                    KSarg: 1 Find best fitting synthetic experiment   0 Experiment 1
+#                    HOriginal: FS Show Filtered and Synthetic (default)
+#                               FOS (Filtered, Original, Synthetic)
+#                               OS (Original, Synthetic)
+#                               O  (Only Original)
+#                               F  (Only Filtered)
+#
+# Example: Rscript paint_density_plots 1962 1976 1 FOS
+
 library(grid)
 library(gridExtra)
 library(ggplot2)
 source("aux_functions_matrix.R")
-source("read_filter_condition.R")
-
 source("parse_command_line_args.R")
 
 
@@ -21,11 +35,25 @@ if (!is.na(KSarg)){
 # Fourth command argument allows to hide original densities
 HOriginal <- as.character(args[4])
 if (is.na(HOriginal)){
-  HOriginal <- FALSE
-  HOstr <- ""
+  SFilt <- TRUE
+  SSynth <- TRUE
+  sOrig <- FALSE
+  HOstr <- "FS"
 } else{
-  HOriginal <- TRUE
-  HOstr <- "_HO"
+  HOstr <- ""
+  if (grepl("F",HOriginal)){
+    SFilt <- TRUE
+    HOstr <- paste0(HOstr,"F")
+  }
+  if (grepl("O",HOriginal)){
+    SOrig <- TRUE
+    HOstr <- paste0(HOstr,"O")
+  }
+  if (grepl("S",HOriginal)){
+    SOrig <- TRUE
+    HOstr <- paste0(HOstr,"S")
+  }
+
 }
 
 
@@ -34,18 +62,34 @@ PaintDensPlot <- function(datos,titletext,xlabel)
   p <- ggplot() + geom_density(aes(x= cuenta, color = collection, fill = collection),  alpha = .1,
                            data=datos, position = "identity", adjust= 2)+
     xlab(paste(year,titletext,xlabel))+ylab("Density\n")#+
-    #ggtitle(titletext)
     if (xlabel == "Degree")
       p <- p + scale_x_log10(limits=c(0.1,1000))
     else
       p <- p + scale_x_log10(limits=c(10^-7,1))
-    if (HOriginal){
+    if (HOstr == "FS"){
       p <- p + scale_fill_manual(values=c("blue","red","red"))+
         scale_color_manual(values=c("blue","red","red"))
-    } else {
-      p <- p + scale_fill_manual(values=c("blue","white","red"))+
-      scale_color_manual(values=c("blue","grey","red"))
-      }
+    } 
+    if (HOstr == "FOS")
+    {
+      p <- p + scale_fill_manual(values=c("blue","orange","red"))+
+      scale_color_manual(values=c("blue","orange","red"))
+    }
+    if (HOstr == "FO")
+    {
+      p <- p + scale_fill_manual(values=c("blue","orange","orange"))+
+        scale_color_manual(values=c("blue","orange","orange"))
+    }
+    if (HOstr == "F")
+    {
+      p <- p + scale_fill_manual(values=c("red","red","red"))+
+        scale_color_manual(values=c("red","red","red"))
+    }
+    if (HOstr == "O")
+    {
+      p <- p + scale_fill_manual(values=c("orange","orange","orange"))+
+        scale_color_manual(values=c("orange","orange","orange"))
+    }
     p <-p +theme_bw() +
     theme(panel.border = element_blank(),
           legend.key = element_blank(),
@@ -71,13 +115,30 @@ PaintBoxPlot <- function(datos,titletext,xlabel)
                                data=datos, position = "identity")+ 
     xlab(paste(year,titletext,xlabel))+ylab("Density\n")+
     scale_y_log10()
-    if (HOriginal){
-      p <- p + scale_fill_manual(values=c("blue","red","red"))+
-        scale_color_manual(values=c("blue","red","red"))
-    } else {
-      p <- p + scale_fill_manual(values=c("blue","white","red"))+
-        scale_color_manual(values=c("blue","grey","red"))
-    }
+  if (HOstr == "FS"){
+    p <- p + scale_fill_manual(values=c("blue","red","red"))+
+      scale_color_manual(values=c("blue","red","red"))
+  } 
+  if (HOstr == "FOS")
+  {
+    p <- p + scale_fill_manual(values=c("blue","orange","red"))+
+      scale_color_manual(values=c("blue","orange","red"))
+  }
+  if (HOstr == "FO")
+  {
+    p <- p + scale_fill_manual(values=c("blue","orange","orange"))+
+      scale_color_manual(values=c("blue","orange","orange"))
+  }
+  if (HOstr == "F")
+  {
+    p <- p + scale_fill_manual(values=c("red","red","red"))+
+      scale_color_manual(values=c("red","red","red"))
+  }
+  if (HOstr == "O")
+  {
+    p <- p + scale_fill_manual(values=c("orange","orange","orange"))+
+      scale_color_manual(values=c("orange","orange","orange"))
+  }
     p <- p + theme_bw() +
     theme(panel.border = element_blank(),
           legend.key = element_blank(),
@@ -101,65 +162,57 @@ source("parse_command_line_args.R")
 
 anyos <- seq(ini_seq,end_seq)
 
-
-
-if (nchar(filtered_string)>1){
-  if (sbestKS)
-    bestKS <- read.table("../results/BestKS.txt",header=TRUE)
-  fstring <- "FILT"
-} else {
-  if (sbestKS)
-    bestKS <- read.table("../results/BestKSUnfiltered.txt",header=TRUE)
-  fstring <- "UNFILT"
-}
+if (sbestKS)
+  bestKS <- read.table("../results/BestKS.txt",header=TRUE)
 
 for (year in anyos){
   if (sbestKS)
     posbest <- bestKS[bestKS$Year==year,]$Experiment
   else
     posbest <- 1
-  file_name <- paste0("RedAdyCom",year,filtered_string)
+  file_name <- paste0("RedAdyCom",year,"_FILT")
   file_orig <- paste0("RedAdyCom",year)
   experiment_files <- Sys.glob(paste0("../results/",file_name,"_W_",posbest,".txt"))
-  numexper <- 1
   filt_matrix <- read_and_remove_zeroes(paste0("../data/",file_name,".txt"))
   orig_matrix <- read_and_remove_zeroes(paste0("../data/",file_orig,".txt"))
   sim_matrix <- read_and_remove_zeroes(experiment_files[1])
   hm_filt <- crea_lista_heatmap(MPack(filt_matrix,normalize = FALSE),justcount = TRUE)
   hm_sim <- crea_lista_heatmap(MPack(sim_matrix,normalize = FALSE),justcount = TRUE)
   hm_orig <- crea_lista_heatmap(MPack(orig_matrix,normalize = FALSE),justcount = TRUE)
-  hm_filt$collection <- "Filtered"
-  hm_sim$collection <- "Synthetic"
-  hm_orig$collection <- "Original"
-  if (HOriginal)
+  hm_filt$collection <- "Filtered  "
+  hm_sim$collection <- "Synthetic  "
+  hm_orig$collection <- "Original  "
+  if (HOstr == "FS")
     hm_all_deg <- rbind(hm_filt,hm_sim)
-  else
+  if (HOstr == "FOS")
     hm_all_deg <- rbind(hm_filt,hm_sim,hm_orig)
+  if (HOstr == "FO")
+    hm_all_deg <- rbind(hm_filt,hm_orig)
+  if (HOstr == "O")
+    hm_all_deg <- rbind(hm_orig)
+  if (HOstr == "F")
+    hm_all_deg <- rbind(hm_filt)
   hm_all_importers_deg <- hm_all_deg[hm_all_deg$type=="IMP",]
-  hm_filt <- crea_lista_heatmap(MPack(filt_matrix,normalize = TRUE))
-  hm_sim <- crea_lista_heatmap(MPack(sim_matrix,normalize = TRUE))
-  hm_orig <- crea_lista_heatmap(MPack(orig_matrix,normalize = TRUE))
-  hm_filt$collection <- "Filtered"
-  hm_sim$collection <- "Synthetic"
-  hm_orig$collection <- "Original"
-  if (HOriginal)
-    hm_all_weight <- rbind(hm_filt,hm_sim)
-  else
-    hm_all_weight <- rbind(hm_filt,hm_sim,hm_orig)
-  hm_all_importers_weight <- hm_all_weight[hm_all_weight$type=="IMP",]
-  
   hm_all_exporters_deg <- hm_all_deg[hm_all_deg$type=="EXP",]
   hm_filt <- crea_lista_heatmap(MPack(filt_matrix,normalize = TRUE))
   hm_sim <- crea_lista_heatmap(MPack(sim_matrix,normalize = TRUE))
   hm_orig <- crea_lista_heatmap(MPack(orig_matrix,normalize = TRUE))
-  hm_filt$collection <- "Filtered"
-  hm_sim$collection <- "Synthetic"
-  hm_orig$collection <- "Original"
-  if (HOriginal)
+  hm_filt$collection <- "Filtered  "
+  hm_sim$collection <- "Synthetic  "
+  hm_orig$collection <- "Original  "
+  if (HOstr == "FS")
     hm_all_weight <- rbind(hm_filt,hm_sim)
-  else
+  if (HOstr == "FOS")
     hm_all_weight <- rbind(hm_filt,hm_sim,hm_orig)
+  if (HOstr == "FO")
+    hm_all_weight <- rbind(hm_filt,hm_orig)
+  if (HOstr == "O")
+    hm_all_weight <- rbind(hm_orig)
+  if (HOstr == "F")
+    hm_all_weight <- rbind(hm_filt)
   hm_all_exporters_weight <- hm_all_weight[hm_all_weight$type=="EXP",]
+  hm_all_importers_weight <- hm_all_weight[hm_all_weight$type=="IMP",]
+  
  
   q <- PaintDensPlot(hm_all_importers_deg,"Importers","Degree")
   r <- PaintDensPlot(hm_all_importers_weight,"Importers","Normalized strength")
@@ -171,12 +224,12 @@ for (year in anyos){
   bs <- PaintBoxPlot(hm_all_exporters_deg,"Exporters","Degree")
   bt <- PaintBoxPlot(hm_all_exporters_weight,"Exporters","Normalized strength")
   dir.create("../figures/densities/", showWarnings = FALSE)
-  fsal <- paste0("../figures/densities/Density_DegStr_",year,"_",fstring,HOstr,".png")
+  fsal <- paste0("../figures/densities/Density_DegStr_",year,"_",HOstr,".png")
   ppi <- 600
   png(fsal, width=10*ppi, height=8*ppi, res=ppi)
   grid.arrange(q,r,s,t, ncol=2, nrow=2,top=year )
   dev.off()
-  fsal2 <- paste0("../figures/densities/Boxplot_DegStr_",year,"_",fstring,HOstr,".png")
+  fsal2 <- paste0("../figures/densities/Boxplot_DegStr_",year,"_",HOstr,".png")
   ppi <- 600
   png(fsal2, width=10*ppi, height=8*ppi, res=ppi)
   grid.arrange(bq,br,bs,bt, ncol=2, nrow=2 )
