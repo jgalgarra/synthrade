@@ -1,3 +1,11 @@
+# Performs the Lilliefors normality test and computes the Kolmogorov-Smirnov distance between the
+# filtered empirical network and the synthetic network. Results are stored at results/BestKS.txt and
+# results/BestLillies.txt
+#
+# Author: Javier Garcia Algarra
+#
+# Invocation: Rscript compute_gof_distrbutions iniseq finseq 
+
 library(nortest)
 source("read_filter_condition.R")
 source("aux_functions_matrix.R")
