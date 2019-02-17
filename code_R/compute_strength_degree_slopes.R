@@ -1,5 +1,10 @@
 #  Compute strength-degree slopes 
 #  
+# Author: Javier Garcia Algarra
+#
+# Invocation: Rscript compute_strength_degree_slopes iniseq finseq KSarg HOriginal
+#                    iniseq : Initial year
+#                    finseq : Final year
 #  Results are stored at Results/Slopes.txt
 
 library("grid")
@@ -8,8 +13,6 @@ library("igraph")
 source("aux_functions_matrix.R")
 source("parse_command_line_args.R")
 
-ini_seq <- 1962
-end_seq <- 2014
 
 calc_accum <- function(datosinput)
 {

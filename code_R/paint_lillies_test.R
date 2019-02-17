@@ -36,8 +36,8 @@ for (i in 1:nrow(Lillies)){
   datalill <- rbind(datalill,datatemp)
 }
   
-exp <- paint_lillies(datalill[datalill$Type=="Exporter",],"red","Exporters")
-imp <- paint_lillies(datalill[datalill$Type=="Importer",],"blue","Importers")
+exp <- paint_lillies(datalill[datalill$Type=="Exporter",],"blue","Exporters")
+imp <- paint_lillies(datalill[datalill$Type=="Importer",],"red","Importers")
 
 dir.create("../figures/tests/", showWarnings = FALSE)
 fsal <- paste0("../figures/tests/Lillies.png")
