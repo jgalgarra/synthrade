@@ -42,12 +42,10 @@ UpdatableLinks <- function(matrixprob){
   listaedges = c()
   tam = c(nrow(matrixprob),ncol(matrixprob))
   newlinks <- 0
-  #while (sum(newlinks) == 0){
-    randunif <- runif(tam[1]*tam[2],0,1)
-    randunif = matrix(randunif,nrow=tam[1],ncol=tam[2])
-    newlinks = randunif < matrixprob
-    positions <- which(newlinks !=0, arr.ind = T)
-  #}
+  randunif <- runif(tam[1]*tam[2],0,1)
+  randunif = matrix(randunif,nrow=tam[1],ncol=tam[2])
+  newlinks = randunif < matrixprob
+  positions <- which(newlinks !=0, arr.ind = T)
   if (sum(newlinks) == 0)
     return(c())
   else
