@@ -136,7 +136,16 @@ compute_log_fit <- function(datosplot)
   return(mod)
 }
 
-
+compute_lognewman_fit <- function(datosplot)
+{
+  
+  datatrf <- datosplot
+  datatrf$log10_degree <- log10(datatrf$degree)
+  datatrf$log10_acstrength <- log10(datatrf$ac_strength)
+  datosfit <- datatrf
+  mod <- lm(datosfit$log10_acstrength ~ datosfit$log10_degree)
+  return(mod)
+}
 TFstring = "TF_"
 files <- paste0(TFstring,"RedAdyCom",seq(ini_seq,end_seq))
 dfslopes <- data.frame("Year"=c(),"Experiment"=c(),
@@ -157,14 +166,18 @@ for (year in seq(ini_seq,end_seq)){
     models_synth <- gen_links_strength_models(name_file,red,series,empirical = FALSE)
     data_e <- models_synth$models_final$data_exp
     data_i <- models_synth$models_final$data_imp
-    sqe_model <- compute_log_fit(data_e)
-    sqi_model <- compute_log_fit(data_i)
+    # sqe_model <- compute_log_fit(data_e)
+    # sqi_model <- compute_log_fit(data_i)
+    sqe_model <- compute_lognewman_fit(data_e)
+    sqi_model <- compute_lognewman_fit(data_i)
     if (nexper == 1){
       models_emp <-  gen_links_strength_models(emp_file,red,series,empirical = TRUE)
       data_e_emp <- models_emp$models_final$data_exp
       data_i_emp <- models_emp$models_final$data_imp
-      sqe_emp_model <- compute_log_fit(data_e_emp)
-      sqi_emp_model <- compute_log_fit(data_i_emp)
+      # sqe_emp_model <- compute_log_fit(data_e_emp)
+      # sqi_emp_model <- compute_log_fit(data_i_emp)
+      sqe_emp_model <- compute_lognewman_fit(data_e_emp)
+      sqi_emp_model <- compute_lognewman_fit(data_i_emp)
     }
     dfexp<- data.frame("Year"=0,"Experiment"=0,
                            "ExpSlopeSynth"=0,"ExpSynthR2"=0,"ImpSlopeSynth"=0,"ImpSynthR2"=0,

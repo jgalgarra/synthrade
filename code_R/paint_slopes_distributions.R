@@ -24,7 +24,7 @@ for (i in 1:nrow(slopes_emp)){
 
 p <- ggplot(data=dataslope,aes(Node,slope)) + 
      geom_boxplot(aes(group=Node,color = Node,fill=Node),alpha=0.3) +
-     ylab("Slope")+xlab("")+ggtitle("Cumulative Degree vs Cumulative Normalized Strength")+
+     ylab("Slope")+xlab("")+ggtitle("Cumulative Normalized Strength vs Degree")+
      theme_bw()+
      theme(panel.border = element_blank(),
         legend.key = element_blank(),

@@ -8,7 +8,8 @@ source("parse_command_line_args.R")
 
 calc_accum <- function(datosinput)
 {
-  datosacc <- datosinput[order(datosinput$weight),]
+  #datosacc <- datosinput[order(datosinput$weight),]
+  datosacc <- datosinput[order(datosinput$degree),]
   datosacc$ac_degree <- 0
   datosacc$ac_strength <- 0
   datosacc$ac_degree[1] <- datosacc$degree[1]
@@ -18,6 +19,7 @@ calc_accum <- function(datosinput)
     datosacc$ac_strength[i] <- datosacc$ac_strength[i-1]+datosacc$weight[i]
   }
   datosacc$ac_strength <- datosacc$ac_strength/max(datosacc$ac_strength)
+  datosacc$ac_strength <- datosacc$ac_strength
   return(datosacc)
 }
 
@@ -55,7 +57,6 @@ gen_links_strength_distribution <- function(red,series, colors, seq_breaks = c(1
     dfdeg$weight <- dfdeg$weight /max(as.numeric(dfdeg$weight))
     
     dfaccum <- calc_accum(dfdeg) 
-    #ddeg_exporter <- dfdeg[dfdeg$type == "Exporter",]
     ddeg_exporter <- dfaccum[dfaccum$type == "Exporter",]
     
     degree <- ddeg_exporter$degree
@@ -230,6 +231,45 @@ plot_log_fit <- function(datosplot,titlestr="",dcol="red")
 }
 
 
+plot_lognewman_fit <- function(datosplot,titlestr="",dcol="red")
+{
+  
+  datatrf <- datosplot
+  datatrf$log10_degree <- log10(datatrf$degree)
+  datatrf$log10_acstrength <- log10(datatrf$ac_strength)
+  #datosfit <- datatrf[(datatrf$log10_acstrength< quantile(datatrf$log10_acstrength,probs=c(0.6))),]
+  datosfit <- datatrf
+  mod <- lm(datosfit$log10_acstrength ~ datosfit$log10_degree)
+  beta <- mod[[1]][1]
+  alpha <- mod[[1]][2]
+  xmin <- min(datosfit$log10_degree)
+  ymin <- alpha*xmin+beta
+  xmax <- max(datosfit$log10_degree)
+  ymax <- alpha*xmax+beta
+  
+  etmodel <- sprintf("log(S) = %.2f log(d) %.2f Adj. R^2 = %0.3f",as.numeric(mod[[1]][2]),as.numeric(mod[[1]][1]),summary(mod)$adj.r.squared)
+  imptf <- ggplot(datatrf,aes(x=degree,y=ac_strength))+geom_point(color=dcol,alpha=0.5)+
+    ggtitle(titlestr)+xlab("Degree")+ylab("Cumulative Normalized strength")+
+    scale_x_log10()+scale_y_log10()+
+    geom_text(x=quantile(datatrf$log10_degree,probs=c(0.02)), 
+              y=min(datatrf$log10_acstrength),label=etmodel, size = 5, hjust=0)+
+    geom_text(x=xmax,y=ymax,label="*")+
+    geom_abline(slope = alpha, intercept = beta, color = "black", alpha = 0.5, linetype = 2) +
+    theme_bw() +  theme(plot.title = element_text(hjust = 0.5, size = 18),
+                        axis.title.x = element_text(color="grey30", size = 15, face="bold"),
+                        axis.title.y = element_text(color="grey30", size= 15, face="bold"),
+                        legend.title=element_blank(),
+                        legend.position = "top",
+                        legend.text=element_text(size=10),
+                        panel.grid.minor = element_blank(),
+                        axis.text.x = element_text(face="bold", color="grey30", size=14),
+                        axis.text.y = element_text(face="bold", color="grey30", size=14)
+    )
+  return(imptf)
+}
+
+
+
 plot_linear_fit <- function(datosplot,titlestr="",dcol="red")
 {
   
@@ -292,7 +332,10 @@ for (orig_file in files)
   acc_e_TF <- plot_log_fit(data_e_TF, titlestr = "Synthetic Exporters at TF", dcol="blue")
   acc_i_TF <- plot_log_fit(data_i_TF, titlestr = "Synthetic Importers at TF", dcol="red")
   
-
+  acc_enewman_TF <- plot_lognewman_fit(data_e_TF, titlestr = "Synthetic Exporters at TF", dcol="blue")
+  acc_inewman_TF <- plot_lognewman_fit(data_i_TF, titlestr = "Synthetic Importers at TF", dcol="red")
+  
+  
   data_e <- grafs$plots_final$data_exp
   data_i <- grafs$plots_final$data_imp
   
@@ -305,6 +348,10 @@ for (orig_file in files)
   acc_e <- plot_log_fit(data_e, titlestr = "Synthetic Exporters at TT", dcol="blue")
   acc_i <- plot_log_fit(data_i, titlestr = "Synthetic Importers at TT", dcol="red")
   
+  acc_enewman <- plot_lognewman_fit(data_e, titlestr = "Synthetic Exporters at TT", dcol="blue")
+  acc_inewman <- plot_lognewman_fit(data_i, titlestr = "Synthetic Importers at TT", dcol="red")
+  
+  
   grafsemp <-  gen_links_strength_distribution(red,series,"blue",empirical = TRUE)
   data_e_emp <- grafsemp$plots_final$data_exp
   data_i_emp <- grafsemp$plots_final$data_imp
@@ -316,6 +363,10 @@ for (orig_file in files)
   
   acc_e_emp <- plot_log_fit(data_e_emp, titlestr = "Empirical Exporters", dcol="blue")
   acc_i_emp <- plot_log_fit(data_i_emp, titlestr = "Empirical Importers", dcol="red")
+  
+  acc_enewman_emp <- plot_lognewman_fit(data_e_emp, titlestr = "Empirical Exporters", dcol="blue")
+  acc_inewman_emp <- plot_lognewman_fit(data_i_emp, titlestr = "Empricial Importers", dcol="red")
+  
   
   dir.create("../figures/linksstrength/", showWarnings = FALSE)
   ppi <- 300
@@ -333,6 +384,12 @@ for (orig_file in files)
   png(paste0("../figures/linksstrength/LS_SYNTH_LOG_",red,".png"), width=(22*ppi), height=12*ppi, res=ppi)
   grid.arrange(acc_i_TF, acc_i, acc_i_emp, acc_e_TF, acc_e, acc_e_emp, ncol=3, nrow=2)
   dev.off()
+  
+  # LOG CS ~ LOG D
+  png(paste0("../figures/linksstrength/LS_SYNTH_LOGNEWMAN_",red,".png"), width=(14*ppi), height=12*ppi, res=ppi)
+  grid.arrange(acc_inewman, acc_inewman_emp, acc_enewman, acc_enewman_emp, ncol=2, nrow=2)
+  dev.off()
+  
   
   png(paste0("../figures/linksstrength/LS_EMP_LOG_",red,".png"), width=(14*ppi), height=12*ppi, res=ppi)
   grid.arrange(lini_emp, acc_i_emp, line_emp, acc_e_emp, ncol=2, nrow=2)
