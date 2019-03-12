@@ -16,7 +16,7 @@ source("parse_command_line_args.R")
 
 calc_accum <- function(datosinput)
 {
-  datosacc <- datosinput[order(datosinput$weight),]
+  datosacc <- datosinput[order(datosinput$degree),]
   datosacc$ac_degree <- 0
   datosacc$ac_strength <- 0
   datosacc$ac_degree[1] <- datosacc$degree[1]
@@ -115,26 +115,6 @@ gen_links_strength_models <- function(namefile,red,series, seq_breaks = c(1,5,10
 
 }
 
-compute_sq_fit <- function(datosplot,titlestr="",dcol="red")
-{
-  datatrf <- datosplot
-  datatrf$log10_degree <- log10(datosplot$degree)^2
-  datatrf$log10_strength <- log10(datosplot$strength)
-  mod <- lm(datatrf$log10_strength ~ datatrf$log10_degree^2)
-  return(mod)
-}
-
-
-compute_log_fit <- function(datosplot)
-{
-  
-  datatrf <- datosplot
-  datatrf$log10_acdegree <- log10(datatrf$ac_degree)
-  datatrf$log10_acstrength <- log10(datatrf$ac_strength)
-  datosfit <- datatrf[(datatrf$log10_acstrength< quantile(datatrf$log10_acstrength,probs=c(0.75))),]
-  mod <- lm(datosfit$log10_acstrength ~ datosfit$log10_acdegree)
-  return(mod)
-}
 
 compute_lognewman_fit <- function(datosplot)
 {
@@ -166,31 +146,38 @@ for (year in seq(ini_seq,end_seq)){
     models_synth <- gen_links_strength_models(name_file,red,series,empirical = FALSE)
     data_e <- models_synth$models_final$data_exp
     data_i <- models_synth$models_final$data_imp
-    # sqe_model <- compute_log_fit(data_e)
-    # sqi_model <- compute_log_fit(data_i)
     sqe_model <- compute_lognewman_fit(data_e)
+    icsqe <- confint(sqe_model,level=0.95)
+    
     sqi_model <- compute_lognewman_fit(data_i)
+    icsqi <- confint(sqi_model,level=0.95)
     if (nexper == 1){
       models_emp <-  gen_links_strength_models(emp_file,red,series,empirical = TRUE)
       data_e_emp <- models_emp$models_final$data_exp
       data_i_emp <- models_emp$models_final$data_imp
-      # sqe_emp_model <- compute_log_fit(data_e_emp)
-      # sqi_emp_model <- compute_log_fit(data_i_emp)
       sqe_emp_model <- compute_lognewman_fit(data_e_emp)
+      icsqe_emp <- confint(sqe_emp_model,level=0.95)
       sqi_emp_model <- compute_lognewman_fit(data_i_emp)
+      icsqi_emp <- confint(sqi_emp_model,level=0.95)
     }
     dfexp<- data.frame("Year"=0,"Experiment"=0,
-                           "ExpSlopeSynth"=0,"ExpSynthR2"=0,"ImpSlopeSynth"=0,"ImpSynthR2"=0,
-                           "ExpSlopeEmp"=0,"ExpEmpR2"=0,"ImpSlopeEmp"=0,"ImpEmpR2"=0)
+                           "ExpSlopeSynth"=0,"ExpSlopeSynthConfInt"=0,"ExpSynthR2"=0,"ImpSlopeSynth"=0,
+                           "ImpSlopeSynthConfInt"=0,"ImpSynthR2"=0,
+                           "ExpSlopeEmp"=0,"ExpSlopeEmpConfInt"=0,"ExpEmpR2"=0,"ImpSlopeEmp"=0,
+                           "ImppSlopEmpConfInt"=0,"ImpEmpR2"=0)
     dfexp$Year = year
     dfexp$Experiment = nexper
     dfexp$ExpSlopeSynth <- as.numeric(sqe_model[[1]][2])
+    dfexp$ExpSlopeSynthConfInt <- as.numeric(sqe_model[[1]][2])-icsqe[2]
     dfexp$ExpSynthR2 <- summary(sqe_model)$adj.r.squared
     dfexp$ImpSlopeSynth <- as.numeric(sqi_model[[1]][2])
+    dfexp$ImpSlopeSynthConfInt <- as.numeric(sqi_model[[1]][2])-icsqi[2]
     dfexp$ImpSynthR2 <- summary(sqi_model)$adj.r.squared
     dfexp$ExpSlopeEmp <- as.numeric(sqe_emp_model[[1]][2])
+    dfexp$ExpSlopeEmpConfInt <- as.numeric(sqe_emp_model[[1]][2])-icsqe_emp[2]
     dfexp$ExpEmpR2 <- summary(sqe_emp_model)$adj.r.squared
     dfexp$ImpSlopeEmp <- as.numeric(sqi_emp_model[[1]][2])
+    dfexp$ImpSlopeEmpConfInt <- as.numeric(sqi_emp_model[[1]][2])-icsqi_emp[2]
     dfexp$ImpEmpR2 <- summary(sqi_emp_model)$adj.r.squared
     dfslopes <- rbind(dfslopes,dfexp)
   }

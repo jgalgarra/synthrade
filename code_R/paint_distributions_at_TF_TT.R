@@ -2,9 +2,27 @@ library("grid")
 library("gridExtra")
 library("igraph")
 library("ggplot2")
+library("poweRlaw")
 source("aux_functions_matrix.R")
 source("parse_command_line_args.R")
 
+estimate_powerlaw <- function(datosfit)
+{
+  m_bs = conpl$new(datosfit$strength)
+  est = estimate_xmin(m_bs)
+  m_bs$setXmin(est)
+  plot(m_bs)
+  print(paste("pendiente strength",m_bs$pars))
+  lines(m_bs, col=2, lwd=2)
+  
+  m_bd = conpl$new(datosfit$degree)
+  est = estimate_xmin(m_bd)
+  m_bd$setXmin(est)
+  plot(m_bd)
+  print(paste("pendiente degree",m_bd$pars))
+  lines(m_bd, col=3, lwd=2)
+  
+}
 
 calc_accum <- function(datosinput)
 {
@@ -19,7 +37,6 @@ calc_accum <- function(datosinput)
     datosacc$ac_strength[i] <- datosacc$ac_strength[i-1]+datosacc$weight[i]
   }
   datosacc$ac_strength <- datosacc$ac_strength/max(datosacc$ac_strength)
-  datosacc$ac_strength <- datosacc$ac_strength
   return(datosacc)
 }
 
@@ -231,13 +248,13 @@ plot_log_fit <- function(datosplot,titlestr="",dcol="red")
 }
 
 
-plot_lognewman_fit <- function(datosplot,titlestr="",dcol="red")
+plot_logcumulative_fit <- function(datosplot,titlestr="",dcol="red")
 {
-  
+   
   datatrf <- datosplot
+  datatrf$ac_strength <- datatrf$ac_strength
   datatrf$log10_degree <- log10(datatrf$degree)
   datatrf$log10_acstrength <- log10(datatrf$ac_strength)
-  #datosfit <- datatrf[(datatrf$log10_acstrength< quantile(datatrf$log10_acstrength,probs=c(0.6))),]
   datosfit <- datatrf
   mod <- lm(datosfit$log10_acstrength ~ datosfit$log10_degree)
   beta <- mod[[1]][1]
@@ -247,6 +264,7 @@ plot_lognewman_fit <- function(datosplot,titlestr="",dcol="red")
   xmax <- max(datosfit$log10_degree)
   ymax <- alpha*xmax+beta
   
+  ic <- confint(mod,level=0.95)
   etmodel <- sprintf("log(S) = %.2f log(d) %.2f Adj. R^2 = %0.3f",as.numeric(mod[[1]][2]),as.numeric(mod[[1]][1]),summary(mod)$adj.r.squared)
   imptf <- ggplot(datatrf,aes(x=degree,y=ac_strength))+geom_point(color=dcol,alpha=0.5)+
     ggtitle(titlestr)+xlab("Degree")+ylab("Cumulative Normalized strength")+
@@ -332,9 +350,10 @@ for (orig_file in files)
   acc_e_TF <- plot_log_fit(data_e_TF, titlestr = "Synthetic Exporters at TF", dcol="blue")
   acc_i_TF <- plot_log_fit(data_i_TF, titlestr = "Synthetic Importers at TF", dcol="red")
   
-  acc_enewman_TF <- plot_lognewman_fit(data_e_TF, titlestr = "Synthetic Exporters at TF", dcol="blue")
-  acc_inewman_TF <- plot_lognewman_fit(data_i_TF, titlestr = "Synthetic Importers at TF", dcol="red")
+  acc_ecumulative_TF <- plot_logcumulative_fit(data_e_TF, titlestr = "Synthetic Exporters at TF", dcol="blue")
+  acc_icumulative_TF <- plot_logcumulative_fit(data_i_TF, titlestr = "Synthetic Importers at TF", dcol="red")
   
+  #estimate_powerlaw(data_e_TF)
   
   data_e <- grafs$plots_final$data_exp
   data_i <- grafs$plots_final$data_imp
@@ -348,8 +367,8 @@ for (orig_file in files)
   acc_e <- plot_log_fit(data_e, titlestr = "Synthetic Exporters at TT", dcol="blue")
   acc_i <- plot_log_fit(data_i, titlestr = "Synthetic Importers at TT", dcol="red")
   
-  acc_enewman <- plot_lognewman_fit(data_e, titlestr = "Synthetic Exporters at TT", dcol="blue")
-  acc_inewman <- plot_lognewman_fit(data_i, titlestr = "Synthetic Importers at TT", dcol="red")
+  acc_ecumulative <- plot_logcumulative_fit(data_e, titlestr = "Synthetic Exporters at TT", dcol="blue")
+  acc_icumulative <- plot_logcumulative_fit(data_i, titlestr = "Synthetic Importers at TT", dcol="red")
   
   
   grafsemp <-  gen_links_strength_distribution(red,series,"blue",empirical = TRUE)
@@ -364,8 +383,8 @@ for (orig_file in files)
   acc_e_emp <- plot_log_fit(data_e_emp, titlestr = "Empirical Exporters", dcol="blue")
   acc_i_emp <- plot_log_fit(data_i_emp, titlestr = "Empirical Importers", dcol="red")
   
-  acc_enewman_emp <- plot_lognewman_fit(data_e_emp, titlestr = "Empirical Exporters", dcol="blue")
-  acc_inewman_emp <- plot_lognewman_fit(data_i_emp, titlestr = "Empricial Importers", dcol="red")
+  acc_ecumulative_emp <- plot_logcumulative_fit(data_e_emp, titlestr = "Empirical Exporters", dcol="blue")
+  acc_icumulative_emp <- plot_logcumulative_fit(data_i_emp, titlestr = "Empirical Importers", dcol="red")
   
   
   dir.create("../figures/linksstrength/", showWarnings = FALSE)
@@ -386,8 +405,8 @@ for (orig_file in files)
   dev.off()
   
   # LOG CS ~ LOG D
-  png(paste0("../figures/linksstrength/LS_SYNTH_LOGNEWMAN_",red,".png"), width=(14*ppi), height=12*ppi, res=ppi)
-  grid.arrange(acc_inewman, acc_inewman_emp, acc_enewman, acc_enewman_emp, ncol=2, nrow=2)
+  png(paste0("../figures/linksstrength/LS_SYNTH_LOGCUMULATIVE_",red,".png"), width=(14*ppi), height=12*ppi, res=ppi)
+  grid.arrange(acc_icumulative, acc_icumulative_emp, acc_ecumulative, acc_ecumulative_emp, ncol=2, nrow=2)
   dev.off()
   
   
