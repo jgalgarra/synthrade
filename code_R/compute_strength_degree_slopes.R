@@ -129,8 +129,10 @@ compute_lognewman_fit <- function(datosplot)
 TFstring = "TF_"
 files <- paste0(TFstring,"RedAdyCom",seq(ini_seq,end_seq))
 dfslopes <- data.frame("Year"=c(),"Experiment"=c(),
-                       "ExpSlopeSynth"=c(),"ExpSynthR2"=c(),"ImpSlopeSynth"=c(),"ImpSynthR2"=c(),
-                        "ExpSlopeEmp"=c(),"ExpEmpR2"=c(),"ImpSlopeEmp"=c(),"ImpEmpR2"=c())
+                        "ExpSlopeSynth"=c(),"ExpSlopeSynthConfInt"=c(),"ExpSynthR2"=c(),"ImpSlopeSynth"=c(),
+                        "ImpSlopeSynthConfInt"=c(),"ImpSynthR2"=c(),
+                        "ExpSlopeEmp"=c(),"ExpSlopeEmpConfInt"=c(),"ExpEmpR2"=c(),"ImpSlopeEmp"=c(),
+                        "ImpSlopeEmpConfInt"=c(),"ImpEmpR2"=c())
 
 for (year in seq(ini_seq,end_seq)){
   print(paste("Year:",year))
@@ -164,7 +166,7 @@ for (year in seq(ini_seq,end_seq)){
                            "ExpSlopeSynth"=0,"ExpSlopeSynthConfInt"=0,"ExpSynthR2"=0,"ImpSlopeSynth"=0,
                            "ImpSlopeSynthConfInt"=0,"ImpSynthR2"=0,
                            "ExpSlopeEmp"=0,"ExpSlopeEmpConfInt"=0,"ExpEmpR2"=0,"ImpSlopeEmp"=0,
-                           "ImppSlopEmpConfInt"=0,"ImpEmpR2"=0)
+                           "ImpSlopeEmpConfInt"=0,"ImpEmpR2"=0)
     dfexp$Year = year
     dfexp$Experiment = nexper
     dfexp$ExpSlopeSynth <- as.numeric(sqe_model[[1]][2])

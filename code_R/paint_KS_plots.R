@@ -6,7 +6,7 @@ PaintKS <- function(series,fillcol,title)
 {
   r <- ggplot(data=series,aes(Year,p.value)) +
     geom_boxplot(aes(group=Year),fill=fillcol, alpha = 0.5)+
-    geom_hline(aes(yintercept=0.1), colour="green", alpha = 0.8, size = 1)+ylab("KS test p.value")+
+    geom_hline(aes(yintercept=0.1), colour="green", alpha = 0.8, size = 1)+ylab("KS test p.value\n")+xlab("")+
     ggtitle(title)+
     theme_bw()+
     theme(panel.border = element_blank(),
@@ -31,9 +31,10 @@ Exdata <- data.frame("Year" = KSdata$Year, "p.value" = KSdata$KSexport)
 KSexp <- PaintKS(Exdata,"blue","Exporters Strength")
 Impdata <- data.frame("Year" = KSdata$Year, "p.value" = KSdata$KSimport)
 KSImp <- PaintKS(Impdata,"red","Importers Strength")
+dir.create("../figures/", showWarnings = FALSE)
 dir.create("../figures/tests/", showWarnings = FALSE)
 fsal <- paste0("../figures/tests/KSplots.png")
 ppi <- 600
 png(fsal, width=10*ppi, height=8*ppi, res=ppi)
-grid.arrange(KSexp, KSImp, ncol=1, nrow=2,top=year )
+grid.arrange(KSexp, KSImp, ncol=1, nrow=2,top="" )
 dev.off()

@@ -7,7 +7,7 @@ library(ggplot2)
 paint_lillies <- function(data,fcol,titletext)
 {
   pl <- ggplot(data)+geom_point(aes(x=Year, y=pvalue), fill=fcol,color="transparent",shape=21,size=3)+
-    xlab("Year")+ylab("Lilliefors test p.value\n")+ggtitle(titletext)+
+    xlab("")+ylab("Lilliefors test p.value\n")+ggtitle(titletext)+
     geom_hline(aes(yintercept=0.1), colour="green", alpha = 0.8, size = 0.8)+ theme_bw() +
     theme(panel.border = element_blank(),
           legend.key = element_blank(),
@@ -43,5 +43,5 @@ dir.create("../figures/tests/", showWarnings = FALSE)
 fsal <- paste0("../figures/tests/Lillies.png")
 ppi <- 600
 png(fsal, width=10*ppi, height=5*ppi, res=ppi)
-grid.arrange(exp,imp, ncol=2, nrow=1,top=year )
+grid.arrange(exp,imp, ncol=2, nrow=1,top="" )
 dev.off()
