@@ -49,7 +49,7 @@ paint_int_matrix <- function(mq,titulo="",maximo=1)
                                  panel.grid.minor = element_blank(),
                                  #legend.position = "right",
                                  axis.text = element_blank(),
-                                 legend.title = element_text(face="bold", size=8),
+                                 legend.title = element_text(face="bold", size=9),
                                  axis.ticks = element_blank(),
                                  panel.border = element_blank(),
                                  plot.title = element_text(hjust = 0.5))
@@ -108,11 +108,11 @@ for (file_name in files)
   hm_synth_prob <- crea_lista_heatsimp(MPack(pr_synth_matrix,transpose = FALSE))
   
   maxleg <- (1+round(max(max(emp_matrix),max(synth_matrix)))%/%100)*100
-  m_emp <- paint_int_matrix(hm_emp,titulo="log Normalized\nWeight\nEmpirical")
-  m_synth <- paint_int_matrix(hm_synth,titulo="log Normalized\nWeight\nSynthetical")
+  m_emp <- paint_int_matrix(hm_emp,titulo="log(W)\nEmpirical")
+  m_synth <- paint_int_matrix(hm_synth,titulo="log(W)\nSynthetical")
   
-  m_prob_emp <- paint_int_matrix(hm_emp_prob,titulo="log Probability\nEmpirical")
-  m_prob_synth <- paint_int_matrix(hm_synth_prob,titulo="log Probability\nSynthetical")
+  m_prob_emp <- paint_int_matrix(hm_emp_prob,titulo="log(P)\nEmpirical")
+  m_prob_synth <- paint_int_matrix(hm_synth_prob,titulo="log(P)\nSynthetical")
   
   dir.create("../figures/matrixes", showWarnings = FALSE)
   fsal <- paste0("../figures/matrixes/STRENGTH_",file_name,"_nexper_",numexper,"_IntMatrix.png")
