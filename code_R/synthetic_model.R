@@ -12,6 +12,9 @@
 #            First number: 1 (Use filtered file)/ 0 (use raw file)
 #            Second number: 1 (Append log to symlog file) / 0 (Do not write log data)
 #            Third number: 0 (Write links/tokens/probs evolution at numlinks folder. It slows down simulation)/ 0 do not append
+#
+# ROWS: Exporters, COLUMNS: Importers
+
 
 source("parse_command_line_args.R")
 source("read_filter_condition.R")
