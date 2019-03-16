@@ -213,7 +213,8 @@ for (year in anyos){
   hm_all_exporters_weight <- hm_all_weight[hm_all_weight$type=="EXP",]
   hm_all_importers_weight <- hm_all_weight[hm_all_weight$type=="IMP",]
   
- 
+  print(paste("Exporters:",nrow(filt_matrix),"Importers",ncol(filt_matrix)))
+  
   q <- PaintDensPlot(hm_all_importers_deg,"Importers","Degree")
   r <- PaintDensPlot(hm_all_importers_weight,"Importers","Normalized strength")
   s <- PaintDensPlot(hm_all_exporters_deg,"Exporters","Degree")

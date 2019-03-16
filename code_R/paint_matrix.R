@@ -74,9 +74,10 @@ for (file_name in files)
     experiment<-1
   experiment_files <- Sys.glob(paste0("../results/",subdir,file_name,"_W_*.txt"))
   zero_matrix <- read_and_remove_zeroes(experiment_files[experiment])
-  for (l in 1:nrow(zero_matrix))
-    for(m in 1:ncol(zero_matrix))
-      zero_matrix[l,m]<-0
+  # for (l in 1:nrow(zero_matrix))
+  #   for(m in 1:ncol(zero_matrix))
+  #     zero_matrix[l,m]<-0
+  zero_matrix <- 0
 
   numexper <- 1
   for (i in 1:numexper){
@@ -91,20 +92,20 @@ for (file_name in files)
   sum_col <- colSums(emp_matrix)
   emp_matrix <- emp_matrix[sum_row>0,]
   emp_matrix <- emp_matrix[,sum_col>0]
-  hm_emp <- crea_lista_heatsimp(MPack(emp_matrix))
-  hm_synth <- crea_lista_heatsimp(MPack(synth_matrix))
+  hm_emp <- crea_lista_heatsimp(MPack(emp_matrix,transpose = FALSE))
+  hm_synth <- crea_lista_heatsimp(MPack(synth_matrix, transpose = FALSE ))
   
   # Marginal probabilities
   pr_emp_E <- rowSums(emp_matrix) 
   pr_emp_I <- colSums(emp_matrix)
   pr_emp_matrix <- pr_emp_E[] %o% pr_emp_I[]
-  hm_emp_prob <- crea_lista_heatsimp(MPack(pr_emp_matrix))
+  hm_emp_prob <- crea_lista_heatsimp(MPack(pr_emp_matrix,transpose = FALSE))
   
   # Marginal probabilities
   pr_synth_E <- rowSums(synth_matrix) 
   pr_synth_I <- colSums(synth_matrix)
   pr_synth_matrix <- pr_synth_E[] %o% pr_synth_I[]
-  hm_synth_prob <- crea_lista_heatsimp(MPack(pr_synth_matrix))
+  hm_synth_prob <- crea_lista_heatsimp(MPack(pr_synth_matrix,transpose = FALSE))
   
   maxleg <- (1+round(max(max(emp_matrix),max(synth_matrix)))%/%100)*100
   m_emp <- paint_int_matrix(hm_emp,titulo="log Normalized\nWeight\nEmpirical")

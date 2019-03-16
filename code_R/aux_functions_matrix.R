@@ -27,7 +27,7 @@ crea_lista_heatmap <- function(matriz, justcount = FALSE)
   return(df)
 }
 
-MPack <- function(matrix,normalize = TRUE)
+MPack <- function(matrix,normalize = TRUE, transpose = FALSE)
 {
   sum_row <- rep(0,nrow(matrix))
   sum_col <- rep(0,ncol(matrix))
@@ -38,7 +38,10 @@ MPack <- function(matrix,normalize = TRUE)
   for (i in 1:ncol(matrix))
     sum_col[i] <- sum(matrix[,i])
   ord_matrix <- matrix[rev(order(sum_row)),rev(order(sum_col))]
-  return(t(ord_matrix))       # Transpose because of order of python-written matrix
+  if (transpose)
+    return(t(ord_matrix))       # Transpose because of order of deprecated python-written matrixes
+  else
+    return(ord_matrix)
 }
 
 lread_network <- function(namenetwork, guild_astr = "pl", guild_bstr = "pol", directory="")
