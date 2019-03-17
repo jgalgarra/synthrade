@@ -109,10 +109,10 @@ for (file_name in files)
   
   maxleg <- (1+round(max(max(emp_matrix),max(synth_matrix)))%/%100)*100
   m_emp <- paint_int_matrix(hm_emp,titulo="log(W)\nEmpirical")
-  m_synth <- paint_int_matrix(hm_synth,titulo="log(W)\nSynthetical")
+  m_synth <- paint_int_matrix(hm_synth,titulo="log(W)\nSynthetic")
   
   m_prob_emp <- paint_int_matrix(hm_emp_prob,titulo="log(P)\nEmpirical")
-  m_prob_synth <- paint_int_matrix(hm_synth_prob,titulo="log(P)\nSynthetical")
+  m_prob_synth <- paint_int_matrix(hm_synth_prob,titulo="log(P)\nSynthetic")
   
   dir.create("../figures/matrixes", showWarnings = FALSE)
   fsal <- paste0("../figures/matrixes/STRENGTH_",file_name,"_nexper_",numexper,"_IntMatrix.png")
