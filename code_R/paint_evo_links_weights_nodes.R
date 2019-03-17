@@ -71,9 +71,6 @@ for (year in years){
   p <- ggplot(data=EvoN,aes(x=Step))+geom_line(aes(y=Data,color=Type),size=0.7)+
     
       geom_line(aes(y=Data,color=Type),size=0.7,data=EvoLT)+
-    
-       # scale_x_continuous(trans = sqrt_trans(),
-       #                    breaks = c(50,500,ftdata$SimStep,15000,seq(0,(1+(max(EvoDataFormation$Step)%/%timebreak))*timebreak,by=timebreak))) +
        scale_y_continuous(sec.axis = sec_axis(~.*transfrate, name = "Links & Tokens")
       )+       ggtitle(paste(year,"Build up dynamics"))+xlab("Simulation Step")+ylab("Nodes")+
 
@@ -89,10 +86,13 @@ for (year in years){
           axis.text = element_text(size=10),
           axis.title.x = element_text(face="bold", size=10),
           axis.title.y  = element_text(face="bold", size=11) )
-
+  
+  
+  
+  
   dir.create("../figures/linksandtokens/", showWarnings = FALSE)
   ppi <- 300
-  png(paste0("../figures/linksandtokens/",year,"_All_FT.png"), width=(8*ppi), height=4*ppi, res=ppi)
+  png(paste0("../figures/linksandtokens/",year,"_All_FT.png"), width=(6*ppi), height=4*ppi, res=ppi)
   print(p)
   dev.off()
 
