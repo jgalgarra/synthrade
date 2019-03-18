@@ -1,3 +1,5 @@
+source("parse_command_line_args.R")
+
 get_data <- function(file_name,filter=FALSE, minconnectance = 0.0001)
 {
 
@@ -39,8 +41,7 @@ while (connectance < minconnectance)
 }
 return(r_df)
 }
-
-files = paste0("RedAdyCom",seq(1962,2014))
+files = paste0("RedAdyCom",seq(ini_seq,end_seq))
 for (nf in files){
   print("Filtered")
   r <- get_data(nf, filter = TRUE, minconnectance = 0.0001)    

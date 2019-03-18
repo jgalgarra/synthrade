@@ -1,3 +1,5 @@
+source("parse_command_line_args.R")
+
 ISO_CC <- c("AFG","ALB","DZA","ASM","AND","AGO","AIA","ATA","ATA","ARG",
             "ARM","ABW","AUS","AUT","AZE","BHS","BHR","BGD","BRB","BLR","BEL",
             "BLZ","BEN","BMU","BTN","BOL","BES","BIH","BWA","IOT","VGB",
@@ -28,7 +30,7 @@ new1984 <- toupper(c("aia","and","ant","atg","brn","btn","cck","cok","com","cpv"
 tls","ton","tuv","vct","vgb","vut","wlf","yem"))
 
 
-files <- seq(1974,2014)
+files <- seq(ini_seq,end_seq)
 for (nfile in files)
 {
   print(nfile)
