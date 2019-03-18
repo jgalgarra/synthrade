@@ -61,6 +61,9 @@ if (TFstring == ""){
 } else
   subdir <- "TFMatrix/"
 
+ini_seq <- 2015
+fin_seq <- 2015
+
 files <- paste0(TFstring,"RedAdyCom",seq(ini_seq,end_seq),"_FILT")
 for (file_name in files)
 {
@@ -71,6 +74,9 @@ for (file_name in files)
     experiment<- bestKS[bestKS$Year==year,]$Experiment
   }
   else
+    experiment<-1
+  
+  if (length(experiment)== 0)
     experiment<-1
   experiment_files <- Sys.glob(paste0("../results/",subdir,file_name,"_W_*.txt"))
   zero_matrix <- read_and_remove_zeroes(experiment_files[experiment])
