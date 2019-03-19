@@ -61,8 +61,6 @@ if (TFstring == ""){
 } else
   subdir <- "TFMatrix/"
 
-ini_seq <- 2015
-fin_seq <- 2015
 
 files <- paste0(TFstring,"RedAdyCom",seq(ini_seq,end_seq),"_FILT")
 for (file_name in files)

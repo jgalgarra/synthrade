@@ -20,7 +20,8 @@ PaintKS <- function(series,fillcol,title)
           legend.text = element_text(size=12, face="bold"),
           axis.line = element_line(colour = "black"),
           plot.title = element_text(lineheight=.8, size=12, face="bold",hjust = 0.5),
-          axis.text = element_text(face="bold", size=13),
+          axis.text.y = element_text(face="bold", size=13),
+          axis.text.x = element_text(face="bold", size=13, angle = 45, hjust = 1),
           axis.title.x = element_text(face="bold", size=13),
           axis.title.y  = element_text(face="bold", size=13) )
   return(r)

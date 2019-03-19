@@ -2,6 +2,8 @@
 #
 # Author: Javier Garcia Algarra
 
+library(grid)
+library(gridExtra)
 library(ggplot2)
 
 paint_lillies <- function(data,fcol,titletext)

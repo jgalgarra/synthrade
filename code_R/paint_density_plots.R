@@ -170,6 +170,8 @@ for (year in anyos){
     posbest <- bestKS[bestKS$Year==year,]$Experiment
   else
     posbest <- 1
+  if (length(posbest)== 0)
+    posbest <- 1
   file_name <- paste0("RedAdyCom",year,"_FILT")
   file_orig <- paste0("RedAdyCom",year)
   experiment_files <- Sys.glob(paste0("../results/",file_name,"_W_",posbest,".txt"))
