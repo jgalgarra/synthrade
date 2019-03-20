@@ -108,7 +108,7 @@ for (year in years){
           axis.line.x = element_line(color="black", size = 0.5),
           axis.line.y = element_line(color="black", size = 0.5),
           panel.grid.minor.x = element_blank(),
-          panel.grid.minor.y = element_blank(),
+          panel.grid.minor.y = element_blank(), 
           legend.text = element_text(size=9, face="bold"),
           plot.title = element_text(size=12,lineheight=.5, face="bold",hjust = 0.5),
           axis.text = element_text(size=10),

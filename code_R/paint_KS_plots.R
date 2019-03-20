@@ -7,14 +7,13 @@ PaintKS <- function(series,fillcol,title)
   r <- ggplot(data=series,aes(Year,p.value)) +
     geom_boxplot(aes(group=Year),fill=fillcol, alpha = 0.5)+
     geom_hline(aes(yintercept=0.1), colour="green", alpha = 0.8, size = 1)+ylab("KS test p.value\n")+xlab("")+
-    ggtitle(title)+
-    theme_bw()+
+    xlim(c(min(series$Year)-1,max(series$Year)+1))+ ggtitle(title)+ theme_bw()+
     theme(panel.border = element_blank(),
           legend.key = element_blank(),
           panel.grid.minor.x = element_blank(),
           panel.grid.minor.y = element_blank(),
-          panel.grid.major.y = element_line(linetype = 2, color="ivory3"),
-          panel.grid.major.x = element_blank(), 
+          panel.grid.major.y = element_line(linetype = 3, color="ivory3"),
+          panel.grid.major.x = element_line(linetype = 3, color="ivory3"), 
           legend.title = element_blank(),
           legend.position = "none",
           legend.text = element_text(size=12, face="bold"),
