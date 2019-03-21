@@ -84,9 +84,10 @@ for (year in years){
           panel.grid.minor.y = element_blank(),
           legend.text = element_text(size=9, face="bold"),
           plot.title = element_text(size=12,lineheight=.5, face="bold",hjust = 0.5),
-          axis.text = element_text(size=10),
+          axis.text.x = element_text(size=9,angle=20,hjust=1),
+          axis.text.y = element_text(size=9),
           axis.title.x = element_text(face="bold", size=10),
-          axis.title.y  = element_text(face="bold", size=11) )
+          axis.title.y  = element_text(face="bold", size=10) )
 
   dir.create("../figures/probevolution/", showWarnings = FALSE)
   ppi <- 300
