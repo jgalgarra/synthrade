@@ -28,7 +28,7 @@ for (i in 1:nrow(slopes_emp)){
 
 p <- ggplot(data=dataslope,aes(Node,slope)) + 
      geom_boxplot(aes(group=Node,fill=Node),alpha=0.3) + ylim(c(0,2))+
-     ylab("Exponent")+xlab("")+ggtitle("Strength vs Degree")+
+     ylab("Strength vs Degree Exponent\n")+xlab("")+ggtitle("")+
      theme_bw()+
      theme(panel.border = element_blank(),
         legend.key = element_blank(),
@@ -41,10 +41,10 @@ p <- ggplot(data=dataslope,aes(Node,slope)) +
         legend.text = element_text(size=12, face="bold"),
         axis.line = element_line(colour = "black"),
         plot.title = element_text(lineheight=.8, size=12, face="bold",hjust = 0.5),
-        axis.text.x = element_text(face="bold", size=11, angle = 45, hjust = 1),
+        axis.text.x = element_text(face="bold", size=11, angle = 25, hjust = 1),
         axis.text.y = element_text(face="bold", size=11),
-        axis.title.x = element_text(face="bold", size=13),
-        axis.title.y  = element_text(face="bold", size=13) )
+        axis.title.x = element_text(face="bold", size=12),
+        axis.title.y  = element_text(face="bold", size=12) )
 
 p <- p +scale_fill_manual(values=c("steelblue1","steelblue4","red1", "red3"))
 
@@ -66,7 +66,8 @@ q <- ggplot(data=datayearexp,aes(Year,slope)) +
         legend.text = element_text(size=12, face="bold"),
         axis.line = element_line(colour = "black"),
         plot.title = element_text(lineheight=.8, size=12, face="bold",hjust = 0.5),
-        axis.text = element_text(face="bold", size=11),
+        axis.text.x = element_text(face="bold", size=9, angle=20, hjust=1),
+        axis.text.y = element_text(face="bold", size=9),
         axis.title.x = element_text(face="bold", size=13),
         axis.title.y  = element_text(face="bold", size=13) )
 
@@ -88,7 +89,8 @@ r <- ggplot(data=datayearimp,aes(Year,slope)) +
         legend.text = element_text(size=12, face="bold"),
         axis.line = element_line(colour = "black"),
         plot.title = element_text(lineheight=.8, size=12, face="bold",hjust = 0.5),
-        axis.text = element_text(face="bold", size=11),
+        axis.text.x = element_text(face="bold", size=9, angle=20, hjust=1),
+        axis.text.y = element_text(face="bold", size=9),
         axis.title.x = element_text(face="bold", size=13),
         axis.title.y  = element_text(face="bold", size=13) )
 
