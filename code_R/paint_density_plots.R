@@ -113,7 +113,7 @@ PaintBoxPlot <- function(datos,titletext,xlabel)
 {
   p <- ggplot() + geom_boxplot(aes(x=as.factor(collection),y= cuenta, color = collection, fill = collection),  alpha = .1,
                                data=datos, position = "identity")+ 
-    xlab(paste(year,titletext,xlabel))+ylab("Density\n")+
+    xlab(paste("\n",titletext,xlabel))+ylab("Density\n")+
     scale_y_log10()
   if (HOstr == "FS"){
     p <- p + scale_fill_manual(values=c("blue","red","red"))+
@@ -152,8 +152,8 @@ PaintBoxPlot <- function(datos,titletext,xlabel)
           axis.line = element_line(colour = "black"),
           plot.title = element_text(lineheight=.8, face="bold"),
           axis.text = element_text(face="bold", size=13),
-          axis.title.x = element_text(face="bold", size=14),
-          axis.title.y  = element_text(face="bold", size=14) )
+          axis.title.x = element_text(face="bold", size=13),
+          axis.title.y  = element_text(face="bold", size=13) )
   
   return(p)
 }
@@ -181,7 +181,7 @@ for (year in anyos){
   hm_filt <- crea_lista_heatmap(MPack(filt_matrix,normalize = FALSE),justcount = TRUE)
   hm_sim <- crea_lista_heatmap(MPack(sim_matrix,normalize = FALSE),justcount = TRUE)
   hm_orig <- crea_lista_heatmap(MPack(orig_matrix,normalize = FALSE),justcount = TRUE)
-  hm_filt$collection <- "Empirical  "
+  hm_filt$collection <- "Empirical (Filtered) "
   hm_sim$collection <- "Synthetic  "
   hm_orig$collection <- "Original  "
   if (HOstr == "FS")
@@ -199,7 +199,7 @@ for (year in anyos){
   hm_filt <- crea_lista_heatmap(MPack(filt_matrix,normalize = TRUE))
   hm_sim <- crea_lista_heatmap(MPack(sim_matrix,normalize = TRUE))
   hm_orig <- crea_lista_heatmap(MPack(orig_matrix,normalize = TRUE))
-  hm_filt$collection <- " Empirical  "
+  hm_filt$collection <- " Empirical (Filtered)"
   hm_sim$collection <- " Synthetic  "
   hm_orig$collection <- " Original  "
   if (HOstr == "FS")
