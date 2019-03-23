@@ -1,5 +1,5 @@
 # Performs the Lilliefors normality test and computes the Kolmogorov-Smirnov distance between the
-# filtered empirical network and the synthetic network. Results are stored at results/BestKS.txt and
+# strength filtered empirical network and the synthetic network. Results are stored at results/BestKS.txt and
 # results/BestLillies.txt
 #
 # Author: Javier Garcia Algarra

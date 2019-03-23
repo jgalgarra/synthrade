@@ -181,7 +181,7 @@ for (year in anyos){
   hm_filt <- crea_lista_heatmap(MPack(filt_matrix,normalize = FALSE),justcount = TRUE)
   hm_sim <- crea_lista_heatmap(MPack(sim_matrix,normalize = FALSE),justcount = TRUE)
   hm_orig <- crea_lista_heatmap(MPack(orig_matrix,normalize = FALSE),justcount = TRUE)
-  hm_filt$collection <- "Filtered  "
+  hm_filt$collection <- "Empirical  "
   hm_sim$collection <- "Synthetic  "
   hm_orig$collection <- "Original  "
   if (HOstr == "FS")
