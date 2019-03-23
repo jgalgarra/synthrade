@@ -61,7 +61,7 @@ PaintDensPlot <- function(datos,titletext,xlabel)
 {
   p <- ggplot() + geom_density(aes(x= cuenta, color = collection, fill = collection),  alpha = .1,
                            data=datos, position = "identity", adjust= 2)+
-    xlab(paste(year,titletext,xlabel))+ylab("Density\n")#+
+    xlab(paste(titletext,xlabel))+ylab("Density\n")#+
     if (xlabel == "Degree")
       p <- p + scale_x_log10(limits=c(0.1,1000))
     else
@@ -199,9 +199,9 @@ for (year in anyos){
   hm_filt <- crea_lista_heatmap(MPack(filt_matrix,normalize = TRUE))
   hm_sim <- crea_lista_heatmap(MPack(sim_matrix,normalize = TRUE))
   hm_orig <- crea_lista_heatmap(MPack(orig_matrix,normalize = TRUE))
-  hm_filt$collection <- "Filtered  "
-  hm_sim$collection <- "Synthetic  "
-  hm_orig$collection <- "Original  "
+  hm_filt$collection <- " Empirical  "
+  hm_sim$collection <- " Synthetic  "
+  hm_orig$collection <- " Original  "
   if (HOstr == "FS")
     hm_all_weight <- rbind(hm_filt,hm_sim)
   if (HOstr == "FOS")
@@ -218,14 +218,14 @@ for (year in anyos){
   print(paste("Exporters:",nrow(filt_matrix),"Importers",ncol(filt_matrix)))
   
   q <- PaintDensPlot(hm_all_importers_deg,"Importers","Degree")
-  r <- PaintDensPlot(hm_all_importers_weight,"Importers","Normalized strength")
+  r <- PaintDensPlot(hm_all_importers_weight,"Importers","Normalized Strength")
   s <- PaintDensPlot(hm_all_exporters_deg,"Exporters","Degree")
-  t <- PaintDensPlot(hm_all_exporters_weight,"Exporters","Normalized strength")
+  t <- PaintDensPlot(hm_all_exporters_weight,"Exporters","Normalized Strength")
   
   bq <- PaintBoxPlot(hm_all_importers_deg,"Importers","Degree")
-  br <- PaintBoxPlot(hm_all_importers_weight,"Importers","Normalized strength")
+  br <- PaintBoxPlot(hm_all_importers_weight,"Importers","Normalized Strength")
   bs <- PaintBoxPlot(hm_all_exporters_deg,"Exporters","Degree")
-  bt <- PaintBoxPlot(hm_all_exporters_weight,"Exporters","Normalized strength")
+  bt <- PaintBoxPlot(hm_all_exporters_weight,"Exporters","Normalized Strength")
   dir.create("../figures/densities/", showWarnings = FALSE)
   fsal <- paste0("../figures/densities/Density_DegStr_",year,"_",HOstr,".png")
   ppi <- 600
