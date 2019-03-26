@@ -24,3 +24,26 @@ plot(nldf$year,nldf$links,main="Number of Links")
 print(paste("Average connectnce",mean(nldf$connectance)))
 
 write.table(nldf,"../results/NUMLINKS.txt",row.names = FALSE)
+
+p <- ggplot(data=nldf)+
+  ggtitle("")+xlab("Year")+ylab("Connectance")+
+  geom_point(aes(year,connectance), alpha = 0.5)+
+  theme_bw() +
+  theme(legend.title = element_blank(),
+        panel.border = element_blank(),
+        axis.line.x = element_line(color="black", size = 0.5),
+        axis.line.y = element_line(color="black", size = 0.5),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        legend.text = element_text(size=13, face="bold"),
+        plot.title = element_text(size=13,lineheight=.5, face="bold",hjust = 0.5),
+        axis.text.x = element_text(size=10,angle=70,hjust=1,face="bold"),
+        axis.text.y = element_text(size=10, face="bold"),
+        axis.title.x = element_text(face="bold", size=13),
+        axis.title.y  = element_text(face="bold", size=13) )+coord_flip()
+
+fsal2 <- paste0("../figures/tests/connectance.png")
+ppi <- 600
+png(fsal2, width=4*ppi, height=8*ppi, res=ppi)
+grid.arrange(p, ncol=1, nrow=1 )
+dev.off()
