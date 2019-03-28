@@ -6,9 +6,11 @@ Created on Sun Oct 28 12:27:54 2017
 """
 
 """
-Editor de Spyder
+Script to extract raw trade files from .tsv files
+Uncomment file names section and modify Years list to
+select the years to be processed.
 
-Este es un archivo temporal
+Warning: This process is CPU intensive
 """
 
 import pandas as pd
