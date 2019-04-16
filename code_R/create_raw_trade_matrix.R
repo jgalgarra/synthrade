@@ -45,6 +45,7 @@ for (nfile in files)
   raw_data$dest <- toupper(raw_data$dest)
   clean_data <- raw_data[is.element(raw_data$or,ISO_CC),]
   clean_data <- clean_data[is.element(clean_data$dest,ISO_CC),]    # remove aggregations
+  dirty_data <- clean_data                                         # Keep 1984 islands
   clean_data <- clean_data[!is.element(clean_data$dest,new1984),]  # remove set of small islands added in 1984
   clean_data <- clean_data[!is.element(clean_data$or,new1984),]
   countries1 <- unique(clean_data$or)
@@ -62,4 +63,19 @@ for (nfile in files)
     dfsal[as.character(clean_data$or[j]),as.character(clean_data$dest[j])] <- as.numeric(clean_data$imp[j])
   write.csv(dfsal,paste0("../data/RedAdyNames",nfile,".txt"),row.names = TRUE)
   write.table(dfsal,paste0("../data/RedAdyCom",nfile,".txt"),row.names = FALSE, col.names = FALSE, sep ="\t")
+
+  countries1 <- unique(dirty_data$or)
+  countries2 <- unique(dirty_data$dest)
+  if (length(countries1) > length(countries2))
+    countries = countries1
+  else
+    countries = countries2
+  dim = length(countries)
+  B <- matrix( rep(0,dim*dim), nrow=dim, ncol=dim)
+  dfsal = as.data.frame(B)
+  rownames(dfsal) <- countries
+  colnames(dfsal) <- countries
+  for (j in 1:nrow(dirty_data))
+    dfsal[as.character(dirty_data$or[j]),as.character(dirty_data$dest[j])] <- as.numeric(dirty_data$imp[j])
+  write.table(dfsal,paste0("../data/RedAdyDirty",nfile,".txt"),row.names = FALSE, col.names = FALSE, sep ="\t")
 }
