@@ -37,7 +37,7 @@ for (nfile in files)
 
 
   ctdata <- read.csv(paste0("../data/raw_data/TodosYR",nfile,".csv"), sep=";")
-  outdata <- data.frame("or"=ctdata$origin,"dest"=ctdata$dest,"imp"=ctdata$import_val)
+  outdata <- data.frame("or"=ctdata$origin,"dest"=ctdata$dest,"imp"=ctdata$export_val)
   write.table(outdata,paste0("../data/raw_data/RedRaw",nfile,".txt"),sep=" ",row.names = FALSE, col.names = FALSE)
   raw_data <- read.table(paste0("../data/raw_data/RedRaw",nfile,".txt"))
   names(raw_data) <- c("or","dest","imp")

@@ -59,9 +59,7 @@ def LeerFicheros():
     cont = 1
     while l:
       year = l.split('\t')[0]
-     
-      
-      
+
       if (year.isdigit()):
           if (int(year) in Years):
               l=l.replace('\t',';')
@@ -99,17 +97,18 @@ def LeerFicheros():
         #datosRedRes = datosRedRes.groupby(['year', 'origin', 'dest'])[['export_val','import_val']].sum()
         print("Despues de agrupar")
         print(datosRedRes.head(10))
+        
         fileName = '../data/raw_data/TodosYR'+str(i)+'.csv'
         pathFile = os.getcwd() + "\\" + fileName
         Header = ['year', 'origin', 'dest', 'export_val', 'import_val']  
         
        
-        datosRedRes.reset_index().to_csv(pathFile, index=None, mode='a', sep=';', columns=Header)
+        datosRedRes.reset_index().to_csv(pathFile, index=None, mode='w', sep=';', columns=Header)
      
 
 
 #Years = [1964,1965]   
-Years=list(np.arange(1964,1973))
+Years=list(np.arange(1962,1974))
 print("Building file")
 LeerFicheros()  
 

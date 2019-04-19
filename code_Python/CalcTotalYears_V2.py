@@ -107,7 +107,7 @@ def LeerFicheros():
         Header = ['year', 'origin', 'dest', 'export_val', 'import_val']  
         
        
-        datosRedRes.reset_index().to_csv(pathFile, index=None, mode='a', sep=';', columns=Header)
+        datosRedRes.reset_index().to_csv(pathFile, index=None, mode='w', sep=';', columns=Header)
      
 
 
