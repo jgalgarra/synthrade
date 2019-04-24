@@ -374,35 +374,13 @@ for (orig_file in files)
   grafsemp <-  gen_links_strength_distribution(red,series,"blue",empirical = TRUE)
   data_e_emp <- grafsemp$plots_final$data_exp
   data_i_emp <- grafsemp$plots_final$data_imp
-  # sqe_emp <- plot_sq_fit(data_e_emp, titlestr = "Empirical Exporters", dcol="blue")
-  # sqi_emp <- plot_sq_fit(data_i_emp, titlestr = "Empirical Importers", dcol="red")
-  # 
-  # line_emp <- plot_linear_fit(data_e_emp, titlestr = "Empirical Exporters", dcol="blue")
-  # lini_emp <- plot_linear_fit(data_i_emp, titlestr = "Empirical Importers", dcol="red")
-  # 
-  # acc_e_emp <- plot_log_fit(data_e_emp, titlestr = "Empirical Exporters", dcol="blue")
-  # acc_i_emp <- plot_log_fit(data_i_emp, titlestr = "Empirical Importers", dcol="red")
-  # 
   acc_ecumulative_emp <- plot_logcumulative_fit(data_e_emp, titlestr = "Empirical Exporters", dcol="blue")
   acc_icumulative_emp <- plot_logcumulative_fit(data_i_emp, titlestr = "Empirical Importers", dcol="red")
   
   
   dir.create("../figures/linksstrength/", showWarnings = FALSE)
-  ppi <- 600
-  # LOG S ~ LOG D^2
-  # png(paste0("../figures/linksstrength/LS_SYNTH_SQ_",red,".png"), width=(22*ppi), height=12*ppi, res=ppi)
-  # grid.arrange(sqi_TF, sqi, sqi_emp, sqe_TF, sqe, sqe_emp, ncol=3, nrow=2)
-  # dev.off()
-  
-  # LOG S ~ LOG D
-  # png(paste0("../figures/linksstrength/LS_SYNTH_LIN_",red,".png"), width=(22*ppi), height=12*ppi, res=ppi)
-  # grid.arrange(lini_TF, lini, lini_emp, line_TF, line, line_emp, ncol=3, nrow=2)
-  # dev.off()
-  
-  # LOG CS ~ LOG CD
-  # png(paste0("../figures/linksstrength/LS_SYNTH_LOG_",red,".png"), width=(22*ppi), height=12*ppi, res=ppi)
-  # grid.arrange(acc_i_TF, acc_i, acc_i_emp, acc_e_TF, acc_e, acc_e_emp, ncol=3, nrow=2)
-  # dev.off()
+  ppi <- 300
+
   
   # LOG CS ~ LOG D
   png(paste0("../figures/linksstrength/LS_ALL_LOGCUMULATIVE_",red,".png"), width=(14*ppi), height=12*ppi, res=ppi)
@@ -413,9 +391,4 @@ for (orig_file in files)
   png(paste0("../figures/linksstrength/LS_EXPORTERS_LOGCUMULATIVE_",red,".png"), width=(14*ppi), height=6*ppi, res=ppi)
   grid.arrange(acc_ecumulative, acc_ecumulative_emp, ncol=2, nrow=1)
   dev.off()
-  
-  # png(paste0("../figures/linksstrength/LS_EMP_LOG_",red,".png"), width=(14*ppi), height=12*ppi, res=ppi)
-  # grid.arrange(lini_emp, acc_i_emp, line_emp, acc_e_emp, ncol=2, nrow=2)
-  # dev.off()
-  
 }

@@ -19,7 +19,7 @@ MPack <- function(matrix,normalize = TRUE)
 
 source("parse_command_line_args.R")
 
-NREPS <- 1000
+NREPS <- 100
 files <- paste0("RedAdyCom",seq(ini_seq,end_seq))
 for (orig_file in files)
 {

@@ -43,7 +43,7 @@ imp <- paint_lillies(datalill[datalill$Type=="Importer",],"red","Empirical Impor
 
 dir.create("../figures/tests/", showWarnings = FALSE)
 fsal <- paste0("../figures/tests/Lillies.png")
-ppi <- 600
+ppi <- 300
 png(fsal, width=5*ppi, height=8*ppi, res=ppi)
 grid.arrange(exp,imp, ncol=1, nrow=2,top="" )
 dev.off()

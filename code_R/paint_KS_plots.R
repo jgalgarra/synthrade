@@ -34,7 +34,7 @@ KSImp <- PaintKS(Impdata,"red","Importers Strength")
 dir.create("../figures/", showWarnings = FALSE)
 dir.create("../figures/tests/", showWarnings = FALSE)
 fsal <- paste0("../figures/tests/KSplots.png")
-ppi <- 600
+ppi <- 300
 png(fsal, width=10*ppi, height=8*ppi, res=ppi)
 grid.arrange(KSexp, KSImp, ncol=1, nrow=2,top="" )
 dev.off()

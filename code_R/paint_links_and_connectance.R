@@ -87,12 +87,12 @@ nldf_raw$Set <- "Raw Data"
 nldf_clean$Set <- "Clean Data"
 nldf$Set <- "Filtered Data"
 
-nldf_all <- rbind(nldf,nldf_clean)
+nldf_all <- rbind(nldf,nldf_clean,nldf_raw)
 nldf_all$Set <- as.factor(nldf_all$Set)
 
 p <- ggplot(data=nldf_all)+
   ggtitle("")+xlab("Year")+ylab("Connectance")+
-  geom_point(aes(x=year,y=connectance,fill=Set),shape=21, size=2, alpha = 0.5)+ylim(c(0,1))+
+  geom_point(aes(x=year,y=connectance,fill=Set),color="transparent",shape=21, size=2, alpha = 0.5)+ylim(c(0,0.7))+
   theme_bw() +
   theme(
         panel.border = element_blank(),
@@ -108,7 +108,7 @@ p <- ggplot(data=nldf_all)+
         axis.title.x = element_text(face="bold", size=13),
         axis.title.y  = element_text(face="bold", size=13) )
 
-nldf_links <- rbind(nldf_raw,nldf_clean)
+nldf_links <- rbind(nldf_raw,nldf_clean,nldf)
 nldf_links$Set <- as.factor(nldf_links$Set)
 q <- ggplot(data=nldf_links)+
   ggtitle("")+xlab("Year")+ylab("Number of links")+
@@ -128,20 +128,20 @@ q <- ggplot(data=nldf_links)+
     axis.title.x = element_text(face="bold", size=13),
     axis.title.y  = element_text(face="bold", size=13) )
 
-p <- p + scale_fill_manual(values=c("blue","red","red"))+
-  scale_color_manual(values=c("blue","red","red"))
 
-q <- q + scale_fill_manual(values=c("red","green","green"))+
-  scale_color_manual(values=c("red","green","green"))
+ppi <- 300
+p <- p + scale_fill_manual(values=c("blue","red","green"))+
+  scale_color_manual(values=c("blue","red","green"))
+
+q <- q + scale_fill_manual(values=c("blue","red","green"))+
+  scale_color_manual(values=c("blue","red","green"))
 
 fsal3 <- paste0("../figures/tests/links_all.png")
-ppi <- 600
 png(fsal3, width=10*ppi, height=5*ppi, res=ppi)
 grid.arrange(q, ncol=1, nrow=1 )
 dev.off()
 
 fsal2 <- paste0("../figures/tests/connectance_all.png")
-ppi <- 600
 png(fsal2, width=10*ppi, height=5*ppi, res=ppi)
 grid.arrange(p, ncol=1, nrow=1 )
 dev.off()

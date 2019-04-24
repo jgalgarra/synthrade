@@ -117,16 +117,14 @@ for (file_name in files)
   
   m_prob_emp <- paint_int_matrix(hm_emp_prob,titulo="log(P)\nEmpirical")
   m_prob_synth <- paint_int_matrix(hm_synth_prob,titulo="log(P)\nSynthetic")
-  
+  ppi <- 300  
   dir.create("../figures/matrixes", showWarnings = FALSE)
   fsal <- paste0("../figures/matrixes/STRENGTH_",file_name,"_nexper_",numexper,"_IntMatrix.png")
-  ppi <- 600
   png(fsal, width=10*ppi, height=4*ppi, res=ppi)
   grid.arrange(m_emp, m_synth,ncol=2)
   dev.off()
   
   fsal <- paste0("../figures/matrixes/SANDPROB_",file_name,"_nexper_",numexper,"_IntMatrix.png")
-  ppi <- 600
   png(fsal, width=10*ppi, height=8*ppi, res=ppi)
   grid.arrange(m_emp, m_synth, m_prob_emp, m_prob_synth,  ncol=2,nrow=2)
   dev.off()

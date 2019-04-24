@@ -43,7 +43,7 @@ gen_deg_distribution <- function(red,series, colors, seq_breaks = c(1,5,10,20,50
     occur <- ddeg_exporter$degree
     woccur <- ddeg_exporter$weight
     woccur <- woccur[order(woccur)]
-    alpha_level = 0.8
+    alpha_level = 0.5
     p = occur/sum(occur)
     dy = rev(cumsum(rev(p)))
     dx = occur
@@ -117,7 +117,7 @@ gen_deg_distribution <- function(red,series, colors, seq_breaks = c(1,5,10,20,50
     geom_point(aes(alpha = nalpha,shape=method,size=tamanyo,stroke=tamanyo),color=colors) +
     scale_x_log10(breaks = seq_breaks) + scale_y_log10(breaks=c(0.1,0.2,0.5,1.0)) + 
     xlab(paste(year,series,"Degree")) + 
-    ylab(cumulativetxt) + scale_shape_manual(values=c(1,16)) +
+    ylab(cumulativetxt) + scale_shape_manual(values=c(21,16)) +
     scale_alpha(guide = 'none') + scale_size_identity()  +
     theme_bw() +
     theme(
@@ -135,7 +135,7 @@ gen_deg_distribution <- function(red,series, colors, seq_breaks = c(1,5,10,20,50
     geom_point(aes(alpha = nalpha,shape=method,size=tamanyo,stroke=tamanyo),color=colors) +
     scale_x_log10(breaks=c(0.001,0.01,0.1,1)) + scale_y_log10(breaks=c(0.1,0.2,0.5,1.0)) + 
     xlab(paste(year,series,"Normalized Strength")) + 
-    ylab(cumulativetxt) + scale_shape_manual(values=c(1,16)) +
+    ylab(cumulativetxt) + scale_shape_manual(values=c(21,16)) +
     scale_alpha(guide = 'none') +  scale_size_identity() + 
     theme_bw() +
     theme(

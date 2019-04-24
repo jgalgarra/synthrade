@@ -96,12 +96,11 @@ r <- ggplot(data=datayearimp,aes(Year,slope)) +
 
 dir.create("../figures/linksstrength/", showWarnings = FALSE)
 fsal <- paste0("../figures/linksstrength/Slopes_ALL.png")
-ppi <- 600
+ppi <- 300
 png(fsal, width=6*ppi, height=6*ppi, res=ppi)
 print(p)
 dev.off()
 fsal <- paste0("../figures/linksstrength/Slopes_Year.png")
-ppi <- 600
 png(fsal, width=10*ppi, height=8*ppi, res=ppi)
 grid.arrange(q, r, ncol=1, nrow=2,top="" )
 dev.off()

@@ -222,18 +222,17 @@ for (year in anyos){
   s <- PaintDensPlot(hm_all_exporters_deg,"Exporters","Degree")
   t <- PaintDensPlot(hm_all_exporters_weight,"Exporters","Normalized Strength")
   
+  ppi <- 300
   bq <- PaintBoxPlot(hm_all_importers_deg,"Importers","Degree")
   br <- PaintBoxPlot(hm_all_importers_weight,"Importers","Normalized Strength")
   bs <- PaintBoxPlot(hm_all_exporters_deg,"Exporters","Degree")
   bt <- PaintBoxPlot(hm_all_exporters_weight,"Exporters","Normalized Strength")
   dir.create("../figures/densities/", showWarnings = FALSE)
   fsal <- paste0("../figures/densities/Density_DegStr_",year,"_",HOstr,".png")
-  ppi <- 600
   png(fsal, width=10*ppi, height=8*ppi, res=ppi)
   grid.arrange(q,r,s,t, ncol=2, nrow=2,top=year )
   dev.off()
   fsal2 <- paste0("../figures/densities/Boxplot_DegStr_",year,"_",HOstr,".png")
-  ppi <- 600
   png(fsal2, width=10*ppi, height=8*ppi, res=ppi)
   grid.arrange(bq,br,bs,bt, ncol=2, nrow=2 )
   dev.off()

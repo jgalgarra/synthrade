@@ -15,7 +15,7 @@ ISO_CC <- c("AFG","ALB","DZA","ASM","AND","AGO","AIA","ATA","ATA","ARG",
             "JOR","KAZ","KEN","KIR","KWT","KGZ","LAO","LVA","LBN","LSO","LBR",
             "LBY","LTU","LUX","MDG","MWI","MYS","MDV","MLI","MLT","MHL","MTQ","MRT",
             "MUS","MYT","MEX","MNG","MNE","MSR","MAR","MOZ","MMR","MNP","NAM","NRU",
-            "NPL","ANT","ANT","NLD","NCL","NZL","NIC","NER","NGA","NIU","NFK",
+            "NPL","ANT","NLD","NCL","NZL","NIC","NER","NGA","NIU","NFK",
             "NOR","OMN","PAK","PLW","PAN","PNG","PRY",
             "PER","PHL","PCN","POL","PRT","QAT","KOR","MDA","REU","ROU","RUS",
             "RWA","BLM","SHN","KNA","KNA","LCA","SXM","SPM","VCT","WSM",
@@ -26,8 +26,7 @@ ISO_CC <- c("AFG","ALB","DZA","ASM","AND","AGO","AIA","ATA","ATA","ARG",
             "URY","VIR","USA","USA","UZB","VUT","VEN","VNM","WLF","ESH",
             "YEM","ZMB","ZWE")
 
-new1984 <- toupper(c("aia","and","ant","atg","brn","btn","cck","cok","com","cpv","cxr","cym","dma","esh","fro","grd","iot","lca","mdv","msr","mtq","nfk","niu","nru","pci","pcn","pyf","reu","slb","stp","tca","tkl
-tls","ton","tuv","vct","vgb","vut","wlf","yem"))
+new1984 <- toupper(c("aia","and","ant","atg","brn","btn","cck","cok","com","cpv","cxr","cym","dma","esh","fro","grd","iot","lca","mdv","msr","mtq","nfk","niu","nru","pci","pcn","pyf","reu","slb","stp","tca","ton","tuv","vct","vgb","vut","wlf","yem"))
 
 
 files <- seq(ini_seq,end_seq)
