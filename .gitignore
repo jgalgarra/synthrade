@@ -1,9 +1,2 @@
-nestedness
-figures
-papers
-plots
-results
-results_good
-data
-code_R/dfcab.csv
-code_R/.Rhistory
+results/
+figures/
