@@ -1,11 +1,13 @@
-# k-decomposition and analysis of mutualistic networks
+# Synthrade: Synthetic model simulator of World Trade Networ
 
-Authors: Javier Garcia-Algarra/ Juan Manuel Pastor (UPM, Spain)
+Authors: Javier Garcia-Algarra (U-TAD, Spain)
+         Mary Luz Mouronte-Lopez (UFV, Spain)
+         Javier Galeano (UPM, Spain)
 
 
 ## Description
 
-This repository contains code for the kcore decomposition, analysis and visualization of mutualistic networks.
+This repository contains the code of Synthrade simulator and input data.
 
 ### Prerequisites
 
@@ -13,30 +15,34 @@ R 3.2 or newer
 Python 3.0 or newer
 git bash installed
 
-Intall kcorebip package with `devtools` package:
-
-
-`install_github("jgalgarra/kcorebip")`
 
 ### Reproducibility
 
-- Clone the repository with `git clone https://github.com/jgalgarra/kcore_robustness.git`
-- Move to `kcore_robustness` directory and set it as R working directory (RStudio use is recommended)
-- The `data` directory contains the 89 network interaction matrices downloaded from the web of life site
-- Run `testing-all.R`. The output file `results/datos_analisis.RData` stores the k-magnitudes in `.csv` format
-- Run `kdegree_calc_store_results.R` to get the `results/datos_analisis_condegs.RData` (results + network degrees and correlation degree kdegree)
-- Run `network_k_parameters.R` to create individual k-magnitude files in `analysis_indiv_extended` directory
+- Download or Clone the repository
+- Run scripts from command line with Rscript
 
-- `destruction_first_algorithm.R`. Algorithm to find the number of primary extinctions of any guild to destroy half the giant component according to different indexes. Read the R file documentation header for detailed instructions
+#### Getting original data
 
-- Go to the python directory and run `extictions_compare_new.py` . This task may be slow, do not stop it
+[CAUTION: This step takes a long time to run. Original .tsv files are huge and we do not provide it in this repository. We recommend to skip this preprocessing step]
 
-Go back to RStudio
-- Run `best_1stalg.R` and `best_2ndalg` to have a fast count of comparative performances. 
-- Run `paint_destructions_1stalg_network.R` . The directory `graphs/FIRST` contains the plots of individual network performance
-- Run `paint_destructions_2ndalg_network.R` . The directory `graphs/pyhton` contains the plots of individual network performance for the two outcomes ofthe second extinction algorithm
-- Run `paint_extinctions_1stalg_results.R` and `paint_extinctions_2ndtalg_results.R` to create the four comparative figures in the directory `graphs`
-- Run `paint_degree_distribution_steps.R` to create the comparative figure of degree vs. kdegree of network M_PL_001
-- Run `paint_2ndalg_areas.R` to build the destruction AUC for the second algorithm under `graphs/AREAS`.
-- Run `create_007_destroy_2nd_alg` to create the stages of destruction of network M_PL_007
-- Run `bipartite_graphs_007.R` to create the bipartite plots of destruction of networkl M_PL_007
+- Download `.tsv` files from OEC [`https://atlas.media.mit.edu/en/`] and store them in raw_data directory
+- Run python scripts `CalcTotalYears_sitc.py` & `CalcTotalYears_hs07.py` Results: File `TODOSYYYY.csv`, where `YYYY` is the year. `TODOSYYYY.csv` files may be found at `data/raw_data`
+
+#### Creation of bipatrite trade matrices
+
+- Run script `create_raw_trade_matrix.R init_year end_year`. Creates files `RedAdyComYYYY.txt` inside `data/ directory`. Each file stores the global ammount of trade among exporters (rows) and importers (columns), for one year.
+- Run script `filter_matrixes.R init_year end_year`. Results: `RedAdyComYYYY_FILT.txt` files.
+
+#### Run the synthetic model
+
+- Run script `synthetic_model.R init_year end_year num_experiments` . This procedure is CPU intensive, try to run it in batch mode. Results: `RedAdyComYYYY_FILT_W_N.txt` files, where `YYYY` is the year and `N` the number of experiment.
+
+#### Compute goodness of fit
+- Run script `compute_gof_distributions.R init_year end_year`. Results are stored in `results`
+
+#### Plots
+- Run `script paint_lillies_test.R`
+- Run `script paint_KS_plots.R`
+- Run `script paint_matrix.R init_year end_year`
+- Run `script paint_density_plots.R init_year end_year FS`
+- Run `script compute_strength_degree_slopes.R init_year end_year`
