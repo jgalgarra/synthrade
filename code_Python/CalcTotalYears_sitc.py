@@ -6,7 +6,7 @@ Created on Sun Oct 28 12:27:54 2017
 """
 
 """
-Script to extract raw trade files from .tsv files
+Script to extract raw trade files from .tsv files SITC coding
 Uncomment file names section and modify Years list to
 select the years to be processed.
 
@@ -101,8 +101,7 @@ def LeerFicheros():
         fileName = '../data/raw_data/TodosYR'+str(i)+'.csv'
         pathFile = os.getcwd() + "\\" + fileName
         Header = ['year', 'origin', 'dest', 'export_val', 'import_val']  
-        
-       
+
         datosRedRes.reset_index().to_csv(pathFile, index=None, mode='w', sep=';', columns=Header)
      
 

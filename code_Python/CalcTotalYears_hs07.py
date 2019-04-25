@@ -6,7 +6,7 @@ Created on Sun Oct 28 12:27:54 2017
 """
 
 """
-Script to extract raw trade files from .tsv files
+Script to extract raw trade files from .tsv files HS07 coding
 Uncomment file names section and modify Years list to
 select the years to be processed.
 
@@ -36,36 +36,35 @@ import glob
 import dask.dataframe as dd
 
 
+# Put the raw data files inside "..\datos\" directory
+  
 
 def LeerFicheros():
  
-    
+
+         
     Header = ['year','origin', 'dest', 'hs07', 'export_val','import_val']
+
+    # Uncomment the file name you are going to process. Refer to OCE for contents    
+
     #fileName = '..\datos\year_origin_destination_hs07_6.csv'
     #fileNameIn = '..\datos\year_origin_destination_sitc_rev2.tsv'
     fileNameIn = '..\datos\year_origin_destination_hs07_6.tsv'
-    #fileNameIn = '..\datos\part1.tsv'
     pathFileIn = os.getcwd() + "\\" + fileNameIn
+
 
     fileNameInP = '..\datos\Pyear_origin_destination_hs07_6.tsv'
     #fileNameInP = '..\datos\Ppart1.tsv'
     pathFileInP = os.getcwd() + "\\" + fileNameInP
     if path.exists(pathFileInP):
         os.remove(pathFileInP)  
-
-
-    print('Leyendo fichero') 
-    
-    
+    print('Reading file') 
     r = open(pathFileIn,"r")
     w = open (pathFileInP, "w")
     l = r.readline()
     cont = 1
     while l:
       year = l.split('\t')[0]
-     
-      
-      
       if (year.isdigit()):
           if (int(year) in Years):
               l=l.replace('\t',';')
@@ -79,17 +78,13 @@ def LeerFicheros():
       l= r.readline()
       cont=cont+1
           
-          
     r.close()
     w.close()
 
     datosRed = pd.read_table(pathFileInP, 'engine=python', delimiter=';', header=0, encoding = "ISO-8859-1", names=Header)
      
-    #print(datosRed.head(10))
-    print("Esto es")
-    print(datosRed)
     for i in Years:
-        print("Buildind year")
+        print("Building year")
         print(i)
         datosRedRes = datosRed[(datosRed.year == i)]
         datosRedRes = datosRedRes.drop(labels="hs07", axis=1)
@@ -105,12 +100,10 @@ def LeerFicheros():
         fileName = '..\datos\TodosYR'+str(i)+'.csv'
         pathFile = os.getcwd() + "\\" + fileName
         Header = ['year', 'origin', 'dest', 'export_val', 'import_val']  
-        
        
         datosRedRes.reset_index().to_csv(pathFile, index=None, mode='w', sep=';', columns=Header)
-     
 
-
+# List of years you want to process
 Years = [2015, 2016, 2017]   
 print("Building file")
 LeerFicheros()  
