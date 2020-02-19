@@ -35,7 +35,7 @@ git bash installed
 
 #### Run the synthetic model
 
-- Run script `synthetic_model.R init_year end_year num_experiments` . This procedure is CPU intensive, try to run it in batch mode. Results: `RedAdyComYYYY_FILT_W_N.txt` files, where `YYYY` is the year and `N` the number of experiment.
+- Run script `synthrade.R init_year end_year num_experiments` . This procedure is CPU intensive, try to run it in batch mode. Results: `RedAdyComYYYY_FILT_W_N.txt` files, where `YYYY` is the year and `N` the number of experiment.
 
 #### Compute goodness of fit
 - Run script `compute_gof_distributions.R init_year end_year`. Results are stored in `results`
