@@ -1,4 +1,4 @@
-# Synthrade: Synthetic model simulator of World Trade Networ
+# Synthrade: Synthetic model simulator of World Trade Network
 
 Authors: Javier Garcia-Algarra (U-TAD, Spain)
          Mary Luz Mouronte-Lopez (UFV, Spain)
@@ -41,8 +41,8 @@ git bash installed
 - Run script `compute_gof_distributions.R init_year end_year`. Results are stored in `results`
 
 #### Plots
-- Run `script paint_lillies_test.R`
-- Run `script paint_KS_plots.R`
-- Run `script paint_matrix.R init_year end_year`
-- Run `script paint_density_plots.R init_year end_year FS`
-- Run `script compute_strength_degree_slopes.R init_year end_year`
+- Run `Rscript paint_lillies_test.R`
+- Run `Rscript paint_KS_plots.R`
+- Run `Rscript paint_matrix.R init_year end_year`
+- Run `Rscript paint_density_plots.R init_year end_year FS`
+- Run `Rscript compute_strength_degree_slopes.R init_year end_year`
